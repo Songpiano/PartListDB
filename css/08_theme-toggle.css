@@ -1,0 +1,62 @@
+/* ================================================================
+   Part List Database — 08_theme-toggle.css
+   테마 토글 버튼
+================================================================ */
+
+/* ── THEME TOGGLE BUTTON ── */
+  .theme-toggle {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 999px;
+    padding: 6px 10px 6px 6px;
+    cursor: pointer;
+    transition: all 0.25s;
+    position: relative;
+    user-select: none;
+    flex-shrink: 0;
+  }
+  .theme-toggle:hover { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+
+  .theme-toggle-track {
+    width: 42px; height: 24px;
+    background: var(--border);
+    border-radius: 999px;
+    position: relative;
+    display: flex; align-items: center;
+    padding: 2px;
+    transition: background 0.35s;
+    flex-shrink: 0;
+  }
+  [data-theme="light"] .theme-toggle-track { background: var(--accent); }
+
+  .theme-toggle-thumb {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: var(--text3);
+    transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), background 0.35s;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+    flex-shrink: 0;
+  }
+  [data-theme="light"] .theme-toggle-thumb { transform: translateX(18px); background: #fff; }
+
+  .theme-toggle-icons { display: flex; align-items: center; gap: 2px; font-size: 14px; line-height: 1; }
+  .theme-icon-dark  { opacity: 1; transition: opacity 0.3s; }
+  .theme-icon-light { opacity: 0.35; transition: opacity 0.3s; }
+  [data-theme="light"] .theme-icon-dark  { opacity: 0.35; }
+  [data-theme="light"] .theme-icon-light { opacity: 1; }
+
+  /* ── LIGHT THEME OVERRIDES for specific selectors ── */
+  [data-theme="light"] .brand-tag { background: rgba(91,110,247,0.08); }
+  [data-theme="light"] .part-card:hover { box-shadow: 0 8px 32px var(--shadow-card); }
+  [data-theme="light"] .model-card:hover { box-shadow: 0 8px 32px var(--shadow-card); }
+  [data-theme="light"] .lock-card { box-shadow: 0 24px 64px rgba(91,110,247,0.12), 0 0 0 1px rgba(0,0,0,0.04); }
+  [data-theme="light"] .modal-card { box-shadow: 0 24px 64px rgba(0,0,0,0.15); }
+  [data-theme="light"] .pw-input { background: var(--bg); }
+  [data-theme="light"] .part-code { background: var(--bg); }
+  [data-theme="light"] .dim-box { background: var(--bg); }
+  [data-theme="light"] #lockScreen::before { background: radial-gradient(circle, rgba(91,110,247,0.12) 0%, transparent 70%); }
+  [data-theme="light"] .year-dot { border-color: var(--bg); }
+  [data-theme="light"] .model-img-thumb { border-color: var(--surface); }
+  [data-theme="light"] .model-img-more { background: var(--border); border-color: var(--surface); }
+  [data-theme="light"] .img-remove { background: rgba(0,0,0,0.55); }

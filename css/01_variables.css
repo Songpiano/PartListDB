@@ -1,0 +1,66 @@
+/* ================================================================
+   Part List Database — 01_variables.css
+   CSS 변수 (색상, 테마, 트랜지션)
+================================================================ */
+
+/* ── SHARED ── */
+  :root {
+    --accent: #5B6EF7;
+    --accent2: #7B8FFF;
+    --accent-glow: rgba(91,110,247,0.18);
+    --green: #22D3A0;
+    --green-dim: rgba(34,211,160,0.12);
+    --rose: #F46A6A;
+    --rose-dim: rgba(244,106,106,0.12);
+    --radius: 20px;
+    --radius-sm: 12px;
+  }
+
+  /* ── DARK THEME (default) ── */
+  :root, [data-theme="dark"] {
+    --bg: #0D0F14;
+    --surface: #141720;
+    --surface2: #1C2030;
+    --border: #252A3A;
+    --border2: #2E3448;
+    --text: #E8EAF2;
+    --text2: #9CA3C0;
+    --text3: #5A6080;
+    --header-bg: rgba(20,23,32,0.92);
+    --filter-bg: rgba(20,23,32,0.88);
+    --shadow-card: rgba(91,110,247,0.12);
+  }
+
+  /* ── LIGHT THEME ── */
+  [data-theme="light"] {
+    --bg: #F0F4FF;
+    --surface: #FFFFFF;
+    --surface2: #F5F7FF;
+    --border: #E2E6F3;
+    --border2: #CBD2EA;
+    --text: #1A1D2E;
+    --text2: #4A5180;
+    --text3: #8A94B8;
+    --header-bg: rgba(255,255,255,0.95);
+    --filter-bg: rgba(245,247,255,0.95);
+    --shadow-card: rgba(91,110,247,0.08);
+    --accent-glow: rgba(91,110,247,0.10);
+    --green-dim: rgba(34,211,160,0.10);
+    --rose-dim: rgba(244,106,106,0.10);
+  }
+
+  /* ── THEME TRANSITION ── */
+  body, header, footer, .part-card, .lock-card, .modal-card, .filter-bar,
+  .tab-bar, .btn, .search-input, .filter-input, .dim-group, .dim-box,
+  .stat-pill, .model-card, .year-dot, .brand-tag, .part-code, .status-badge {
+    transition: background 0.35s ease, border-color 0.35s ease, color 0.25s ease, box-shadow 0.35s ease;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 14px; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }

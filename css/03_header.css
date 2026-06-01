@@ -1,0 +1,136 @@
+/* ================================================================
+   Part List Database — 03_header.css
+   헤더, 탭, 필터바
+================================================================ */
+
+/* MAIN APP */
+  #app { display: none; flex-direction: column; min-height: 100vh; }
+  #app.visible { display: flex; animation: fadeIn 0.4s ease; }
+  @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+
+  /* HEADER */
+  header {
+    background: var(--header-bg);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 32px;
+    min-height: 68px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 40;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+  .header-brand { display: flex; align-items: center; gap: 14px; }
+  .brand-icon {
+    width: 44px; height: 44px;
+    background: var(--accent);
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    box-shadow: 0 4px 16px rgba(91,110,247,0.4);
+    flex-shrink: 0;
+  }
+  .brand-name { font-family: 'Inter', 'Noto Sans KR', sans-serif; font-size: 18px; font-weight: 900; color: var(--text); letter-spacing: -0.03em; }
+  .brand-tag {
+    font-size: 10px; font-family: 'JetBrains Mono', monospace; font-weight: 700;
+    background: rgba(255,255,255,0.06); border: 1px solid var(--border2);
+    padding: 3px 8px; border-radius: 6px; color: var(--text3); margin-top: 2px;
+    letter-spacing: 0.1em; text-transform: uppercase;
+  }
+  .brand-sub { font-size: 10px; color: var(--text3); font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; margin-top: 2px; }
+
+  .tab-bar {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 4px;
+    display: flex; gap: 2px;
+  }
+  .tab-btn {
+    padding: 8px 18px;
+    border-radius: 9px;
+    border: none;
+    background: transparent;
+    color: var(--text3);
+    font-family: 'Inter', 'Noto Sans KR', sans-serif;
+    font-size: 13px; font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .tab-btn.active { background: var(--accent); color: #fff; box-shadow: 0 4px 12px rgba(91,110,247,0.4); }
+  .tab-btn:not(.active):hover { background: var(--border); color: var(--text); }
+
+  .header-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .btn {
+    display: flex; align-items: center; gap: 6px;
+    padding: 10px 18px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border2);
+    background: var(--surface2);
+    color: var(--text2);
+    font-family: 'Inter', 'Noto Sans KR', sans-serif;
+    font-size: 13px; font-weight: 700;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-glow); }
+  .btn.danger:hover { border-color: var(--rose); color: var(--rose); background: var(--rose-dim); }
+  .btn svg { width: 15px; height: 15px; }
+  .status-badge {
+    font-size: 10px; font-family: 'JetBrains Mono', monospace; font-weight: 700;
+    padding: 4px 10px; border-radius: 6px;
+    display: flex; align-items: center; gap: 6px;
+    letter-spacing: 0.05em;
+  }
+  .status-badge.success { background: var(--green-dim); color: var(--green); border: 1px solid rgba(34,211,160,0.25); }
+  .status-badge.error { background: var(--rose-dim); color: var(--rose); border: 1px solid rgba(244,106,106,0.25); }
+  .status-badge.info { background: var(--accent-glow); color: var(--accent2); border: 1px solid rgba(91,110,247,0.25); }
+  .pulse { width: 7px; height: 7px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+
+  /* FILTER BAR */
+  .filter-bar {
+    background: var(--filter-bg);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 32px;
+    position: sticky; top: 68px; z-index: 30;
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  }
+  .search-wrap { position: relative; flex: 1; min-width: 240px; }
+  .search-wrap svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text3); width: 16px; height: 16px; pointer-events: none; }
+  .search-input, .filter-input {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 11px 14px 11px 42px;
+    color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 13px; font-weight: 500;
+    outline: none; width: 100%;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .filter-input { padding-left: 14px; }
+  .search-input:focus, .filter-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+  .dim-group { display: flex; align-items: center; gap: 6px; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px 12px; }
+  .dim-label { font-size: 10px; font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--text3); text-transform: uppercase; white-space: nowrap; }
+  .dim-input { background: transparent; border: none; outline: none; width: 48px; font-size: 12px; font-weight: 700; font-family: 'JetBrains Mono', monospace; color: var(--text); }
+  .dim-sep { color: var(--border2); font-size: 16px; font-weight: 200; }
+  .btn-reset { background: none; border: none; color: var(--text3); cursor: pointer; padding: 8px; border-radius: 8px; transition: all 0.2s; display: flex; align-items: center; }
+  .btn-reset:hover { color: var(--accent); background: var(--accent-glow); }
+  .btn-reset svg { width: 16px; height: 16px; }
+
+  /* PARTS COUNT */
+  .parts-count {
+    padding: 12px 32px 4px;
+    color: var(--text3);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.08em;
+  }
+  .parts-count span { color: var(--accent2); font-weight: 700; }
+
+  /* MAIN */
+  main { flex: 1; padding: 12px 48px 40px; overflow-y: auto; }

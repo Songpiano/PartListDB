@@ -1,0 +1,19 @@
+/* ================================================================
+   Part List Database — 07_footer.css
+   푸터
+================================================================ */
+
+/* FOOTER */
+  footer {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: 14px 32px;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 10px;
+  }
+  .footer-text { font-size: 10px; font-family: 'JetBrains Mono', monospace; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.15em; }
+
+  /* SVG ICONS inline */
+  .ico { display: inline-flex; align-items: center; justify-content: center; }
+  svg.ico-sm { width: 14px; height: 14px; }
+  svg.ico-md { width: 18px; height: 18px; }

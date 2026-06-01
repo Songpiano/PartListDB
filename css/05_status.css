@@ -1,0 +1,124 @@
+/* ================================================================
+   Part List Database — 05_status.css
+   연간 현황, 아코디언, 타임라인
+================================================================ */
+
+/* EMPTY STATE */
+  .empty-state { text-align: center; padding: 80px 20px; color: var(--text3); }
+  .empty-state svg { width: 64px; height: 64px; margin: 0 auto 20px; opacity: 0.3; display: block; }
+  .empty-state h3 { font-family: 'Inter', 'Noto Sans KR', sans-serif; font-size: 20px; font-weight: 700; color: var(--text2); margin-bottom: 8px; }
+  .empty-state p { font-size: 13px; line-height: 1.6; }
+
+  /* ── 년도 아코디언 ── */
+  .year-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    margin-bottom: 16px;
+    overflow: hidden;
+    transition: border-color 0.25s, box-shadow 0.25s;
+  }
+  .year-block.open { border-color: var(--accent); box-shadow: 0 4px 24px rgba(91,110,247,0.10); }
+
+  .year-accordion {
+    width: 100%; background: none; border: none; cursor: pointer;
+    padding: 24px 28px;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    text-align: left;
+    transition: background 0.2s;
+  }
+  .year-accordion:hover { background: var(--surface2); }
+  .year-accordion-left { display: flex; align-items: center; gap: 20px; }
+  .year-accordion-dot {
+    width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0;
+    background: var(--accent);
+    box-shadow: 0 0 0 4px var(--accent-glow);
+    transition: box-shadow 0.2s;
+  }
+  .year-block.open .year-accordion-dot { box-shadow: 0 0 0 6px var(--accent-glow); }
+  .year-accordion-right { display: flex; align-items: center; gap: 16px; flex-shrink: 0; }
+  .year-chevron {
+    color: var(--text3); transition: transform 0.3s cubic-bezier(0.34,1.2,0.64,1), color 0.2s;
+    display: flex;
+  }
+  .year-chevron svg { width: 20px; height: 20px; }
+  .year-block.open .year-chevron { transform: rotate(180deg); color: var(--accent2); }
+
+  .year-body {
+    max-height: 0; overflow: hidden;
+    transition: max-height 0.45s cubic-bezier(0.4,0,0.2,1);
+  }
+  .year-block.open .year-body { max-height: 9999px; }
+
+  .year-group { padding: 0 28px 24px; }
+
+  /* ── 월별 그룹 ── */
+  .months-container { display: flex; flex-direction: column; gap: 0; }
+
+  .month-group { position: relative; padding-left: 32px; padding-bottom: 32px; }
+  .month-group::before { content: ''; position: absolute; left: 7px; top: 18px; bottom: 0; width: 1px; background: var(--border); }
+  .month-group:last-child::before { display: none; }
+
+  .month-head { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+  .month-dot { position: absolute; left: 2px; width: 12px; height: 12px; border-radius: 50%; background: var(--surface); border: 2px solid var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); flex-shrink: 0; margin-top: 2px; }
+  .month-label-wrap { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .month-label { font-family: 'Inter', 'Noto Sans KR', sans-serif; font-size: 15px; font-weight: 800; color: var(--text); letter-spacing: -0.02em; }
+  .month-stats { font-size: 11px; font-family: 'JetBrains Mono', monospace; font-weight: 600; color: var(--text3); background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 2px 8px; }
+
+  /* 모델 카드 내 완제품/하위 배지 */
+  .model-parts-detail { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 6px; }
+  .mpd-badge { font-size: 10px; font-family: 'JetBrains Mono', monospace; font-weight: 700; padding: 2px 7px; border-radius: 5px; }
+  .mpd-badge.assy { background: var(--assembly-bg); color: var(--text3); border: 1px solid var(--assembly-border); }
+  .mpd-badge.sub  { background: var(--accent-glow); color: var(--accent2); border: 1px solid rgba(91,110,247,0.2); }
+
+  /* STATUS TAB */
+  .status-header { margin-bottom: 40px; }
+  .status-header h2 { font-family: 'Inter', 'Noto Sans KR', sans-serif; font-size: 28px; font-weight: 800; color: var(--text); margin-bottom: 6px; }
+  .status-header p { color: var(--text3); font-size: 13px; }
+
+  .timeline { display: flex; flex-direction: column; gap: 0; }
+  .year-group { position: relative; padding-left: 48px; padding-bottom: 48px; }
+  .year-group::before { content: ''; position: absolute; left: 14px; top: 14px; bottom: 0; width: 2px; background: var(--border2); }
+  .year-group:last-child::before { display: none; }
+  .year-dot { position: absolute; left: 6px; top: 6px; width: 18px; height: 18px; border-radius: 50%; background: var(--accent); border: 3px solid var(--bg); box-shadow: 0 0 0 3px rgba(91,110,247,0.3); }
+  .year-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+  .year-label { font-size: 11px; font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--accent2); text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 4px; }
+  .year-title { font-family: 'Inter', 'Noto Sans KR', sans-serif; font-size: 32px; font-weight: 900; color: var(--text); line-height: 1; letter-spacing: -0.04em; }
+  .year-stats { display: flex; gap: 10px; }
+  .stat-pill { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 20px; text-align: center; min-width: 100px; }
+  .stat-pill-label { font-size: 9px; font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px; }
+  .stat-pill-val { font-family: 'Inter', 'Noto Sans KR', sans-serif; font-size: 22px; font-weight: 900; color: var(--text); letter-spacing: -0.03em; }
+  .models-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+  .model-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    transition: all 0.25s;
+    cursor: default;
+  }
+  .model-card:hover { border-color: var(--accent); box-shadow: 0 8px 32px rgba(91,110,247,0.15); transform: translateY(-2px); }
+  .model-card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .model-icon { width: 38px; height: 38px; background: var(--accent-glow); border: 1px solid rgba(91,110,247,0.2); border-radius: 11px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+  .model-card:hover .model-icon { background: var(--accent); border-color: var(--accent); }
+  .model-name { font-family: 'Inter', 'Noto Sans KR', sans-serif; font-size: 15px; font-weight: 800; color: var(--text); margin-bottom: 4px; letter-spacing: -0.02em; }
+  .model-parts-count { font-size: 11px; font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--text3); }
+  .model-card-goto {
+    margin-top: 12px;
+    font-size: 11px; font-family: 'Inter', 'Noto Sans KR', sans-serif; font-weight: 700;
+    color: var(--text3);
+    opacity: 0;
+    transform: translateX(-4px);
+    transition: opacity 0.2s, transform 0.2s, color 0.2s;
+    letter-spacing: 0.03em;
+  }
+  .model-card:hover .model-card-goto {
+    opacity: 1;
+    transform: translateX(0);
+    color: var(--accent2);
+  }
+  .model-imgs { display: flex; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
+  .model-img-thumb { width: 28px; height: 28px; border-radius: 7px; overflow: hidden; border: 2px solid var(--surface2); margin-left: -8px; }
+  .model-img-thumb:first-child { margin-left: 0; }
+  .model-img-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .model-img-more { width: 28px; height: 28px; border-radius: 7px; background: var(--border); border: 2px solid var(--surface2); display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 800; color: var(--text3); margin-left: -8px; font-family: 'JetBrains Mono', monospace; }

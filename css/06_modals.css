@@ -1,0 +1,44 @@
+/* ================================================================
+   Part List Database — 06_modals.css
+   모달 (컨펌, 줌)
+================================================================ */
+
+/* CONFIRM MODAL */
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(8px);
+    display: none; align-items: center; justify-content: center; padding: 24px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal-card {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 28px;
+    padding: 40px 36px;
+    max-width: 380px; width: 100%;
+    text-align: center;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.5);
+    animation: zoomIn 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .modal-icon { width: 60px; height: 60px; border-radius: 50%; background: var(--rose-dim); border: 1px solid rgba(244,106,106,0.3); display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 28px; }
+  .modal-title { font-family: 'Inter', 'Noto Sans KR', sans-serif; font-size: 20px; font-weight: 800; color: var(--text); margin-bottom: 8px; }
+  .modal-body { font-size: 13px; color: var(--text3); line-height: 1.6; margin-bottom: 28px; }
+  .modal-actions { display: flex; gap: 10px; }
+  .modal-cancel { flex: 1; padding: 14px; background: var(--surface2); border: 1px solid var(--border2); border-radius: var(--radius-sm); color: var(--text2); font-family: 'Inter', 'Noto Sans KR', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+  .modal-cancel:hover { border-color: var(--border2); background: var(--border); }
+  .modal-confirm { flex: 1; padding: 14px; background: var(--rose); border: none; border-radius: var(--radius-sm); color: #fff; font-family: 'Inter', 'Noto Sans KR', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: 0 6px 18px rgba(244,106,106,0.3); }
+  .modal-confirm:hover { filter: brightness(1.1); }
+
+  /* ZOOM MODAL */
+  .zoom-overlay {
+    position: fixed; inset: 0; z-index: 300;
+    background: rgba(0,0,0,0.92);
+    backdrop-filter: blur(16px);
+    display: none; align-items: center; justify-content: center; padding: 24px;
+    cursor: zoom-out;
+  }
+  .zoom-overlay.open { display: flex; animation: fadeIn 0.2s; }
+  .zoom-overlay img { max-width: 90vw; max-height: 90vh; object-fit: contain; border-radius: 16px; box-shadow: 0 40px 80px rgba(0,0,0,0.5); }
+  .zoom-close { position: absolute; top: 24px; right: 24px; background: rgba(255,255,255,0.1); border: none; color: #fff; width: 44px; height: 44px; border-radius: 50%; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
+  .zoom-close:hover { background: rgba(255,255,255,0.2); }
