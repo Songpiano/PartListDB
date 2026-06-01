@@ -5,7 +5,7 @@
 
 // ─── GOOGLE SHEETS 연동 ───────────────────────────────────────────────────────
 const GAS_URL_KEY = 'partlist_gas_url';
-const GAS_DEFAULT_URL = 'https://script.google.com/macros/s/AKfycbzeTiZIcRolQ_mk3-Yx8iP8vGH4wnvgGGvwL_YjZUrqUzPzM8um6vFg0siA_AkOWEmThQ/exec';
+const GAS_DEFAULT_URL = 'https://script.google.com/macros/s/AKfycbxe5tE07aIlsZMj2E1zNx5Hd_7zrxHbDLCjWdvwWecZepi0-AowjiaQaoEkYW1UpTh2nA/exec';
 let gasUrl    = localStorage.getItem(GAS_URL_KEY) || GAS_DEFAULT_URL;
 // 기본 URL을 localStorage에 저장
 if (!localStorage.getItem(GAS_URL_KEY)) localStorage.setItem(GAS_URL_KEY, GAS_DEFAULT_URL);
@@ -85,32 +85,7 @@ function disconnectGas() {
   showSyncStatus('Sheets 연동 해제됨', 'info');
 }
 
-// ── GAS 공통 POST 요청 (form-urlencoded, 크기 제한 없음) ─────────
-async function gasPostForm(params) {
-  const body = new URLSearchParams();
-  Object.entries(params).forEach(([k, v]) => {
-    body.set(k, v !== null && v !== undefined ? String(v) : '');
-  });
-  // 1차: POST with CORS
-  try {
-    const res  = await fetch(gasUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: body.toString(), redirect: 'follow'
-    });
-    const text = await res.text();
-    if (text.trim().startsWith('<')) throw new Error('HTML 응답');
-    return JSON.parse(text);
-  } catch(e) {
-    console.warn('POST CORS 실패, no-cors 폴백:', e.message);
-    // 2차: no-cors (응답 없음, fire-and-forget)
-    fetch(gasUrl, { method:'POST', mode:'no-cors', body: body.toString(),
-      headers:{'Content-Type':'application/x-www-form-urlencoded'} });
-    return { ok: true, saved: 0, noResponse: true };
-  }
-}
-
-// ── GAS GET 요청 (조회용) ─────────────────────────────────────
+// ── GAS GET 요청 ─────────────────────────────────────────────
 async function gasGetRequest(params) {
   const url = new URL(gasUrl);
   Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, String(v ?? '')));
@@ -120,32 +95,25 @@ async function gasGetRequest(params) {
   return JSON.parse(text);
 }
 
-// ── 전체 동기화 (청크 10개씩 POST) ───────────────────────────
+// ── 전체 동기화 (GET 방식, 항목별 upsert) ────────────────────
 async function syncToSheets() {
   if (!gasUrl || gasSyncing) return;
   gasSyncing = true;
   showSyncStatus('Sheets 동기화 중...', 'info');
   try {
     const partsData = parts.map(p => ({ ...p, imageUrl: null }));
-    const CHUNK = 10;
-    let saved = 0;
 
-    for (let i = 0; i < partsData.length; i += CHUNK) {
-      const chunk   = partsData.slice(i, i + CHUNK);
-      const action  = (i === 0) ? 'syncAll' : 'appendChunk';
-      const res     = await gasPostForm({ action, parts: JSON.stringify(chunk) });
-      if (res && !res.ok && !res.noResponse) throw new Error(res.error || '저장 실패');
-      saved += chunk.length;
-      showSyncStatus(`저장 중... (${saved}/${partsData.length})`, 'info');
+    // 1단계: 전체 초기화
+    await gasGetRequest({ action: 'clearAll' });
+
+    // 2단계: 항목별 저장
+    for (let i = 0; i < partsData.length; i++) {
+      const p = partsData[i];
+      await gasGetRequest({ action: 'upsert', part: JSON.stringify(p) });
+      if (i % 5 === 0) showSyncStatus(`저장 중... (${i+1}/${partsData.length})`, 'info');
     }
 
-    // 완제품 이미지 업데이트
-    const withImg = parts.filter(p => p.imageUrl && p.isAssembly);
-    for (const p of withImg) {
-      await gasPostForm({ action: 'updateImage', id: p.id, imageUrl: p.imageUrl });
-    }
-
-    showSyncStatus(`Sheets 저장 완료 (${saved}건)`, 'success');
+    showSyncStatus(`Sheets 저장 완료 (${partsData.length}건)`, 'success');
   } catch(e) {
     showSyncStatus('Sheets 저장 실패: ' + e.message, 'error');
     console.error('syncToSheets:', e);
@@ -174,13 +142,13 @@ async function loadFromSheets() {
 
 async function updateImageOnSheets(id, imageUrl) {
   if (!gasUrl) return;
-  try { await gasPostForm({ action: 'updateImage', id, imageUrl: imageUrl || '' }); }
+  try { await gasGetRequest({ action: 'updateImage', id, imageUrl: imageUrl || '' }); }
   catch(e) { console.warn('이미지 Sheets 업데이트 실패:', e); }
 }
 
 async function updateFieldOnSheets(id, field, value) {
   if (!gasUrl) return;
-  try { await gasPostForm({ action: 'updateField', id, field, value }); }
+  try { await gasGetRequest({ action: 'updateField', id, field, value }); }
   catch(e) { console.warn('필드 Sheets 업데이트 실패:', e); }
 }
 
