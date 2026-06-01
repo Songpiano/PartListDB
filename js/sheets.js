@@ -37,33 +37,18 @@ async function testGasConnection() {
   if (!url) return;
   const dot  = document.getElementById('gasStatusDot');
   const text = document.getElementById('gasStatusText');
-  dot.className  = 'gas-status-dot';
+  dot.className    = 'gas-status-dot';
   text.textContent = '연결 테스트 중...';
   text.style.color = '';
   try {
-    const testUrl = new URL(url);
-    testUrl.searchParams.set('action', 'getAll');
-    const res  = await fetch(testUrl.toString(), { redirect: 'follow' });
-    const json = await res.json();
-    if (json.ok !== undefined) {
-      dot.className    = 'gas-status-dot connected';
-      text.textContent = `✓ 연결 성공! 저장된 항목: ${(json.parts||[]).length}개`;
-      text.style.color = 'var(--green)';
-    } else throw new Error('응답 오류');
+    const json = await gasJsonp({ action: 'getAll' }, url);
+    dot.className    = 'gas-status-dot connected';
+    text.textContent = `✓ 연결 성공! 저장된 항목: ${(json.parts||[]).length}개`;
+    text.style.color = 'var(--green)';
   } catch(e) {
-    // CORS 차단 시 no-cors 폴백으로 연결 확인
-    try {
-      const testUrl2 = new URL(url);
-      testUrl2.searchParams.set('action', 'getAll');
-      await fetch(testUrl2.toString(), { mode: 'no-cors', redirect: 'follow' });
-      dot.className    = 'gas-status-dot connected';
-      text.textContent = '✓ 연결 성공! (데이터 동기화 준비 완료)';
-      text.style.color = 'var(--green)';
-    } catch(e2) {
-      dot.className    = 'gas-status-dot error';
-      text.textContent = '✗ 연결 실패 — Apps Script 코드를 새 버전으로 재배포했는지 확인하세요.';
-      text.style.color = 'var(--rose)';
-    }
+    dot.className    = 'gas-status-dot error';
+    text.textContent = '✗ 연결 실패 — Apps Script 코드를 새 버전으로 재배포했는지 확인하세요.';
+    text.style.color = 'var(--rose)';
   }
 }
 
@@ -85,17 +70,36 @@ function disconnectGas() {
   showSyncStatus('Sheets 연동 해제됨', 'info');
 }
 
-// ── GAS GET 요청 ─────────────────────────────────────────────
-async function gasGetRequest(params) {
-  const url = new URL(gasUrl);
-  Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, String(v ?? '')));
-  const res  = await fetch(url.toString(), { redirect: 'follow' });
-  const text = await res.text();
-  if (text.trim().startsWith('<')) throw new Error('HTML 응답 — GAS 재배포 필요');
-  return JSON.parse(text);
+// ── JSONP 요청 (CORS 우회) ────────────────────────────────────
+function gasJsonp(params, overrideUrl) {
+  return new Promise((resolve, reject) => {
+    const cbName = 'gasCb_' + Date.now() + '_' + Math.floor(Math.random()*9999);
+    const url    = new URL(overrideUrl || gasUrl);
+    Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, String(v ?? '')));
+    url.searchParams.set('callback', cbName);
+
+    const timer = setTimeout(() => {
+      delete window[cbName];
+      script.remove();
+      reject(new Error('JSONP timeout'));
+    }, 10000);
+
+    window[cbName] = (data) => {
+      clearTimeout(timer);
+      delete window[cbName];
+      script.remove();
+      try { resolve(typeof data === 'string' ? JSON.parse(data) : data); }
+      catch(e) { reject(e); }
+    };
+
+    const script = document.createElement('script');
+    script.src    = url.toString();
+    script.onerror = () => { clearTimeout(timer); delete window[cbName]; reject(new Error('Script load error')); };
+    document.head.appendChild(script);
+  });
 }
 
-// ── 전체 동기화 (GET 방식, 항목별 upsert) ────────────────────
+// ── 전체 동기화 (JSONP, 항목별 upsert) ───────────────────────
 async function syncToSheets() {
   if (!gasUrl || gasSyncing) return;
   gasSyncing = true;
@@ -103,13 +107,10 @@ async function syncToSheets() {
   try {
     const partsData = parts.map(p => ({ ...p, imageUrl: null }));
 
-    // 1단계: 전체 초기화
-    await gasGetRequest({ action: 'clearAll' });
+    await gasJsonp({ action: 'clearAll' });
 
-    // 2단계: 항목별 저장
     for (let i = 0; i < partsData.length; i++) {
-      const p = partsData[i];
-      await gasGetRequest({ action: 'upsert', part: JSON.stringify(p) });
+      await gasJsonp({ action: 'upsert', part: JSON.stringify(partsData[i]) });
       if (i % 5 === 0) showSyncStatus(`저장 중... (${i+1}/${partsData.length})`, 'info');
     }
 
@@ -124,7 +125,7 @@ async function loadFromSheets() {
   if (!gasUrl) return false;
   showSyncStatus('Sheets에서 불러오는 중...', 'info');
   try {
-    const json = await gasGetRequest({ action: 'getAll' });
+    const json = await gasJsonp({ action: 'getAll' });
     if (json.ok && json.parts && json.parts.length > 0) {
       parts = json.parts;
       parts.forEach((p, i) => { p.globalNo = i + 1; });
@@ -142,13 +143,13 @@ async function loadFromSheets() {
 
 async function updateImageOnSheets(id, imageUrl) {
   if (!gasUrl) return;
-  try { await gasGetRequest({ action: 'updateImage', id, imageUrl: imageUrl || '' }); }
+  try { await gasJsonp({ action: 'updateImage', id, imageUrl: imageUrl || '' }); }
   catch(e) { console.warn('이미지 Sheets 업데이트 실패:', e); }
 }
 
 async function updateFieldOnSheets(id, field, value) {
   if (!gasUrl) return;
-  try { await gasGetRequest({ action: 'updateField', id, field, value }); }
+  try { await gasJsonp({ action: 'updateField', id, field, value }); }
   catch(e) { console.warn('필드 Sheets 업데이트 실패:', e); }
 }
 
