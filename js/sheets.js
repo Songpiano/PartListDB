@@ -5,7 +5,7 @@
 
 // ─── GOOGLE SHEETS 연동 ───────────────────────────────────────────────────────
 const GAS_URL_KEY = 'partlist_gas_url';
-const GAS_DEFAULT_URL = 'https://script.google.com/macros/s/AKfycbxe5tE07aIlsZMj2E1zNx5Hd_7zrxHbDLCjWdvwWecZepi0-AowjiaQaoEkYW1UpTh2nA/exec';
+const GAS_DEFAULT_URL = 'https://script.google.com/macros/s/AKfycbyzpxeYdrGQ5tqu3eOvWUFMulj5Cl1cg-pXjp93px4b89lsqh2V0TamDHUT75UO5L4nIg/exec';
 let gasUrl    = localStorage.getItem(GAS_URL_KEY) || GAS_DEFAULT_URL;
 // 기본 URL을 localStorage에 저장
 if (!localStorage.getItem(GAS_URL_KEY)) localStorage.setItem(GAS_URL_KEY, GAS_DEFAULT_URL);
