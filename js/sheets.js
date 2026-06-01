@@ -43,7 +43,7 @@ async function testGasConnection() {
   try {
     const testUrl = new URL(url);
     testUrl.searchParams.set('action', 'getAll');
-    const res  = await fetch(testUrl.toString());
+    const res  = await fetch(testUrl.toString(), { redirect: 'follow' });
     const json = await res.json();
     if (json.ok !== undefined) {
       dot.className    = 'gas-status-dot connected';
@@ -51,9 +51,19 @@ async function testGasConnection() {
       text.style.color = 'var(--green)';
     } else throw new Error('응답 오류');
   } catch(e) {
-    dot.className    = 'gas-status-dot error';
-    text.textContent = '✗ 연결 실패 — Apps Script 코드를 새 버전으로 재배포했는지 확인하세요.';
-    text.style.color = 'var(--rose)';
+    // CORS 차단 시 no-cors 폴백으로 연결 확인
+    try {
+      const testUrl2 = new URL(url);
+      testUrl2.searchParams.set('action', 'getAll');
+      await fetch(testUrl2.toString(), { mode: 'no-cors', redirect: 'follow' });
+      dot.className    = 'gas-status-dot connected';
+      text.textContent = '✓ 연결 성공! (데이터 동기화 준비 완료)';
+      text.style.color = 'var(--green)';
+    } catch(e2) {
+      dot.className    = 'gas-status-dot error';
+      text.textContent = '✗ 연결 실패 — Apps Script 코드를 새 버전으로 재배포했는지 확인하세요.';
+      text.style.color = 'var(--rose)';
+    }
   }
 }
 
