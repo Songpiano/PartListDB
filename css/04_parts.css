@@ -204,10 +204,10 @@
 
 /* DIM BOX (가로/세로/높이/CAV/SET소요 등) */
 .dim-box {
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 7px; padding: 4px 10px;
-  text-align: center; min-width: 44px;
+  background: none;
+  border: none;
+  padding: 0 8px;
+  text-align: center; min-width: 36px;
 }
 .dim-box-label {
   font-family: var(--font-base);
@@ -221,20 +221,20 @@
   color: var(--text);
 }
 /* CAV / SET소요 강조 */
-.dim-box-accent { background: var(--accent-glow); border-color: rgba(91,110,247,0.2); }
+.dim-box-accent { background: none; border: none; }
 .dim-box-accent .dim-box-label { color: var(--accent2); }
 .dim-box-accent .dim-box-val   { color: var(--accent2); }
 /* TRAY / 릴 업체명 */
-.dim-box-pkg { background: rgba(245,158,11,0.08); border-color: rgba(245,158,11,0.22); }
+.dim-box-pkg { background: none; border: none; }
 .dim-box-pkg .dim-box-label { color: #F59E0B; }
 .dim-box-pkg .dim-box-val   { color: #F59E0B; }
 /* Weight */
-.dim-box-weight { background: var(--surface2); border-color: var(--border2); }
+.dim-box-weight { background: none; border: none; }
 .dim-box-weight .dim-box-label { color: var(--text3); }
 .dim-box-weight .dim-box-val   { color: var(--text); }
 
 /* SUB dim-box */
-.part-card.is-sub .dim-box { padding: 2px 6px; min-width: 34px; }
+.part-card.is-sub .dim-box { padding: 0 5px; min-width: 28px; }
 .part-card.is-sub .dim-box-val   { font-size: 11px; }
 .part-card.is-sub .dim-box-label { font-size: 8px; }
 
