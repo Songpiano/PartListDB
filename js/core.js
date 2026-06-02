@@ -24,7 +24,7 @@ const STORAGE_KEY = 'shieldcan_parts_v1';
 let parts = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
 // 초기 로드 시 globalNo 재계산
 parts.forEach((p, i) => { p.globalNo = i + 1; });
-let currentTab = 'list';
+let currentTab = 'status';
 let pendingAction = null;
 
 function saveParts() {
@@ -46,9 +46,9 @@ function tryUnlock(e) {
     initGasBadge();
     // Sheets 연동 시 최신 데이터 불러오기
     if (gasUrl) {
-      loadFromSheets().then(loaded => {
-        if (loaded) { renderParts(); renderStatus(); }
-        else { renderParts(); renderStatus(); }
+      loadFromSheets().then(() => {
+        renderParts();
+        renderStatus();
       });
     } else {
       renderParts();

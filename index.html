@@ -147,13 +147,13 @@
     </div>
 
     <div class="tab-bar">
-      <button class="tab-btn active" id="tabList" onclick="switchTab('list')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-        부품 리스트
-      </button>
-      <button class="tab-btn" id="tabStatus" onclick="switchTab('status')">
+      <button class="tab-btn active" id="tabStatus" onclick="switchTab('status')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
         연간 모델 현황
+      </button>
+      <button class="tab-btn" id="tabList" onclick="switchTab('list')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        부품 리스트
       </button>
     </div>
 
@@ -197,7 +197,7 @@
   </header>
 
   <!-- LIST TAB -->
-  <div id="panelList">
+  <div id="panelList" style="display:none;">
     <div class="filter-bar">
       <div class="search-wrap">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -227,7 +227,7 @@
   </div>
 
   <!-- STATUS TAB -->
-  <div id="panelStatus" style="display:none;">
+  <div id="panelStatus">
     <main>
       <div class="status-header">
         <h2>연간 모델 개발 현황</h2>
