@@ -41,7 +41,7 @@
   .part-model-label {
     font-family: 'Inter', 'Noto Sans KR', sans-serif;
     font-size: 13px; font-weight: 800;
-    color: var(--accent2);
+    color: var(--text);
     background: var(--accent-glow);
     border: 1px solid rgba(91,110,247,0.25);
     border-radius: 8px;
@@ -89,7 +89,7 @@
   .part-main { min-width: 0; }
   .part-tags { display: flex; align-items: center; flex-wrap: wrap; gap: 5px; margin-bottom: 5px; }
   .tag {
-    font-size: 10px; font-family: 'JetBrains Mono', monospace; font-weight: 700;
+    font-size: 12px; font-family: 'JetBrains Mono', monospace; font-weight: 700;
     padding: 3px 9px; border-radius: 6px; display: flex; align-items: center; gap: 4px;
     text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap;
   }
@@ -109,8 +109,8 @@
 
   .part-specs { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 6px; }
   .spec-group { }
-  .spec-label { font-size: 9px; font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 2px; }
-  .spec-val { font-size: 11px; font-weight: 700; color: var(--text2); }
+  .spec-label { font-size: 10px; font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 2px; }
+  .spec-val { font-size: 13px; font-weight: 700; color: var(--text2); }
   .spec-dims { display: flex; gap: 5px; margin-top: 6px; flex-wrap: wrap; }
   .dim-box { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 4px 8px; text-align: center; min-width: 44px; }
   .dim-box-accent { background: var(--accent-glow); border-color: rgba(91,110,247,0.25); }
@@ -171,10 +171,10 @@
   .part-card.is-sub .part-tags { margin-bottom: 3px; }
 
   /* ── 제품구분 배지 ── */
-  .tag.category-brk    { background: rgba(91,110,247,0.12); color: var(--accent2); border: 1px solid rgba(91,110,247,0.25); }
-  .tag.category-sub    { background: rgba(34,211,160,0.10); color: var(--green);   border: 1px solid rgba(34,211,160,0.25); }
-  .tag.category-pkg    { background: rgba(245,158,11,0.12); color: #F59E0B;        border: 1px solid rgba(245,158,11,0.25); }
-  .tag.category-other  { background: var(--surface2);       color: var(--text3);   border: 1px solid var(--border2); }
+  .tag.category-brk    { background: rgba(91,110,247,0.12); color: var(--text); border: 1px solid rgba(91,110,247,0.25); }
+  .tag.category-sub    { background: rgba(34,211,160,0.10); color: var(--text); border: 1px solid rgba(34,211,160,0.25); }
+  .tag.category-pkg    { background: rgba(245,158,11,0.12); color: var(--text); border: 1px solid rgba(245,158,11,0.25); }
+  .tag.category-other  { background: var(--surface2);       color: var(--text); border: 1px solid var(--border2); }
 
   /* NO 컬럼 — 완제품은 더 굵고 크게 */
   .part-no-val.assy-no { font-size: 19px; color: var(--text2); letter-spacing: -0.02em; }
