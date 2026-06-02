@@ -87,13 +87,14 @@ function handleFileUpload(e) {
 
       // ── CAV / SET당 소요량 컬럼 인덱스 동적 탐지 ──
       // 헤더 행을 스캔해서 'CAV', 'SET' 키워드가 있는 컬럼 인덱스를 찾음
-      let cavIdx = 16, setIdx = 17; // 기본값 (openpyxl 확인 기준)
+      let cavIdx = 16, setIdx = 17, managerIdx = -1;
       for (let r = 0; r < Math.min(12, rows.length); r++) {
         if (!rows[r]) continue;
         rows[r].forEach((cell, ci) => {
           const s = String(cell||'').replace(/[\s\n\r]/g,'').toUpperCase();
           if (s === 'CAV') cavIdx = ci;
           if (s.includes('SET') && s.includes('소요')) setIdx = ci;
+          if (s === '담당자' || s.includes('담당자')) managerIdx = ci;
         });
       }
 
@@ -147,6 +148,7 @@ function handleFileUpload(e) {
           cav:       (row[cavIdx] != null && row[cavIdx] !== '') ? row[cavIdx] : '-',
           set_qty:   (row[setIdx] != null && row[setIdx] !== '') ? row[setIdx] : '-',
           tray_qty:  trayQty,
+          manager:   managerIdx >= 0 && row[managerIdx] != null ? String(row[managerIdx]).trim() : '',
           approvalDate,
           uploadBatch,                    // 파일 단위 묶음 키
           rowIndex: rowIndex++,           // 엑셀 행 순서
