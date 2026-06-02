@@ -165,7 +165,12 @@ function renderStatus() {
 
   container.innerHTML = years.map((yg, yi) => {
     const isOpen = yi === 0;
-    const modelList = Object.entries(yg.models).sort((a,b) => a[0].localeCompare(b[0]));
+    // 빠른 월 기준 정렬 (같은 월이면 모델명 순)
+    const modelList = Object.entries(yg.models).sort((a,b) => {
+      const minA = [...a[1].months].sort()[0] || '99';
+      const minB = [...b[1].months].sort()[0] || '99';
+      return minA !== minB ? minA.localeCompare(minB) : a[0].localeCompare(b[0]);
+    });
 
     const tableRows = modelList.map(([model, md]) => {
       const assyCount = md.parts.filter(p => p.isAssembly).length;
