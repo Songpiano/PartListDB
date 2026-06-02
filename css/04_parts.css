@@ -40,18 +40,19 @@
   }
   .part-model-label {
     font-family: 'Inter', 'Noto Sans KR', sans-serif;
-    font-size: 11px; font-weight: 800;
+    font-size: 13px; font-weight: 800;
     color: var(--accent2);
     background: var(--accent-glow);
     border: 1px solid rgba(91,110,247,0.25);
     border-radius: 8px;
-    padding: 3px 8px;
-    text-align: center;
+    padding: 4px 10px;
     letter-spacing: -0.01em;
     white-space: nowrap;
     width: max-content;
-    max-width: 200px;
+    max-width: 300px;
     transition: background 0.2s, border-color 0.2s;
+    display: inline-block;
+    margin-bottom: 6px;
   }
   .part-card:hover .part-model-label {
     background: rgba(91,110,247,0.22);
@@ -96,15 +97,15 @@
   .tag.date { background: var(--green-dim); color: var(--green); border: 1px solid rgba(34,211,160,0.25); cursor: pointer; }
   .tag.date:hover { border-color: var(--green); }
   .part-name {
-    font-family: 'Inter', 'Noto Sans KR', sans-serif; font-size: 14px; font-weight: 700; color: var(--text);
-    margin-bottom: 4px; cursor: pointer; display: flex; align-items: center; gap: 6px;
+    font-family: 'Inter', 'Noto Sans KR', sans-serif; font-size: 17px; font-weight: 800; color: var(--text);
+    margin-bottom: 5px; cursor: pointer; display: flex; align-items: center; gap: 6px;
     transition: color 0.2s; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     letter-spacing: -0.02em;
   }
   .part-name:hover { color: var(--accent2); }
-  .part-name svg { width: 12px; height: 12px; opacity: 0; transition: opacity 0.2s; flex-shrink: 0; }
+  .part-name svg { width: 13px; height: 13px; opacity: 0; transition: opacity 0.2s; flex-shrink: 0; }
   .part-card:hover .part-name svg { opacity: 0.5; }
-  .part-code { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600; color: var(--text3); background: var(--bg); padding: 3px 8px; border-radius: 6px; border: 1px solid var(--border); display: inline-block; }
+  .part-code { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; color: var(--text); background: var(--bg); padding: 3px 8px; border-radius: 6px; border: 1px solid var(--border); display: inline-block; }
 
   .part-specs { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 6px; }
   .spec-group { }
@@ -156,9 +157,18 @@
   .part-card.is-assembly .part-no-val { color: var(--text3); font-size: 17px; }
   .part-card.is-assembly:hover .part-no-val { color: var(--text2); }
 
-  /* 하위자재 들여쓰기 표시 */
-  .part-card.is-sub { border-left: 3px solid var(--border2); margin-left: 24px; border-radius: 0 var(--radius) var(--radius) 0; }
+  /* 하위자재 들여쓰기 표시 — 카드 작게 */
+  .part-card.is-sub { border-left: 3px solid var(--border2); margin-left: 24px; border-radius: 0 var(--radius) var(--radius) 0; padding: 8px 14px; }
   .part-card.is-sub::before { display: none; }
+  .part-card.is-sub .part-name { font-size: 14px; }
+  .part-card.is-sub .part-code { font-size: 11px; }
+  .part-card.is-sub .part-model-label { font-size: 11px; padding: 2px 7px; margin-bottom: 4px; }
+  .part-card.is-sub .part-no-val { font-size: 16px; }
+  .part-card.is-sub .dim-box-val { font-size: 11px; }
+  .part-card.is-sub .dim-box { padding: 3px 6px; min-width: 38px; }
+  .part-card.is-sub .spec-dims { margin-top: 4px; gap: 4px; }
+  .part-card.is-sub .part-specs { margin-top: 4px; }
+  .part-card.is-sub .part-tags { margin-bottom: 3px; }
 
   /* ── 제품구분 배지 ── */
   .tag.category-brk    { background: rgba(91,110,247,0.12); color: var(--accent2); border: 1px solid rgba(91,110,247,0.25); }

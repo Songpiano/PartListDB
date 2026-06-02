@@ -53,7 +53,6 @@ function renderParts() {
       </div>
 
       <div class="part-img-col">
-        ${p.model ? `<div class="part-model-label">${escHtml(p.model)}</div>` : ''}
         ${isSub ? '' : p.imageUrl
           ? `<div class="part-img-wrap">
               <img src="${p.imageUrl}" alt="${escHtml(p.name)}" onclick="openZoom('${p.id}')" />
@@ -70,6 +69,7 @@ function renderParts() {
 
       <div class="part-info">
         <div class="part-main">
+          ${p.model ? `<div class="part-model-label">${escHtml(p.model)}</div>` : ''}
           <div class="part-tags">
             <span class="tag ${catCls}">${categoryEmoji(catCls)} ${escHtml(catLabel)}</span>
             <span class="tag date" onclick="startEdit('${p.id}','approvalDate')" title="클릭하여 편집">
