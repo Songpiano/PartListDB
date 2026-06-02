@@ -82,7 +82,7 @@ function gasJsonp(params, overrideUrl) {
       delete window[cbName];
       script.remove();
       reject(new Error('JSONP timeout'));
-    }, 10000);
+    }, 20000);
 
     window[cbName] = (data) => {
       clearTimeout(timer);
@@ -99,26 +99,55 @@ function gasJsonp(params, overrideUrl) {
   });
 }
 
-// ── 전체 동기화 (JSONP, 항목별 upsert) ───────────────────────
+let pendingSync = false; // 동기화 대기 플래그
+
+// ── JSONP 재시도 래퍼 ─────────────────────────────────────────
+async function gasJsonpRetry(params, retries = 3) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      return await gasJsonp(params);
+    } catch(e) {
+      if (i === retries - 1) throw e;
+      await new Promise(r => setTimeout(r, 800 * (i + 1))); // 점진적 대기
+    }
+  }
+}
+
+// ── 전체 동기화 (JSONP, 항목별 upsert, 재시도 포함) ──────────
 async function syncToSheets() {
-  if (!gasUrl || gasSyncing) return;
+  if (!gasUrl) return;
+  if (gasSyncing) { pendingSync = true; return; } // 진행 중이면 대기 등록
   gasSyncing = true;
+  pendingSync = false;
   showSyncStatus('Sheets 동기화 중...', 'info');
   try {
     const partsData = parts.map(p => ({ ...p, imageUrl: null }));
+    let failed = 0;
 
-    await gasJsonp({ action: 'clearAll' });
+    await gasJsonpRetry({ action: 'clearAll' });
 
     for (let i = 0; i < partsData.length; i++) {
-      await gasJsonp({ action: 'upsert', part: JSON.stringify(partsData[i]) });
-      if (i % 5 === 0) showSyncStatus(`저장 중... (${i+1}/${partsData.length})`, 'info');
+      try {
+        await gasJsonpRetry({ action: 'upsert', part: JSON.stringify(partsData[i]) });
+      } catch(e) {
+        failed++;
+        console.warn(`upsert 실패 (${partsData[i].name}):`, e.message);
+      }
+      if (i % 3 === 0) showSyncStatus(`저장 중... (${i+1}/${partsData.length})`, 'info');
     }
 
-    showSyncStatus(`Sheets 저장 완료 (${partsData.length}건)`, 'success');
+    if (failed > 0) {
+      showSyncStatus(`저장 완료 (${partsData.length - failed}건 성공, ${failed}건 실패)`, 'error');
+    } else {
+      showSyncStatus(`Sheets 저장 완료 (${partsData.length}건)`, 'success');
+    }
   } catch(e) {
     showSyncStatus('Sheets 저장 실패: ' + e.message, 'error');
     console.error('syncToSheets:', e);
-  } finally { gasSyncing = false; }
+  } finally {
+    gasSyncing = false;
+    if (pendingSync) { pendingSync = false; setTimeout(syncToSheets, 500); } // 대기 중 요청 처리
+  }
 }
 
 async function loadFromSheets() {
