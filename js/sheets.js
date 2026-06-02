@@ -127,6 +127,16 @@ async function loadFromSheets() {
   try {
     const json = await gasJsonp({ action: 'getAll' });
     if (json.ok && json.parts && json.parts.length > 0) {
+      // 날짜 변환 오염 감지 — displayId가 ISO 날짜 형식이면 로컬 데이터 유지
+      const isCorrupted = json.parts.some(p =>
+        /^\d{4}-\d{2}-\d{2}T/.test(String(p.displayId || ''))
+      );
+      if (isCorrupted) {
+        showSyncStatus('Sheets 데이터 오류 감지 — 로컬 데이터 사용', 'error');
+        // 오염된 시트를 로컬 데이터로 즉시 덮어씌움
+        if (parts.length > 0) syncToSheets();
+        return false;
+      }
       parts = json.parts;
       parts.forEach((p, i) => { p.globalNo = i + 1; });
       localStorage.setItem(STORAGE_KEY, JSON.stringify(parts));
