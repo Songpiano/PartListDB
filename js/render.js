@@ -36,6 +36,11 @@ function renderParts() {
     const catCls = p.categoryClass || 'category-other';
     const catLabel = p.category || '–';
     const noValClass = isAssy ? 'part-no-val assy-no' : 'part-no-val';
+    const isBobbin = (p.name||'').toUpperCase().includes('BOBBIN');
+    const trayLabel = isBobbin ? '릴 업체명' : 'TRAY입수';
+    const trayFontSize = String(p.tray_qty||'').length > 5 ? '8px' : '11px';
+    const setFontSize = String(p.set_qty).length > 4 ? '9px' : '13px';
+    const weightVal = p.weight_g != null && p.weight_g !== '-' ? p.weight_g : '–';
 
     return `
     <div class="${cardClass}" id="card_${p.id}">
@@ -44,16 +49,16 @@ function renderParts() {
       </button>
 
       <div class="part-no">
-        <div class="part-no-label" style="font-size:11px;">전체</div>
-        <div class="part-no-val" style="font-size:26px;color:var(--text3);">${p.globalNo}</div>
+        <div class="part-no-label">전체</div>
+        <div class="part-no-val" style="font-size:26px;color:var(--text);">${p.globalNo}</div>
         <div class="part-no-divider"></div>
-        <div class="part-no-label" style="margin-top:6px;font-size:11px;">NO</div>
+        <div class="part-no-label" style="margin-top:5px;">NO</div>
         <div class="${noValClass}">${escHtml(String(p.displayId))}</div>
-        ${isAssy ? '<div style="font-size:10px;color:var(--text3);font-weight:700;margin-top:3px;letter-spacing:0.05em;">ASSY</div>' : ''}
+        ${isAssy ? '<div class="assy-badge">ASSY<br>완제품</div>' : ''}
       </div>
 
-      <div class="part-img-col">
-        ${isSub ? '' : p.imageUrl
+      ${isSub ? '' : `<div class="part-img-col">
+        ${p.imageUrl
           ? `<div class="part-img-wrap">
               <img src="${p.imageUrl}" alt="${escHtml(p.name)}" onclick="openZoom('${p.id}')" />
               <div class="img-zoom-icon">🔍</div>
@@ -65,57 +70,53 @@ function renderParts() {
               <input type="file" accept="image/*" style="display:none" onchange="handleImgFile(event,'${p.id}')" />
             </label>`
         }
-      </div>
+      </div>`}
 
       <div class="part-info">
-        <div class="part-main">
-          ${p.model ? `<div class="part-model-label">${escHtml(p.model)}</div>` : ''}
-          <div class="part-tags">
-            <span class="tag ${catCls}">${categoryEmoji(catCls)} ${escHtml(catLabel)}</span>
-            <span class="tag date" onclick="startEdit('${p.id}','approvalDate')" title="클릭하여 편집">
-              📅 <span id="field_${p.id}_approvalDate">${escHtml(p.approvalDate||'–')}</span>
-            </span>
+        ${p.model ? `<div class="part-model-label">${escHtml(p.model)}</div>` : ''}
+        <div class="part-tags">
+          <span class="tag ${catCls}">${categoryEmoji(catCls)} ${escHtml(catLabel)}</span>
+          <span class="tag date" onclick="startEdit('${p.id}','approvalDate')" title="클릭하여 편집">
+            📅 <span id="field_${p.id}_approvalDate">${escHtml(p.approvalDate||'–')}</span>
+          </span>
+        </div>
+        <div class="part-name" onclick="startEdit('${p.id}','name')">
+          <span id="field_${p.id}_name">${escHtml(p.name)}</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </div>
+        <div class="part-code"># ${escHtml(p.code)}</div>
+        <div class="part-specs">
+          <div class="spec-group">
+            <div class="spec-label">원소재</div>
+            <div class="spec-val">${escHtml(String(p.material||'–'))}</div>
           </div>
-          <div class="part-name" onclick="startEdit('${p.id}','name')">
-            <span id="field_${p.id}_name">${escHtml(p.name)}</span>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-          </div>
-          <div class="part-code"># ${escHtml(p.code)}</div>
-          <div class="part-specs">
-            <div class="spec-group">
-              <div class="spec-label">원소재</div>
-              <div class="spec-val">${escHtml(String(p.material||'–'))}</div>
-            </div>
-            <div class="spec-group">
-              <div class="spec-label">규격</div>
-              <div class="spec-val" style="font-size:11px;">T:${p.thickness} / W:${p.width_raw} / P:${p.pitch}</div>
-            </div>
-          </div>
-          <div class="spec-dims">
-            ${['l','w','h'].map(d=>`
-              <div class="dim-box">
-                <div class="dim-box-label">${d==='l'?'가로':d==='w'?'세로':'높이'}</div>
-                <div class="dim-box-val">${p['dim_'+d]}</div>
-              </div>`).join('')}
-            <div class="dim-box dim-box-accent">
-              <div class="dim-box-label">CAV</div>
-              <div class="dim-box-val">${p.cav != null && p.cav !== '-' ? escHtml(String(p.cav)) : '-'}</div>
-            </div>
-            <div class="dim-box dim-box-accent">
-              <div class="dim-box-label">SET소요</div>
-              <div class="dim-box-val" style="font-size:${String(p.set_qty).length > 4 ? '9px' : '13px'}">${p.set_qty != null && p.set_qty !== '-' ? escHtml(typeof p.set_qty === 'number' && p.set_qty < 1 ? p.set_qty.toFixed(5) : String(p.set_qty)) : '-'}</div>
-            </div>
-            ${p.tray_qty != null ? `
-            <div class="dim-box dim-box-pkg">
-              <div class="dim-box-label">${(p.name||'').toUpperCase().includes('BOBBIN') ? '릴 업체명' : 'TRAY입수'}</div>
-              <div class="dim-box-val" style="font-size:${String(p.tray_qty).length > 5 ? '8px' : '11px'}">${escHtml(String(p.tray_qty))}</div>
-            </div>` : ''}
+          <div class="spec-group">
+            <div class="spec-label">규격</div>
+            <div class="spec-val">T:${p.thickness} / W:${p.width_raw} / P:${p.pitch}</div>
           </div>
         </div>
-        <div class="part-right">
-          <div>
-            <div class="weight-label">Weight</div>
-            <div><span class="weight-val">${p.weight_g}</span><span class="weight-unit"> g</span></div>
+        <div class="spec-dims">
+          ${['l','w','h'].map(d=>`
+            <div class="dim-box">
+              <div class="dim-box-label">${d==='l'?'가로':d==='w'?'세로':'높이'}</div>
+              <div class="dim-box-val">${p['dim_'+d]}</div>
+            </div>`).join('')}
+          <div class="dim-box dim-box-accent">
+            <div class="dim-box-label">CAV</div>
+            <div class="dim-box-val">${p.cav != null && p.cav !== '-' ? escHtml(String(p.cav)) : '-'}</div>
+          </div>
+          <div class="dim-box dim-box-accent">
+            <div class="dim-box-label">SET소요</div>
+            <div class="dim-box-val" style="font-size:${setFontSize}">${p.set_qty != null && p.set_qty !== '-' ? escHtml(typeof p.set_qty === 'number' && p.set_qty < 1 ? p.set_qty.toFixed(5) : String(p.set_qty)) : '-'}</div>
+          </div>
+          ${p.tray_qty != null ? `
+          <div class="dim-box dim-box-pkg">
+            <div class="dim-box-label">${trayLabel}</div>
+            <div class="dim-box-val" style="font-size:${trayFontSize}">${escHtml(String(p.tray_qty))}</div>
+          </div>` : ''}
+          <div class="dim-box dim-box-weight">
+            <div class="dim-box-label">Weight</div>
+            <div class="dim-box-val">${escHtml(String(weightVal))}<span style="font-size:9px;font-weight:600;opacity:0.7"> g</span></div>
           </div>
         </div>
       </div>
