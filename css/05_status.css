@@ -122,3 +122,37 @@
   .model-img-thumb:first-child { margin-left: 0; }
   .model-img-thumb img { width: 100%; height: 100%; object-fit: cover; }
   .model-img-more { width: 28px; height: 28px; border-radius: 7px; background: var(--border); border: 2px solid var(--surface2); display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 800; color: var(--text3); margin-left: -8px; font-family: 'JetBrains Mono', monospace; }
+
+  /* ── 연간 현황 테이블 ── */
+  .status-table { width: 100%; border-collapse: collapse; }
+  .status-table thead tr { border-bottom: 2px solid var(--border2); }
+  .status-table th {
+    font-size: 10px; font-family: 'JetBrains Mono', monospace; font-weight: 700;
+    color: var(--text3); text-transform: uppercase; letter-spacing: 0.1em;
+    padding: 8px 14px; text-align: left;
+  }
+  .status-model-row {
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.18s;
+  }
+  .status-model-row:hover { background: var(--surface2); }
+  .status-model-row:last-child { border-bottom: none; }
+  .status-table td { padding: 12px 14px; vertical-align: middle; }
+
+  .status-model-name { display: flex; align-items: center; gap: 10px; font-family: 'Inter','Noto Sans KR',sans-serif; font-size: 15px; font-weight: 800; color: var(--text); }
+  .status-model-thumb { width: 36px; height: 36px; border-radius: 8px; object-fit: cover; border: 1px solid var(--border2); flex-shrink: 0; }
+  .status-model-icon { width: 36px; height: 36px; border-radius: 8px; background: var(--accent-glow); border: 1px solid rgba(91,110,247,0.2); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+
+  .status-cat-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-family: 'JetBrains Mono', monospace; background: var(--surface); border: 1px solid var(--border2); border-radius: 6px; padding: 2px 8px; margin: 2px 3px 2px 0; color: var(--text2); white-space: nowrap; }
+  .status-cat-badge strong { color: var(--text); }
+
+  .status-td-num { text-align: center; }
+  .status-num { display: inline-block; font-family: 'Inter','Noto Sans KR',sans-serif; font-size: 18px; font-weight: 900; border-radius: 8px; padding: 4px 14px; }
+  .status-num.assy { background: var(--assembly-bg); color: var(--text2); border: 1px solid var(--assembly-border); }
+  .status-num.sub  { background: var(--accent-glow); color: var(--accent2); border: 1px solid rgba(91,110,247,0.2); }
+
+  .status-td-approval { font-size: 13px; font-family: 'JetBrains Mono', monospace; font-weight: 600; color: var(--text3); white-space: nowrap; }
+
+  .status-goto-btn { font-size: 11px; font-weight: 700; color: var(--text3); opacity: 0; transition: opacity 0.2s, color 0.2s; white-space: nowrap; }
+  .status-model-row:hover .status-goto-btn { opacity: 1; color: var(--accent2); }

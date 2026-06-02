@@ -14,9 +14,6 @@
     transition: border-color 0.25s, box-shadow 0.25s, background 0.25s;
     position: relative;
     overflow: hidden;
-    width: fit-content;
-    min-width: 600px;
-    max-width: 100%;
   }
   .part-card::before {
     content: '';
@@ -88,7 +85,7 @@
   .img-upload-label svg { width: 20px; height: 20px; }
 
   /* PART INFO */
-  .part-info { display: flex; flex-direction: column; gap: 4px; min-width: 0; width: fit-content; }
+  .part-info { flex: 1; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
   .part-tags { display: flex; align-items: center; flex-wrap: wrap; gap: 5px; margin-bottom: 3px; }
   .tag {
     font-size: 12px; font-family: 'JetBrains Mono', monospace; font-weight: 700;

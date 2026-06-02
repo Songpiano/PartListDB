@@ -298,24 +298,27 @@ function renderStatus() {
   const container = document.getElementById('timelineGrid');
   if (!container) return;
 
-  // ── 데이터 집계: 년도 → 월 → 모델 ──
+  // ── 데이터 집계: 년도 → 모델 ──
   const yearMap = {};
   parts.forEach(p => {
-    const raw = (p.approvalDate || '').trim();
-    const parts2 = raw.split('.');
-    const year  = parts2[0] || '미지정';
-    const month = parts2[1] ? parts2[1].padStart(2,'0') : '00';
+    const raw   = (p.approvalDate || '').trim();
+    const sp    = raw.split('.');
+    const year  = sp[0] || '미지정';
+    const month = sp[1] ? sp[1].padStart(2,'0') : '00';
     const model = p.model || '미지정';
 
-    if (!yearMap[year]) yearMap[year] = { year, months: {}, totalParts: 0, totalModels: new Set() };
-    if (!yearMap[year].months[month]) yearMap[year].months[month] = { month, models: {}, totalParts: 0 };
-    if (!yearMap[year].months[month].models[model]) yearMap[year].months[month].models[model] = { parts: [] };
-    yearMap[year].months[month].models[model].parts.push(p);
-    yearMap[year].months[month].totalParts++;
+    if (!yearMap[year]) yearMap[year] = { year, models: {}, totalParts: 0 };
+    if (!yearMap[year].models[model]) yearMap[year].models[model] = { parts: [], months: new Set(), cats: {} };
+
+    const md = yearMap[year].models[model];
+    md.parts.push(p);
+    if (month !== '00') md.months.add(month);
+    const cat = p.category || '기타';
+    md.cats[cat] = (md.cats[cat] || 0) + 1;
     yearMap[year].totalParts++;
-    yearMap[year].totalModels.add(model);
   });
 
+  const MONTH_KO = ['','1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
   const years = Object.values(yearMap).sort((a,b) => b.year.localeCompare(a.year));
 
   if (years.length === 0) {
@@ -326,48 +329,32 @@ function renderStatus() {
     return;
   }
 
-  const MONTH_KO = ['','1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
-
   container.innerHTML = years.map((yg, yi) => {
-    const isOpen = yi === 0; // 가장 최신 년도만 기본 열림
-    const monthsSorted = Object.entries(yg.months).sort((a,b) => a[0].localeCompare(b[0]));
+    const isOpen = yi === 0;
+    const modelList = Object.entries(yg.models).sort((a,b) => a[0].localeCompare(b[0]));
+    const totalModels = modelList.length;
 
-    const monthsHtml = monthsSorted.map(([month, mg]) => {
-      const monthLabel = month === '00' ? '월 미지정' : (MONTH_KO[parseInt(month)] || month+'월');
-      const modelCards = Object.entries(mg.models).map(([model, md]) => {
-        const imgs      = md.parts.filter(p=>p.imageUrl).slice(0,4);
-        const extra     = md.parts.filter(p=>p.imageUrl).length - 4;
-        const assyCount = md.parts.filter(p=>p.isAssembly).length;
-        const subCount  = md.parts.filter(p=>p.isSub).length;
-        return `<div class="model-card" onclick="navigateToModel('${escHtml(model)}')" title="${escHtml(model)} 부품 리스트 보기">
-          <div class="model-card-top">
-            <div class="model-icon">📱</div>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="width:14px;height:14px;color:var(--text3)"><polyline points="9 18 15 12 9 6"/></svg>
-          </div>
-          <div class="model-name">${escHtml(model)}</div>
-          <div class="model-parts-count">Parts <strong style="color:var(--text)">${md.parts.length}</strong> Items</div>
-          <div class="model-parts-detail">
-            ${assyCount > 0 ? `<span class="mpd-badge assy">완제품 ${assyCount}</span>` : ''}
-            ${subCount  > 0 ? `<span class="mpd-badge sub">하위 ${subCount}</span>`  : ''}
-          </div>
-          ${imgs.length > 0 ? `<div class="model-imgs">
-            ${imgs.map(p=>`<div class="model-img-thumb"><img src="${p.imageUrl}" /></div>`).join('')}
-            ${extra > 0 ? `<div class="model-img-more">+${extra}</div>` : ''}
-          </div>` : ''}
-          <div class="model-card-goto">부품 리스트 보기 →</div>
-        </div>`;
-      }).join('');
+    const tableRows = modelList.map(([model, md]) => {
+      const assyCount = md.parts.filter(p => p.isAssembly).length;
+      const subCount  = md.parts.filter(p => p.isSub).length;
+      const monthsSorted = [...md.months].sort();
+      const approvalStr = monthsSorted.map(m => MONTH_KO[parseInt(m)] || m+'월').join(', ') || '미지정';
+      const catStr = Object.entries(md.cats).map(([c,n]) => `<span class="status-cat-badge">${escHtml(c)} <strong>${n}</strong></span>`).join('');
+      const imgs = md.parts.filter(p=>p.imageUrl).slice(0,1);
 
-      return `<div class="month-group">
-        <div class="month-head">
-          <div class="month-dot"></div>
-          <div class="month-label-wrap">
-            <span class="month-label">${monthLabel}</span>
-            <span class="month-stats">${Object.keys(mg.models).length}개 모델 · ${mg.totalParts}개 부품</span>
+      return `<tr class="status-model-row" onclick="navigateToModel('${escHtml(model)}')" title="부품 리스트 보기">
+        <td class="status-td-model">
+          <div class="status-model-name">
+            ${imgs.length ? `<img class="status-model-thumb" src="${imgs[0].imageUrl}" />` : '<div class="status-model-icon">📱</div>'}
+            <span>${escHtml(model)}</span>
           </div>
-        </div>
-        <div class="models-grid">${modelCards}</div>
-      </div>`;
+        </td>
+        <td class="status-td-cat">${catStr}</td>
+        <td class="status-td-num"><span class="status-num assy">${assyCount}</span></td>
+        <td class="status-td-num"><span class="status-num sub">${subCount}</span></td>
+        <td class="status-td-approval">${escHtml(approvalStr)}</td>
+        <td class="status-td-goto"><span class="status-goto-btn">보기 →</span></td>
+      </tr>`;
     }).join('');
 
     return `<div class="year-block ${isOpen ? 'open' : ''}">
@@ -381,8 +368,7 @@ function renderStatus() {
         </div>
         <div class="year-accordion-right">
           <div class="year-stats">
-            <div class="stat-pill"><div class="stat-pill-label">월</div><div class="stat-pill-val">${Object.keys(yg.months).length}</div></div>
-            <div class="stat-pill"><div class="stat-pill-label">Models</div><div class="stat-pill-val">${yg.totalModels.size}</div></div>
+            <div class="stat-pill"><div class="stat-pill-label">Models</div><div class="stat-pill-val">${totalModels}</div></div>
             <div class="stat-pill"><div class="stat-pill-label">Parts</div><div class="stat-pill-val">${yg.totalParts}</div></div>
           </div>
           <div class="year-chevron">
@@ -392,7 +378,19 @@ function renderStatus() {
       </button>
       <div class="year-body">
         <div class="year-group">
-          <div class="months-container">${monthsHtml}</div>
+          <table class="status-table">
+            <thead>
+              <tr>
+                <th>모델명</th>
+                <th>품목별</th>
+                <th>ASSY PART</th>
+                <th>하위품 PART</th>
+                <th>승인시점</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>${tableRows}</tbody>
+          </table>
         </div>
       </div>
     </div>`;
