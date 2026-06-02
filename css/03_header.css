@@ -13,14 +13,11 @@
     background: var(--header-bg);
     backdrop-filter: blur(20px);
     border-bottom: 1px solid var(--border);
-    padding: 0 32px;
+    padding: 10px 48px;
     min-height: 68px;
     display: flex; align-items: center; justify-content: space-between;
     position: sticky; top: 0; z-index: 40;
-    gap: 12px;
-    flex-wrap: wrap;
-    padding-top: 10px;
-    padding-bottom: 10px;
+    gap: 12px; flex-wrap: wrap;
   }
   .header-brand { display: flex; align-items: center; gap: 14px; }
   .brand-icon {
@@ -93,7 +90,7 @@
     background: var(--filter-bg);
     backdrop-filter: blur(16px);
     border-bottom: 1px solid var(--border);
-    padding: 14px 32px;
+    padding: 12px 48px;
     position: sticky; top: 68px; z-index: 30;
     display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
   }
@@ -156,7 +153,7 @@
 
   /* PARTS COUNT */
   .parts-count {
-    padding: 10px 32px 4px;
+    padding: 10px 48px 4px;
     color: var(--text3);
     font-family: var(--font-base, 'Noto Sans KR', sans-serif);
     font-size: 12px; font-weight: 600;
@@ -164,4 +161,4 @@
   .parts-count span { color: var(--accent2); font-weight: 700; }
 
   /* MAIN */
-  main { flex: 1; padding: 12px 48px 40px; overflow-y: auto; }
+  main { flex: 1; padding: 12px 48px 40px; overflow-y: auto; max-width: 1600px; margin: 0 auto; width: 100%; }

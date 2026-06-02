@@ -64,3 +64,11 @@
     min-height: 100vh;
     overflow-x: hidden;
   }
+
+  /* 전체 레이아웃 최대 너비 + 좌우 여백 */
+  .page-wrap {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 0 24px;
+    width: 100%;
+  }

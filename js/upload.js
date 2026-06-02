@@ -88,18 +88,21 @@ function handleFileUpload(e) {
       // ── CAV / SET당 소요량 컬럼 인덱스 동적 탐지 ──
       // 헤더 행을 스캔해서 'CAV', 'SET' 키워드가 있는 컬럼 인덱스를 찾음
       let cavIdx = 16, setIdx = 17, managerIdx = -1, deliverIdx = -1;
-      for (let r = 0; r < Math.min(12, rows.length); r++) {
+      for (let r = 0; r < Math.min(15, rows.length); r++) {
         if (!rows[r]) continue;
         rows[r].forEach((cell, ci) => {
-          const s = String(cell||'').replace(/[\s\n\r]/g,'').toUpperCase();
+          const s = String(cell||'').replace(/[\s\n\r\t]/g,'').toUpperCase();
           if (s === 'CAV') cavIdx = ci;
           if (s.includes('SET') && s.includes('소요')) setIdx = ci;
-          if (s === '담당자' || s === '담 당 자') managerIdx = ci;
-          if (s === '납품처' || s === '납 품 처') deliverIdx = ci;
+          if (s.includes('담당자')) managerIdx = ci;
+          if (s.includes('납품처') || s.includes('납품')) deliverIdx = ci;
         });
       }
-      // 담당자 헤더 못 찾은 경우: 납품처 다음 컬럼 사용
+      // 담당자 헤더 못 찾은 경우 폴백 순서:
+      // 1) 납품처 다음 컬럼
+      // 2) setIdx + 4 (setIdx 이후 4번째: SET→TRAY→양산처→납품처→담당자)
       if (managerIdx === -1 && deliverIdx >= 0) managerIdx = deliverIdx + 1;
+      if (managerIdx === -1) managerIdx = setIdx + 4;
 
       const uploadBatch = Date.now();
       let rowIndex = 0;
