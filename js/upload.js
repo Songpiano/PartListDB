@@ -23,15 +23,21 @@ function handleFileUpload(e) {
 
       // 승인일자 자동 감지 (상단 10행 내 YYYY.MM.DD 형식)
       let approvalDate = new Date().getFullYear() + '.' + String(new Date().getMonth()+1).padStart(2,'0');
-      // 새 양식: "26.04.17" 형식도 감지
-      for (let r = 0; r < Math.min(10, rows.length); r++) {
+      // 승인일자 감지: YYYY.M.D / YYYY.MM.DD / YY.MM.DD 형식
+      for (let r = 0; r < Math.min(12, rows.length); r++) {
         if (!rows[r]) continue;
-        const found4 = rows[r].find(c => /^\d{4}\.\d{2}\.\d{2}$/.test(String(c||'').trim()));
-        if (found4) { approvalDate = String(found4).trim().split('.').slice(0,2).join('.'); break; }
+        // YYYY.M.D 또는 YYYY.MM.DD (4자리 연도)
+        const found4 = rows[r].find(c => /^\d{4}\.\d{1,2}\.\d{1,2}$/.test(String(c||'').trim()));
+        if (found4) {
+          const sp = String(found4).trim().split('.');
+          approvalDate = sp[0] + '.' + sp[1].padStart(2,'0');
+          break;
+        }
+        // YY.MM.DD (2자리 연도)
         const found2 = rows[r].find(c => /^\d{2}\.\d{2}\.\d{2}$/.test(String(c||'').trim()));
         if (found2) {
-          const parts2 = String(found2).trim().split('.');
-          approvalDate = '20' + parts2[0] + '.' + parts2[1];
+          const sp = String(found2).trim().split('.');
+          approvalDate = '20' + sp[0] + '.' + sp[1];
           break;
         }
       }
