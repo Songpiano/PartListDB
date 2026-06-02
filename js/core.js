@@ -44,15 +44,17 @@ function tryUnlock(e) {
     const app = document.getElementById('app');
     app.classList.add('visible');
     initGasBadge();
-    // Sheets 연동 시 최신 데이터 불러오기
+    // 로컬 데이터 즉시 렌더링
+    renderParts();
+    renderStatus();
+    // Sheets 연동 시 최신 데이터로 갱신
     if (gasUrl) {
-      loadFromSheets().then(() => {
-        renderParts();
-        renderStatus();
+      loadFromSheets().then(loaded => {
+        if (loaded) {
+          renderParts();
+          renderStatus();
+        }
       });
-    } else {
-      renderParts();
-      renderStatus();
     }
   } else {
     const inp = document.getElementById('pwInput');
