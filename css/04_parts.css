@@ -29,7 +29,7 @@
 
   .part-no { flex-shrink: 0; text-align: center; padding-right: 14px; border-right: 1px solid var(--border); min-width: 48px; }
   .part-no-label { font-size: 9px; font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.1em; }
-  .part-no-val { font-family: 'Inter', 'Noto Sans KR', sans-serif; font-size: 22px; font-weight: 900; color: var(--text); transition: color 0.2s; letter-spacing: -0.03em; }
+  .part-no-val { font-family: 'Inter', 'Noto Sans KR', sans-serif; font-size: 26px; font-weight: 900; color: var(--text); transition: color 0.2s; letter-spacing: -0.03em; }
   .part-card:hover .part-no-val { color: var(--accent2); }
   .part-no-divider { height: 1px; background: var(--border); margin: 4px 0; }
 
@@ -109,8 +109,8 @@
 
   .part-specs { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 6px; }
   .spec-group { }
-  .spec-label { font-size: 10px; font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 2px; }
-  .spec-val { font-size: 13px; font-weight: 700; color: var(--text2); }
+  .spec-label { font-size: 11px; font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 2px; }
+  .spec-val { font-size: 15px; font-weight: 700; color: var(--text2); }
   .spec-dims { display: flex; gap: 5px; margin-top: 6px; flex-wrap: wrap; }
   .dim-box { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 4px 8px; text-align: center; min-width: 44px; }
   .dim-box-accent { background: var(--accent-glow); border-color: rgba(91,110,247,0.25); }
@@ -157,18 +157,24 @@
   .part-card.is-assembly .part-no-val { color: var(--text3); font-size: 17px; }
   .part-card.is-assembly:hover .part-no-val { color: var(--text2); }
 
-  /* 하위자재 들여쓰기 표시 — 카드 작게 */
-  .part-card.is-sub { border-left: 3px solid var(--border2); margin-left: 24px; border-radius: 0 var(--radius) var(--radius) 0; padding: 8px 14px; }
+  /* 하위자재 들여쓰기 표시 — 카드 더 작게 */
+  .part-card.is-sub { border-left: 3px solid var(--border2); margin-left: 40px; border-radius: 0 var(--radius) var(--radius) 0; padding: 6px 12px; }
   .part-card.is-sub::before { display: none; }
-  .part-card.is-sub .part-name { font-size: 14px; }
-  .part-card.is-sub .part-code { font-size: 11px; }
-  .part-card.is-sub .part-model-label { font-size: 11px; padding: 2px 7px; margin-bottom: 4px; }
-  .part-card.is-sub .part-no-val { font-size: 16px; }
-  .part-card.is-sub .dim-box-val { font-size: 11px; }
-  .part-card.is-sub .dim-box { padding: 3px 6px; min-width: 38px; }
-  .part-card.is-sub .spec-dims { margin-top: 4px; gap: 4px; }
-  .part-card.is-sub .part-specs { margin-top: 4px; }
-  .part-card.is-sub .part-tags { margin-bottom: 3px; }
+  .part-card.is-sub .part-name { font-size: 13px; margin-bottom: 3px; }
+  .part-card.is-sub .part-code { font-size: 10px; padding: 2px 6px; }
+  .part-card.is-sub .part-model-label { font-size: 10px; padding: 2px 6px; margin-bottom: 3px; }
+  .part-card.is-sub .part-no { padding-right: 10px; min-width: 38px; }
+  .part-card.is-sub .part-no-val { font-size: 14px; }
+  .part-card.is-sub .part-no-label { font-size: 8px; }
+  .part-card.is-sub .dim-box-val { font-size: 10px; }
+  .part-card.is-sub .dim-box-label { font-size: 7px; }
+  .part-card.is-sub .dim-box { padding: 2px 5px; min-width: 34px; }
+  .part-card.is-sub .spec-dims { margin-top: 3px; gap: 3px; }
+  .part-card.is-sub .part-specs { margin-top: 3px; gap: 6px; }
+  .part-card.is-sub .spec-label { font-size: 9px; }
+  .part-card.is-sub .spec-val { font-size: 12px; }
+  .part-card.is-sub .part-tags { margin-bottom: 2px; gap: 3px; }
+  .part-card.is-sub .tag { font-size: 10px; padding: 2px 7px; }
 
   /* ── 제품구분 배지 ── */
   .tag.category-brk    { background: rgba(91,110,247,0.12); color: var(--text); border: 1px solid rgba(91,110,247,0.25); }

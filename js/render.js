@@ -44,12 +44,12 @@ function renderParts() {
       </button>
 
       <div class="part-no">
-        <div class="part-no-label">전체</div>
-        <div class="part-no-val" style="font-size:22px;color:var(--text3);">${p.globalNo}</div>
+        <div class="part-no-label" style="font-size:11px;">전체</div>
+        <div class="part-no-val" style="font-size:26px;color:var(--text3);">${p.globalNo}</div>
         <div class="part-no-divider"></div>
-        <div class="part-no-label" style="margin-top:6px;">NO</div>
+        <div class="part-no-label" style="margin-top:6px;font-size:11px;">NO</div>
         <div class="${noValClass}">${escHtml(String(p.displayId))}</div>
-        ${isAssy ? '<div style="font-size:9px;color:var(--text3);font-weight:700;margin-top:3px;letter-spacing:0.05em;">ASSY</div>' : ''}
+        ${isAssy ? '<div style="font-size:10px;color:var(--text3);font-weight:700;margin-top:3px;letter-spacing:0.05em;">ASSY</div>' : ''}
       </div>
 
       <div class="part-img-col">
@@ -107,8 +107,8 @@ function renderParts() {
             </div>
             ${p.tray_qty != null ? `
             <div class="dim-box dim-box-pkg">
-              <div class="dim-box-label">TRAY입수</div>
-              <div class="dim-box-val">${escHtml(String(p.tray_qty))}</div>
+              <div class="dim-box-label">${(p.name||'').toUpperCase().includes('BOBBIN') ? '릴 업체명' : 'TRAY입수'}</div>
+              <div class="dim-box-val" style="font-size:${String(p.tray_qty).length > 5 ? '8px' : '11px'}">${escHtml(String(p.tray_qty))}</div>
             </div>` : ''}
           </div>
         </div>
