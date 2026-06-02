@@ -135,7 +135,7 @@ function renderStatus() {
 
   const yearMap = {};
   parts.forEach(p => {
-    const raw   = (p.approvalDate || '').trim();
+    const raw   = String(p.approvalDate || '').trim();
     const sp    = raw.split('.');
     const year  = sp[0] || '미지정';
     const month = sp[1] ? sp[1].padStart(2,'0') : '00';
