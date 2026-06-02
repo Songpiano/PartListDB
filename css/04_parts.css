@@ -238,6 +238,28 @@
 .part-card.is-sub .dim-box-val   { font-size: 11px; }
 .part-card.is-sub .dim-box-label { font-size: 8px; }
 
+/* ══ 담당자 컬럼 (카드 오른쪽 끝) ══════════════════════════ */
+.part-manager-col {
+  flex-shrink: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding-left: 16px;
+  border-left: 1px solid var(--border);
+  min-width: 72px; gap: 4px;
+}
+.part-manager-label {
+  font-family: var(--font-base);
+  font-size: 10px; font-weight: 600;
+  color: var(--text3);
+}
+.part-manager-name {
+  font-family: var(--font-base);
+  font-size: 14px; font-weight: 800;
+  color: var(--text);
+  text-align: center; white-space: nowrap;
+}
+.part-card.is-sub .part-manager-col { min-width: 56px; padding-left: 10px; }
+.part-card.is-sub .part-manager-name { font-size: 12px; }
+
 /* ══ 삭제 버튼 ═══════════════════════════════════════════════ */
 .btn-delete {
   position: absolute; top: 9px; right: 9px;
