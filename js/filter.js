@@ -86,3 +86,53 @@ function closeSearchDropdown() {
   const d = document.getElementById('searchDropdown');
   if (d) { d.innerHTML = ''; d.style.display = 'none'; }
 }
+
+// ─── 원소재 자동완성 ──────────────────────────────────────────
+function onMatInput() {
+  renderParts();
+  showMatDropdown();
+}
+
+function showMatDropdown() {
+  const input = document.getElementById('matInput');
+  const q = (input?.value || '').trim().toLowerCase();
+  let dropdown = document.getElementById('matDropdown');
+
+  if (!dropdown) {
+    dropdown = document.createElement('div');
+    dropdown.id = 'matDropdown';
+    dropdown.className = 'search-dropdown';
+    input.parentNode.appendChild(dropdown);
+  }
+
+  const seen = new Set();
+  const candidates = [];
+  parts.forEach(p => {
+    const mat = (p.material || '').trim();
+    if (!mat || mat === '-') return;
+    if (!seen.has(mat) && (q === '' || mat.toLowerCase().includes(q))) {
+      seen.add(mat);
+      candidates.push(mat);
+    }
+  });
+
+  if (candidates.length === 0) { dropdown.innerHTML = ''; dropdown.style.display = 'none'; return; }
+
+  dropdown.innerHTML = candidates.slice(0, 12).map(mat => `
+    <div class="search-dropdown-item" onmousedown="selectMatItem('${escHtml(mat)}')">
+      <span class="search-dropdown-type">소재</span>
+      <span class="search-dropdown-label">${escHtml(mat)}</span>
+    </div>`).join('');
+  dropdown.style.display = 'block';
+}
+
+function selectMatItem(value) {
+  const input = document.getElementById('matInput');
+  if (input) { input.value = value; renderParts(); }
+  closeMatDropdown();
+}
+
+function closeMatDropdown() {
+  const d = document.getElementById('matDropdown');
+  if (d) { d.innerHTML = ''; d.style.display = 'none'; }
+}
