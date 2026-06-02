@@ -84,8 +84,13 @@
   .img-upload-label:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-glow); }
   .img-upload-label svg { width: 20px; height: 20px; }
 
-  /* PART INFO */
-  .part-info { flex: 1; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  /* PART INFO — 좌: 이름/코드, 우: 스펙 */
+  .part-info { flex: 1; display: flex; flex-direction: row; align-items: center; gap: 16px; min-width: 0; }
+  .part-main { display: flex; flex-direction: column; gap: 3px; min-width: 180px; flex-shrink: 0; }
+  .part-specs-right {
+    display: flex; flex-wrap: wrap; align-items: flex-end;
+    gap: 5px; flex: 1; min-width: 0;
+  }
   .part-tags { display: flex; align-items: center; flex-wrap: wrap; gap: 5px; margin-bottom: 3px; }
   .tag {
     font-size: 12px; font-family: 'JetBrains Mono', monospace; font-weight: 700;
@@ -106,15 +111,10 @@
   .part-card:hover .part-name svg { opacity: 0.5; }
   .part-code { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; color: var(--text); background: var(--bg); padding: 3px 8px; border-radius: 6px; border: 1px solid var(--border); display: inline-block; width: fit-content; align-self: flex-start; }
 
-  /* 원소재·규격·치수 한 줄 가로 배열 */
-  .spec-all-row {
-    display: flex; flex-wrap: wrap; align-items: flex-end;
-    gap: 6px; margin-top: 4px;
-  }
   .spec-inline-group { display: flex; flex-direction: column; justify-content: flex-end; }
   .spec-label { font-size: 11px; font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 2px; }
   .spec-val { font-size: 14px; font-weight: 700; color: var(--text2); white-space: nowrap; }
-  .spec-divider { width: 1px; height: 32px; background: var(--border2); margin: 0 4px; align-self: flex-end; }
+  .spec-divider { width: 1px; height: 32px; background: var(--border2); margin: 0 2px; align-self: flex-end; }
   .dim-box { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 4px 8px; text-align: center; min-width: 44px; }
   .dim-box-accent { background: var(--accent-glow); border-color: rgba(91,110,247,0.25); }
   .dim-box-accent .dim-box-label { color: var(--accent2); }
@@ -172,10 +172,11 @@
   .part-card.is-sub .dim-box-val { font-size: 10px; }
   .part-card.is-sub .dim-box-label { font-size: 7px; }
   .part-card.is-sub .dim-box { padding: 2px 5px; min-width: 34px; }
-  .part-card.is-sub .spec-all-row { gap: 4px; margin-top: 3px; }
+  .part-card.is-sub .part-specs-right { gap: 4px; }
   .part-card.is-sub .spec-label { font-size: 9px; }
   .part-card.is-sub .spec-val { font-size: 11px; }
   .part-card.is-sub .spec-divider { height: 24px; }
+  .part-card.is-sub .part-main { min-width: 140px; }
   .part-card.is-sub .part-tags { margin-bottom: 2px; gap: 3px; }
   .part-card.is-sub .tag { font-size: 10px; padding: 2px 7px; }
 

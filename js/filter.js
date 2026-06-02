@@ -42,8 +42,6 @@ function showSearchDropdown() {
     input.parentNode.appendChild(dropdown);
   }
 
-  if (!q) { dropdown.innerHTML = ''; dropdown.style.display = 'none'; return; }
-
   // 후보 수집: 모델명, 품명, CODE NO.
   const seen = new Set();
   const candidates = [];
@@ -56,16 +54,21 @@ function showSearchDropdown() {
     ].forEach(({ label, type }) => {
       if (!label) return;
       const key = type + '|' + label;
-      if (!seen.has(key) && label.toLowerCase().includes(q)) {
+      if (!seen.has(key) && (q === '' || label.toLowerCase().includes(q))) {
         seen.add(key);
         candidates.push({ label, type });
       }
     });
   });
 
-  if (candidates.length === 0) { dropdown.innerHTML = ''; dropdown.style.display = 'none'; return; }
+  // 빈 검색어면 모델명만 표시
+  const filtered = q === ''
+    ? candidates.filter(c => c.type === '모델')
+    : candidates;
 
-  dropdown.innerHTML = candidates.slice(0, 10).map(c => `
+  if (filtered.length === 0) { dropdown.innerHTML = ''; dropdown.style.display = 'none'; return; }
+
+  dropdown.innerHTML = filtered.slice(0, 12).map(c => `
     <div class="search-dropdown-item" onmousedown="selectSearchItem('${escHtml(c.label)}')">
       <span class="search-dropdown-type">${c.type}</span>
       <span class="search-dropdown-label">${escHtml(c.label)}</span>

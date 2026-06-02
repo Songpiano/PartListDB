@@ -73,19 +73,21 @@ function renderParts() {
       </div>`}
 
       <div class="part-info">
-        ${p.model ? `<div class="part-model-label">${escHtml(p.model)}</div>` : ''}
-        <div class="part-tags">
-          <span class="tag ${catCls}">${categoryEmoji(catCls)} ${escHtml(catLabel)}</span>
-          <span class="tag date" onclick="startEdit('${p.id}','approvalDate')" title="클릭하여 편집">
-            📅 <span id="field_${p.id}_approvalDate">${escHtml(p.approvalDate||'–')}</span>
-          </span>
+        <div class="part-main">
+          ${p.model ? `<div class="part-model-label">${escHtml(p.model)}</div>` : ''}
+          <div class="part-tags">
+            <span class="tag ${catCls}">${categoryEmoji(catCls)} ${escHtml(catLabel)}</span>
+            <span class="tag date" onclick="startEdit('${p.id}','approvalDate')" title="클릭하여 편집">
+              📅 <span id="field_${p.id}_approvalDate">${escHtml(p.approvalDate||'–')}</span>
+            </span>
+          </div>
+          <div class="part-name" onclick="startEdit('${p.id}','name')">
+            <span id="field_${p.id}_name">${escHtml(p.name)}</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </div>
+          <div class="part-code"># ${escHtml(p.code)}</div>
         </div>
-        <div class="part-name" onclick="startEdit('${p.id}','name')">
-          <span id="field_${p.id}_name">${escHtml(p.name)}</span>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-        </div>
-        <div class="part-code"># ${escHtml(p.code)}</div>
-        <div class="spec-all-row">
+        <div class="part-specs-right">
           <div class="spec-inline-group">
             <div class="spec-label">원소재</div>
             <div class="spec-val">${escHtml(String(p.material||'–'))}</div>
