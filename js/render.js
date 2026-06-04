@@ -117,7 +117,7 @@ function renderParts() {
           </div>
           <div class="dim-box dim-box-accent">
             <div class="dim-box-label">SET소요</div>
-            <div class="dim-box-val" style="font-size:${setFontSize}">${p.set_qty != null && p.set_qty !== '-' ? escHtml(typeof p.set_qty === 'number' && p.set_qty < 1 ? p.set_qty.toFixed(5) : String(p.set_qty)) : '-'}</div>
+            <div class="dim-box-val" style="font-size:${setFontSize}">${p.set_qty != null && p.set_qty !== '-' ? (() => { const v = parseFloat(p.set_qty); return isNaN(v) ? String(p.set_qty) : (v < 1 ? v.toFixed(4) : String(p.set_qty)); })() : '-'}</div>
           </div>
           ${p.tray_qty != null ? `
           <div class="dim-box dim-box-pkg">
