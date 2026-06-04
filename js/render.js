@@ -29,6 +29,13 @@ function renderParts() {
     return;
   }
 
+  // ASSY별 하위 항목 부모 ID 매핑
+  let currentAssyId = null;
+  filtered.forEach(p => {
+    if (p.isAssembly) currentAssyId = p.id;
+    else if (p.isSub) p._assyParentId = currentAssyId;
+  });
+
   grid.innerHTML = filtered.map(p => {
     const isAssy = p.isAssembly;
     const isSub  = p.isSub;
@@ -41,9 +48,12 @@ function renderParts() {
     const trayFontSize = String(p.tray_qty||'').length > 5 ? '8px' : '11px';
     const setFontSize = String(p.set_qty).length > 4 ? '9px' : '13px';
     const weightVal = p.weight_g != null && p.weight_g !== '-' ? p.weight_g : '–';
+    const assyAttr  = isAssy ? `data-assy-id="${p.id}"` : '';
+    const subAttr   = (isSub && p._assyParentId) ? `data-parent-assy="${p._assyParentId}"` : '';
 
     return `
-    <div class="${cardClass}" id="card_${p.id}">
+    <div class="${cardClass}" id="card_${p.id}" ${assyAttr} ${subAttr}
+      ${isAssy ? `onclick="toggleSubParts('${p.id}', event)" style="cursor:pointer;"` : ''}>
       <button class="btn-delete" onclick="askDelete('${p.id}')" title="삭제">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
       </button>
@@ -53,7 +63,8 @@ function renderParts() {
         <div class="part-no-divider"></div>
         <div class="part-no-label" style="margin-top:5px;">NO</div>
         <div class="${noValClass}">${escHtml(String(p.displayId))}</div>
-        ${isAssy ? '<div class="assy-badge">ASSY<br>완제품</div>' : ''}
+        ${isAssy ? `<div class="assy-badge">ASSY<br>완제품</div>
+        <div class="assy-toggle-arrow" id="arrow_${p.id}">▾</div>` : ''}
       </div>
 
       ${isSub ? '' : `<div class="part-img-col">
@@ -125,6 +136,18 @@ function renderParts() {
       </div>` : ''}
     </div>`;
   }).join('');
+}
+
+// ─── ASSY 하위 토글 ───────────────────────────────────────────
+function toggleSubParts(assyId, e) {
+  // 삭제 버튼·편집 클릭은 무시
+  if (e && e.target.closest('.btn-delete, .part-name, .part-code, .tag.date, .inline-edit')) return;
+  const subs  = document.querySelectorAll(`[data-parent-assy="${assyId}"]`);
+  if (!subs.length) return;
+  const arrow = document.getElementById('arrow_' + assyId);
+  const isHidden = subs[0].style.display === 'none';
+  subs.forEach(el => { el.style.display = isHidden ? '' : 'none'; });
+  if (arrow) arrow.textContent = isHidden ? '▾' : '▸';
 }
 
 function escHtml(s) {
