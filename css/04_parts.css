@@ -229,20 +229,25 @@
 .dim-box {
   background: none;
   border: none;
-  padding: 0 8px;
+  padding: 0 4px;
   text-align: center;
-  min-width: 44px; /* 고정 최소 너비로 칸 정렬 */
+  width: 60px; min-width: 60px; max-width: 60px; /* 고정 너비로 모든 행에서 칸 위치 일치 */
+  flex-shrink: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
 }
 .dim-box-label {
   font-family: var(--font-base);
-  font-size: 10px; font-weight: 600;
+  font-size: 10px; font-weight: 600; line-height: 12px;
   color: var(--text3);
   margin-bottom: 2px; white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis; max-width: 100%;
 }
 .dim-box-val {
   font-family: var(--font-base);
-  font-size: 13px; font-weight: 800;
+  font-size: 13px; font-weight: 800; line-height: 16px; min-height: 16px;
   color: var(--text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
+  display: flex; align-items: center; justify-content: center;
 }
 /* CAV / SET소요 */
 .dim-box-accent { background: none; border: none; }
@@ -258,7 +263,7 @@
 .dim-box-weight .dim-box-val   { color: var(--text); }
 
 /* SUB dim-box */
-.part-card.is-sub .dim-box { padding: 0 8px; min-width: 36px; }
+.part-card.is-sub .dim-box { padding: 0 4px; width: 60px; min-width: 60px; max-width: 60px; }
 .part-card.is-sub .dim-box-val   { font-size: 13px; }
 .part-card.is-sub .dim-box-label { font-size: 10px; }
 
