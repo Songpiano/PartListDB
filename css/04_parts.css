@@ -264,15 +264,15 @@
   display: flex; align-items: center; justify-content: center;
 }
 /* CAV / SET소요 */
-.dim-box-accent { background: none; border: none; }
+.dim-box-accent { background: none; }
 .dim-box-accent .dim-box-label { color: var(--text3); }
 .dim-box-accent .dim-box-val   { color: var(--text); }
 /* TRAY / 릴 업체명 */
-.dim-box-pkg { background: none; border: none; }
+.dim-box-pkg { background: none; }
 .dim-box-pkg .dim-box-label { color: var(--text3); }
 .dim-box-pkg .dim-box-val   { color: var(--text); }
 /* Weight */
-.dim-box-weight { background: none; border: none; }
+.dim-box-weight { background: none; }
 .dim-box-weight .dim-box-label { color: var(--text3); }
 .dim-box-weight .dim-box-val   { color: var(--text); }
 
