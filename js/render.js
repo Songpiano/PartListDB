@@ -11,7 +11,7 @@ function categoryEmoji(cls) {
 }
 
 function renderParts() {
-  const filtered = getFilteredParts();
+  const filtered = getFilteredParts().filter(p => (p.name && p.name.trim()) || (p.code && p.code.trim()));
   const countEl = document.getElementById('partsCount');
   const grid = document.getElementById('partsGrid');
   if (!grid) return;
@@ -29,16 +29,21 @@ function renderParts() {
     return;
   }
 
-  // ASSY별 하위 항목 부모 ID 매핑
+  // ASSY별 하위 항목 부모 ID 매핑 + 하위코드 보유 여부 집계
   let currentAssyId = null;
+  const assyHasSubs = new Set();
   filtered.forEach(p => {
     if (p.isAssembly) currentAssyId = p.id;
-    else if (p.isSub) p._assyParentId = currentAssyId;
+    else if (p.isSub) {
+      p._assyParentId = currentAssyId;
+      if (currentAssyId) assyHasSubs.add(currentAssyId);
+    }
   });
 
   grid.innerHTML = filtered.map(p => {
     const isAssy = p.isAssembly;
     const isSub  = p.isSub;
+    const hasSubs = isAssy && assyHasSubs.has(p.id);
     const cardClass = `part-card${isAssy ? ' is-assembly' : ''}${isSub ? ' is-sub' : ''}`;
     const catCls = p.categoryClass || 'category-other';
     const catLabel = p.category || '–';
@@ -53,7 +58,7 @@ function renderParts() {
 
     return `
     <div class="${cardClass}" id="card_${p.id}" ${assyAttr} ${subAttr}
-      ${isAssy ? `onclick="toggleSubParts('${p.id}', event)" style="cursor:pointer;"` : ''}>
+      ${hasSubs ? `onclick="toggleSubParts('${p.id}', event)" style="cursor:pointer;"` : ''}>
       <button class="btn-delete" onclick="askDelete('${p.id}')" title="삭제">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
       </button>
@@ -64,10 +69,10 @@ function renderParts() {
         <div class="part-no-label" style="margin-top:5px;">NO</div>
         <div class="${noValClass}">${escHtml(String(p.displayId))}</div>
         ${isAssy ? `<div class="assy-badge">ASSY<br>완제품</div>
-        <div class="assy-toggle-wrap">
+        ${hasSubs ? `<div class="assy-toggle-wrap">
           <div class="assy-toggle-arrow" id="arrow_${p.id}">▾</div>
           <div class="assy-toggle-label" id="arrowLabel_${p.id}">하위코드 숨김</div>
-        </div>` : ''}
+        </div>` : ''}` : ''}
       </div>
 
       ${isSub ? '<div class="sub-img-spacer"></div>' : `<div class="part-img-col">
