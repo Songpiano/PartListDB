@@ -224,11 +224,10 @@
   display: flex; flex-direction: column; justify-content: flex-end; align-items: center;
   border: 1px solid var(--text3);
   border-radius: 8px;
-  background: #FFFFFF;
+  background: none;
   padding: 4px 10px;
   box-sizing: border-box;
 }
-[data-theme="dark"] .spec-inline-group { background: var(--surface2); }
 /* 원소재·규격 고정 너비로 칸 정렬 (원소재는 넉넉하게) */
 .spec-inline-group.spec-material { width: 160px; min-width: 160px; max-width: 160px; }
 .spec-inline-group.spec-dimension { width: 170px; min-width: 170px; max-width: 170px; }
