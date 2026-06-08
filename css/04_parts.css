@@ -54,15 +54,15 @@
   background: var(--bg);
 }
 .part-card.is-sub::before { display: none; }
-/* 하위자재 이미지 칸 자리 맞춤 spacer */
-.sub-img-spacer { width: 70px; flex-shrink: 0; }
+/* 하위자재 이미지 칸 자리 맞춤 spacer — 이미지 칸과 동일 너비 */
+.sub-img-spacer { width: 70px; min-width: 70px; flex-shrink: 0; }
 
 /* ══ NO 컬럼 ══════════════════════════════════════════════════ */
 .part-no {
   flex-shrink: 0; text-align: center;
   padding-right: 14px;
   border-right: 1px solid var(--border);
-  min-width: 80px;
+  width: 90px; min-width: 90px; /* 고정 너비 */
 }
 .part-no-label {
   font-family: var(--font-base);
@@ -94,10 +94,10 @@
 .part-no-divider { height: 1px; background: var(--border); margin: 3px 0; }
 .part-no-val.assy-no { font-size: var(--fs-xl); color: var(--text); }
 
-/* SUB NO */
-.part-card.is-sub .part-no { padding-right: 10px; min-width: 40px; }
-.part-card.is-sub .part-no-val { font-size: var(--fs-lg); }
-.part-card.is-sub .part-no-label { font-size: 10px; }
+/* SUB NO — ASSY와 동일 너비 유지 */
+.part-card.is-sub .part-no { width: 90px; min-width: 90px; padding-right: 14px; }
+.part-card.is-sub .part-no-val { font-size: var(--fs-xl); }
+.part-card.is-sub .part-no-label { font-size: var(--fs-xs); }
 
 /* ASSY 배지 */
 .assy-badge {
@@ -128,8 +128,8 @@
 
 /* ══ PART INFO (좌: 이름/코드  우: 스펙) ════════════════════ */
 .part-info { flex: 1; display: flex; flex-direction: row; align-items: center; gap: 20px; min-width: 0; }
-.part-main { display: flex; flex-direction: column; gap: 4px; min-width: 190px; flex-shrink: 0; }
-.part-card.is-sub .part-main { min-width: 150px; }
+.part-main { display: flex; flex-direction: column; gap: 4px; width: 220px; min-width: 220px; flex-shrink: 0; }
+.part-card.is-sub .part-main { width: 220px; min-width: 220px; }
 
 /* 모델 라벨 */
 .part-model-label {
@@ -218,9 +218,9 @@
   color: var(--text); white-space: nowrap;
 }
 .spec-divider { width: 1px; height: 30px; background: var(--border2); margin: 0 3px; align-self: flex-end; }
-.part-card.is-sub .spec-label { font-size: 9px; }
-.part-card.is-sub .spec-val   { font-size: var(--fs-sm); }
-.part-card.is-sub .spec-divider { height: 22px; }
+.part-card.is-sub .spec-label { font-size: 10px; }
+.part-card.is-sub .spec-val   { font-size: var(--fs-md); }
+.part-card.is-sub .spec-divider { height: 30px; }
 
 /* DIM BOX (가로/세로/높이/CAV/SET소요 등) */
 .dim-box {
@@ -254,9 +254,9 @@
 .dim-box-weight .dim-box-val   { color: var(--text); }
 
 /* SUB dim-box */
-.part-card.is-sub .dim-box { padding: 0 5px; min-width: 28px; }
-.part-card.is-sub .dim-box-val   { font-size: 11px; }
-.part-card.is-sub .dim-box-label { font-size: 8px; }
+.part-card.is-sub .dim-box { padding: 0 8px; min-width: 36px; }
+.part-card.is-sub .dim-box-val   { font-size: 13px; }
+.part-card.is-sub .dim-box-label { font-size: 10px; }
 
 /* ══ 담당자 컬럼 (카드 오른쪽 끝) ══════════════════════════ */
 .part-manager-col {
