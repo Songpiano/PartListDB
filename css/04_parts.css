@@ -214,11 +214,6 @@
 .part-specs-right {
   display: flex; flex-wrap: wrap; align-items: flex-end;
   gap: 5px; flex: 1; min-width: 0;
-  border: 1.5px solid var(--text3);
-  border-radius: 10px;
-  background: none;
-  padding: 8px 14px;
-  box-sizing: border-box;
 }
 .part-card.is-sub .part-specs-right { gap: 4px; }
 
@@ -245,11 +240,13 @@
 /* DIM BOX (가로/세로/높이/CAV/SET소요 등) */
 .dim-box {
   background: none;
-  border: none;
-  padding: 0 4px;
+  border: 1px solid var(--text3);
+  border-radius: 8px;
+  padding: 4px 4px;
   text-align: center;
   width: 60px; min-width: 60px; max-width: 60px; /* 고정 너비로 모든 행에서 칸 위치 일치 */
   flex-shrink: 0;
+  box-sizing: border-box;
   display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
 }
 .dim-box-label {
