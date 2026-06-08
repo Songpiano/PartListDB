@@ -35,11 +35,15 @@
 .part-card:hover::before { opacity: 1; }
 
 /* ══ ASSY 카드 ════════════════════════════════════════════════ */
-:root, [data-theme="dark"] { --assembly-bg: #181B26; --assembly-border: #282D40; }
-[data-theme="light"]        { --assembly-bg: #F2F4FB; --assembly-border: #D6DAEA; }
+:root, [data-theme="dark"] { --assembly-bg: #13172280; --assembly-border: #2E3550; }
+[data-theme="light"]        { --assembly-bg: #DDE3F5;  --assembly-border: #B8C3E0; }
 
-.part-card.is-assembly { background: var(--assembly-bg); border-color: var(--assembly-border); }
-.part-card.is-assembly:hover { border-color: var(--text2); }
+.part-card.is-assembly {
+  background: var(--assembly-bg);
+  border-color: var(--assembly-border);
+  border-left: 4px solid var(--accent);
+}
+.part-card.is-assembly:hover { border-color: var(--accent); box-shadow: 0 4px 20px rgba(91,110,247,0.15); }
 
 /* ══ SUB 카드 (하위자재) ═════════════════════════════════════ */
 .part-card.is-sub {
@@ -50,6 +54,8 @@
   background: var(--bg);
 }
 .part-card.is-sub::before { display: none; }
+/* 하위자재 이미지 칸 자리 맞춤 spacer */
+.sub-img-spacer { width: 70px; flex-shrink: 0; }
 
 /* ══ NO 컬럼 ══════════════════════════════════════════════════ */
 .part-no {

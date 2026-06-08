@@ -67,7 +67,7 @@ function renderParts() {
         <div class="assy-toggle-arrow" id="arrow_${p.id}">▾</div>` : ''}
       </div>
 
-      ${isSub ? '' : `<div class="part-img-col">
+      ${isSub ? '<div class="sub-img-spacer"></div>' : `<div class="part-img-col">
         ${p.imageUrl
           ? `<div class="part-img-wrap">
               <img src="${p.imageUrl}" alt="${escHtml(p.name)}" onclick="openZoom('${p.id}')" />
