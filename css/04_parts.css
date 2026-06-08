@@ -42,6 +42,7 @@
   background: var(--assembly-bg);
   border-color: var(--assembly-border);
   border-left: 4px solid var(--accent);
+  padding: 9px 16px;
 }
 .part-card.is-assembly:hover { border-color: var(--accent); box-shadow: 0 4px 20px rgba(91,110,247,0.15); }
 
@@ -223,12 +224,13 @@
   display: flex; flex-direction: column; justify-content: flex-end; align-items: center;
   border: 1px solid var(--text3);
   border-radius: 8px;
-  background: none;
+  background: #FFFFFF;
   padding: 4px 10px;
   box-sizing: border-box;
 }
-/* 원소재·규격 고정 너비로 칸 정렬 */
-.spec-inline-group.spec-material { width: 110px; min-width: 110px; max-width: 110px; }
+[data-theme="dark"] .spec-inline-group { background: var(--surface2); }
+/* 원소재·규격 고정 너비로 칸 정렬 (원소재는 넉넉하게) */
+.spec-inline-group.spec-material { width: 160px; min-width: 160px; max-width: 160px; }
 .spec-inline-group.spec-dimension { width: 170px; min-width: 170px; max-width: 170px; }
 .spec-label {
   font-family: var(--font-base);
