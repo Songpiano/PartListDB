@@ -76,10 +76,10 @@ function renderParts() {
         <div class="part-no-label" style="margin-top:5px;">NO</div>
         <div class="${noValClass}">${escHtml(String(p.displayId))}</div>
         ${isAssy ? `<div class="assy-badge">ASSY<br>완제품</div>
-        ${hasSubs ? `<div class="assy-toggle-wrap">
+        <div class="assy-toggle-wrap${hasSubs ? '' : ' is-hidden'}">
           <div class="assy-toggle-arrow" id="arrow_${p.id}">▾</div>
           <div class="assy-toggle-label" id="arrowLabel_${p.id}">하위코드 숨김</div>
-        </div>` : ''}` : ''}
+        </div>` : ''}
       </div>
 
       ${isSub ? '<div class="sub-img-spacer"></div>' : `<div class="part-img-col">
