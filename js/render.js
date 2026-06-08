@@ -97,11 +97,11 @@ function renderParts() {
           <div class="part-code">CODE: ${escHtml(p.code)}</div>
         </div>
         <div class="part-specs-right">
-          <div class="spec-inline-group">
+          <div class="spec-inline-group spec-material">
             <div class="spec-label">원소재</div>
             <div class="spec-val">${escHtml(String(p.material||'–'))}</div>
           </div>
-          <div class="spec-inline-group">
+          <div class="spec-inline-group spec-dimension">
             <div class="spec-label">규격</div>
             <div class="spec-val">T:${p.thickness} / W:${p.width_raw} / P:${p.pitch}</div>
           </div>

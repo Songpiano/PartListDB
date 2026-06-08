@@ -207,6 +207,9 @@
 
 /* 원소재·규격 인라인 그룹 */
 .spec-inline-group { display: flex; flex-direction: column; justify-content: flex-end; }
+/* 원소재·규격 고정 너비로 칸 정렬 */
+.spec-inline-group.spec-material { min-width: 100px; }
+.spec-inline-group.spec-dimension { min-width: 160px; }
 .spec-label {
   font-family: var(--font-base);
   font-size: 10px; font-weight: 600;
@@ -217,7 +220,7 @@
   font-size: var(--fs-md); font-weight: 700;
   color: var(--text); white-space: nowrap;
 }
-.spec-divider { width: 1px; height: 30px; background: var(--border2); margin: 0 3px; align-self: flex-end; }
+.spec-divider { width: 1px; height: 30px; background: var(--border2); margin: 0 6px; align-self: flex-end; }
 .part-card.is-sub .spec-label { font-size: 10px; }
 .part-card.is-sub .spec-val   { font-size: var(--fs-md); }
 .part-card.is-sub .spec-divider { height: 30px; }
@@ -227,7 +230,8 @@
   background: none;
   border: none;
   padding: 0 8px;
-  text-align: center; min-width: 36px;
+  text-align: center;
+  min-width: 44px; /* 고정 최소 너비로 칸 정렬 */
 }
 .dim-box-label {
   font-family: var(--font-base);
