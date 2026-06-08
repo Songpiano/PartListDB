@@ -224,7 +224,7 @@
   display: flex; flex-direction: column; justify-content: flex-end; align-items: center;
   border: 1px solid var(--text3);
   border-radius: 8px;
-  background: none;
+  background: var(--surface);
   padding: 4px 10px;
   box-sizing: border-box;
 }
@@ -249,7 +249,7 @@
 
 /* DIM BOX (가로/세로/높이/CAV/SET소요 등) */
 .dim-box {
-  background: none;
+  background: var(--surface);
   border: 1px solid var(--text3);
   border-radius: 8px;
   padding: 4px 4px;
