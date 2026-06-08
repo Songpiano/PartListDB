@@ -11,7 +11,14 @@ function categoryEmoji(cls) {
 }
 
 function renderParts() {
-  const filtered = getFilteredParts().filter(p => (p.name && p.name.trim()) || (p.code && p.code.trim()));
+  // 손상/유령 데이터(이름은 있으나 코드·모델·NO가 모두 비어있는 항목) 제거
+  const isGhost = (p) => {
+    const noCode = !p.code || !String(p.code).trim();
+    const noModel = !p.model || !String(p.model).trim() || String(p.model).trim() === '-';
+    const noDisplay = !p.displayId || !String(p.displayId).trim() || String(p.displayId).trim() === '-';
+    return noCode && noModel && noDisplay;
+  };
+  const filtered = getFilteredParts().filter(p => !isGhost(p) && ((p.name && p.name.trim()) || (p.code && p.code.trim())));
   const countEl = document.getElementById('partsCount');
   const grid = document.getElementById('partsGrid');
   if (!grid) return;

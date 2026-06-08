@@ -22,6 +22,29 @@ applyTheme(currentTheme);
 // ─── STATE ───────────────────────────────────────────────────────────────────
 const STORAGE_KEY = 'shieldcan_parts_v1';
 let parts = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+
+// ── 손상/유령 데이터 정리 (이름은 있으나 코드·모델·NO가 모두 비어있는 항목 제거 + 중복 제거) ──
+(function cleanupGhostParts() {
+  const isGhost = (p) => {
+    const noCode = !p.code || !String(p.code).trim();
+    const noModel = !p.model || !String(p.model).trim() || String(p.model).trim() === '-';
+    const noDisplay = !p.displayId || !String(p.displayId).trim() || String(p.displayId).trim() === '-';
+    return noCode && noModel && noDisplay;
+  };
+  const seen = new Set();
+  const before = parts.length;
+  parts = parts.filter(p => {
+    if (isGhost(p)) return false;
+    const key = `${String(p.model||'').trim()}|${String(p.name||'').trim().replace(/\s+/g,' ')}|${String(p.code||'').trim()}`.toUpperCase();
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+  if (parts.length !== before) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(parts));
+  }
+})();
+
 // 초기 로드 시 globalNo 재계산
 parts.forEach((p, i) => { p.globalNo = i + 1; });
 let currentTab = 'status';
