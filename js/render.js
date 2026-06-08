@@ -86,9 +86,9 @@ function renderParts() {
         <div class="part-main">
           <div class="part-tags">
             <span class="tag ${catCls}">${categoryEmoji(catCls)} ${escHtml(catLabel)}</span>
-            <span class="tag date" onclick="startEdit('${p.id}','approvalDate')" title="클릭하여 편집">
-              📅 <span id="field_${p.id}_approvalDate">${escHtml(p.approvalDate||'–')}</span>
-            </span>
+            ${!isSub ? `<span class="tag date" onclick="startEdit('${p.id}','approvalDate')" title="클릭하여 편집">
+              📅 승인 일자 <span id="field_${p.id}_approvalDate">${escHtml(p.approvalDate||'–')}</span>
+            </span>` : ''}
           </div>
           <div class="part-name" onclick="startEdit('${p.id}','name')">
             <span id="field_${p.id}_name">${escHtml(p.name)}</span>
