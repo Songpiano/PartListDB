@@ -77,13 +77,25 @@
   text-align: center; white-space: nowrap;
   line-height: 1.3; margin-bottom: 2px;
 }
+.assy-toggle-wrap {
+  display: flex; flex-direction: column; align-items: center;
+  margin-top: 4px;
+}
 .assy-toggle-arrow {
   font-size: 52px; font-weight: 900; color: var(--accent);
-  text-align: center; margin-top: 4px;
+  text-align: center;
   transition: color 0.2s, transform 0.2s;
   user-select: none; line-height: 1;
 }
+.assy-toggle-label {
+  font-family: var(--font-base);
+  font-size: 10px; font-weight: 700;
+  color: var(--text3);
+  margin-top: 2px; white-space: nowrap;
+  user-select: none;
+}
 .part-card:hover .assy-toggle-arrow { color: var(--accent2); }
+.part-card:hover .assy-toggle-label { color: var(--accent2); }
 .part-no-val {
   font-family: var(--font-base);
   font-size: var(--fs-2xl); font-weight: 900;
@@ -202,6 +214,10 @@
 .part-specs-right {
   display: flex; flex-wrap: wrap; align-items: flex-end;
   gap: 5px; flex: 1; min-width: 0;
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  background: none;
+  padding: 8px 14px;
 }
 .part-card.is-sub .part-specs-right { gap: 4px; }
 

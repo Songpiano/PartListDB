@@ -64,7 +64,10 @@ function renderParts() {
         <div class="part-no-label" style="margin-top:5px;">NO</div>
         <div class="${noValClass}">${escHtml(String(p.displayId))}</div>
         ${isAssy ? `<div class="assy-badge">ASSY<br>완제품</div>
-        <div class="assy-toggle-arrow" id="arrow_${p.id}">▾</div>` : ''}
+        <div class="assy-toggle-wrap">
+          <div class="assy-toggle-arrow" id="arrow_${p.id}">▾</div>
+          <div class="assy-toggle-label" id="arrowLabel_${p.id}">하위코드 숨김</div>
+        </div>` : ''}
       </div>
 
       ${isSub ? '<div class="sub-img-spacer"></div>' : `<div class="part-img-col">
@@ -145,9 +148,11 @@ function toggleSubParts(assyId, e) {
   const subs  = document.querySelectorAll(`[data-parent-assy="${assyId}"]`);
   if (!subs.length) return;
   const arrow = document.getElementById('arrow_' + assyId);
+  const label = document.getElementById('arrowLabel_' + assyId);
   const isHidden = subs[0].style.display === 'none';
   subs.forEach(el => { el.style.display = isHidden ? '' : 'none'; });
   if (arrow) arrow.textContent = isHidden ? '▾' : '▸';
+  if (label) label.textContent = isHidden ? '하위코드 숨김' : '하위코드 표시';
 }
 
 function escHtml(s) {
