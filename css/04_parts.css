@@ -191,6 +191,9 @@
 .part-card:hover .part-name svg { opacity: 0.45; }
 .part-card.is-sub .part-name { font-size: var(--fs-md); }
 
+.part-field-label { font-size: 10px; font-weight: 700; color: var(--text3); letter-spacing: 0.04em; white-space: nowrap; flex-shrink: 0; line-height: 1.8; }
+.part-no-model .part-field-label { display: block; font-size: 9px; margin-bottom: 2px; }
+
 /* CODE NO. + 담당자 행 */
 .part-code-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .part-code {

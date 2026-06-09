@@ -71,7 +71,7 @@ function renderParts() {
       </button>
 
       <div class="part-no">
-        <div class="part-no-model">${escHtml(p.model||'–')}</div>
+        <div class="part-no-model"><span class="part-field-label">모델명 :</span> ${escHtml(p.model||'–')}</div>
         <div class="part-no-divider"></div>
         <div class="part-no-label" style="margin-top:5px;">NO</div>
         <div class="${noValClass}">${escHtml(String(p.displayId))}</div>
@@ -106,7 +106,7 @@ function renderParts() {
             </span>` : ''}
           </div>
           <div class="part-name" onclick="startEdit('${p.id}','name')">
-            <span id="field_${p.id}_name">${escHtml(p.name)}</span>
+            <span class="part-field-label">품명 :</span> <span id="field_${p.id}_name">${escHtml(p.name)}</span>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
           </div>
           <div class="part-code">CODE: ${escHtml(p.code)}</div>
