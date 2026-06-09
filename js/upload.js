@@ -35,54 +35,7 @@ function handleFileUpload(e) {
         if (found2) { const sp = String(found2).trim().split('.'); approvalDate = '20'+sp[0]+'.'+sp[1]; break; }
       }
 
-      // ── 담당자 감지 (결재란 전수 스캔) ──
-      // 직급: 책임/이사/과장/부장/차장/대리/팀장/수석/선임/주임
-      const TITLE_LIST = ['책임','이사','과장','부장','차장','대리','팀장','수석','선임','주임'];
-      const TITLE_PAT  = new RegExp(TITLE_LIST.join('|'));
-      const NAME_PAT   = /^[가-힣]{2,5}$/;
-      let headerManager = '';
-
-      // 상위 20행 × 전체 컬럼 스캔
-      const headerRows = rows.slice(0, Math.min(20, rows.length));
-      // 모든 셀값 수집 (빈 셀 제외)
-      const allCells = [];
-      headerRows.forEach((row, ri) => {
-        if (!row) return;
-        row.forEach((cell, ci) => {
-          const s = String(cell||'').trim().replace(/\s+/g,' ');
-          if (s) allCells.push({ s, ri, ci });
-        });
-      });
-
-      // 패스1: "이름 직급" 또는 "이름\n직급" 같은 셀
-      for (const { s } of allCells) {
-        const m = s.match(/^([가-힣]{2,5})\s*(책임|이사|과장|부장|차장|대리|팀장|수석|선임|주임)/);
-        if (m) { headerManager = m[1] + ' ' + m[2]; break; }
-      }
-
-      // 패스2: "직급" 셀 인근(같은 행/인접 행)에서 이름 탐색
-      if (!headerManager) {
-        outer2: for (const { s, ri, ci } of allCells) {
-          if (!TITLE_PAT.test(s) || s.length > 6) continue;
-          const title = s.match(TITLE_PAT)?.[0];
-          if (!title) continue;
-          // 같은 행 인접 셀
-          for (const nc of [ci-1, ci+1, ci-2, ci+2]) {
-            if (nc < 0) continue;
-            const ns = String((headerRows[ri]||[])[nc]||'').trim();
-            if (NAME_PAT.test(ns)) { headerManager = ns + ' ' + title; break outer2; }
-          }
-          // 아래/위 행 같은 열
-          for (const nr of [ri+1, ri+2, ri-1]) {
-            if (nr < 0 || nr >= headerRows.length) continue;
-            const ns = String((headerRows[nr]||[])[ci]||'').trim();
-            if (NAME_PAT.test(ns)) { headerManager = ns + ' ' + title; break outer2; }
-          }
-        }
-      }
-      // 도형 텍스트 결과가 있으면 우선 사용
-      if (shapeManager) headerManager = shapeManager;
-      console.log('[upload] 담당자 최종:', headerManager, '(도형:', shapeManager, '| 셀 스캔 수:', allCells.length, ')');
+      // 담당자는 비고 열(각 ASSY 행)에서 직접 읽음 — 결재란 스캔 사용 안 함
 
       // ── 모델명 감지 ──
       let modelName = '';
@@ -95,7 +48,7 @@ function handleFileUpload(e) {
         }
       }
 
-      // ── CAV / SET 컬럼 인덱스 탐지 ──
+      // ── CAV / SET / 비고(담당자) 컬럼 인덱스 탐지 ──
       let cavIdx = 16, setIdx = 17, managerIdx = -1, deliverIdx = -1;
       for (let r = 0; r < Math.min(15, rows.length); r++) {
         if (!rows[r]) continue;
@@ -104,33 +57,34 @@ function handleFileUpload(e) {
           if (s === 'CAV') cavIdx = ci;
           if (s.includes('SET') && s.includes('소요')) setIdx = ci;
           if (s.includes('담당자')) managerIdx = ci;
+          if (s === '비고') managerIdx = ci;           // 비고 컬럼 명시 감지
           if (s.includes('납품처') || s.includes('납품')) deliverIdx = ci;
         });
       }
+      // 비고 컬럼 미감지 시 납품처 다음 컬럼으로 추정
       if (managerIdx === -1 && deliverIdx >= 0) managerIdx = deliverIdx + 1;
       if (managerIdx === -1) managerIdx = setIdx + 4;
+      console.log('[upload] managerIdx:', managerIdx, '(deliverIdx:', deliverIdx, ')');
 
       // ── 기존 모델 존재 시 교체/추가 선택 모달 ──
       const existingCount = parts.filter(p => p.model === modelName).length;
-      const existingManager = parts.find(p => p.model === modelName && p.manager)?.manager || '';
-      const resolvedManager = headerManager || existingManager;
 
       if (modelName && existingCount > 0) {
         document.getElementById('replaceModalBody').innerHTML =
           `<strong>${modelName}</strong> 모델의 기존 파트 <strong>${existingCount}개</strong>가 있습니다.<br>어떻게 처리하시겠습니까?`;
         document.getElementById('replaceBtn').onclick = () => {
           closeReplaceModal();
-          processUpload(rows, modelName, resolvedManager, xlsxImgMap, approvalDate, cavIdx, setIdx, managerIdx, true);
+          processUpload(rows, modelName, xlsxImgMap, approvalDate, cavIdx, setIdx, managerIdx, true);
         };
         document.getElementById('appendBtn').onclick = () => {
           closeReplaceModal();
-          processUpload(rows, modelName, resolvedManager, xlsxImgMap, approvalDate, cavIdx, setIdx, managerIdx, false);
+          processUpload(rows, modelName, xlsxImgMap, approvalDate, cavIdx, setIdx, managerIdx, false);
         };
         document.getElementById('replaceModal').classList.add('open');
         return;
       }
 
-      processUpload(rows, modelName, resolvedManager, xlsxImgMap, approvalDate, cavIdx, setIdx, managerIdx, false);
+      processUpload(rows, modelName, xlsxImgMap, approvalDate, cavIdx, setIdx, managerIdx, false);
 
     } catch(err) {
       console.error(err);
@@ -142,25 +96,14 @@ function handleFileUpload(e) {
 }
 
 // ─── CORE UPLOAD PROCESSING ───────────────────────────────────────────────────
-function processUpload(rows, modelName, headerManager, xlsxImgMap, approvalDate, cavIdx, setIdx, managerIdx, replace) {
-  // 교체 전 기존 담당자 이름 보존 (감지 실패 대비)
-  let preservedManager = headerManager;
-  if (!preservedManager && modelName) {
-    const existing = parts.find(p => p.model === modelName && p.manager);
-    if (existing) preservedManager = existing.manager;
-  }
+function processUpload(rows, modelName, xlsxImgMap, approvalDate, cavIdx, setIdx, managerIdx, replace) {
+  const isEmptyManager = (v) => !v || /^[-–—\s]+$/.test(v);
 
   // 교체 모드: 기존 모델 파트 전체 삭제
   if (replace && modelName) {
     for (let i = parts.length - 1; i >= 0; i--) {
       if (parts[i].model === modelName) parts.splice(i, 1);
     }
-  }
-
-  // 담당자 업데이트 (기존 파트 중 manager 비어있거나 "-"인 것)
-  const isEmptyManager = (v) => !v || /^[-–—]+$/.test(v);
-  if (preservedManager && !replace) {
-    parts.forEach(p => { if (p.model === modelName && isEmptyManager(p.manager)) p.manager = preservedManager; });
   }
 
   const isHeaderRow = (row) => {
@@ -230,7 +173,7 @@ function processUpload(rows, modelName, headerManager, xlsxImgMap, approvalDate,
       cav:       (row[cavIdx] != null && row[cavIdx] !== '') ? row[cavIdx] : '-',
       set_qty:   (row[setIdx] != null && row[setIdx] !== '') ? row[setIdx] : '-',
       tray_qty:  trayQty,
-      manager:   colManagerVal || preservedManager,
+      manager:   colManagerVal,
       approvalDate,
       uploadBatch,
       rowIndex: rowIndex++,
@@ -267,13 +210,18 @@ function processUpload(rows, modelName, headerManager, xlsxImgMap, approvalDate,
     if (imgApplied > 0) showSyncStatus(`이미지 ${imgApplied}개 자동 적용`, 'success');
   }
 
-  // 감지된 담당자로 해당 모델의 ASSY 파트 전체 강제 갱신 (기존 데이터 포함)
-  if (preservedManager && modelName) {
-    parts.forEach(p => {
-      if (p.model === modelName && p.isAssembly && isEmptyManager(p.manager))
-        p.manager = preservedManager;
-    });
-  }
+  // ── ASSY 담당자 전파: 비고 비어있는 ASSY → 하위행 비고에서 탐색 ──
+  // (비고 셀이 merge되어 하위행에만 값이 있는 경우 대비)
+  const batchParts = parts.filter(p => p.uploadBatch === uploadBatch);
+  batchParts.forEach(assy => {
+    if (!assy.isAssembly || !isEmptyManager(assy.manager)) return;
+    const subs = batchParts.filter(s => s.isSub && s.displayId.startsWith(assy.displayId + '-'));
+    const found = subs.find(s => !isEmptyManager(s.manager));
+    if (found) assy.manager = found.manager;
+  });
+
+  const logManagers = batchParts.filter(p => p.isAssembly).map(p => `${p.displayId}:${p.manager||'(없음)'}`);
+  console.log('[upload] ASSY 담당자:', logManagers);
 
   if (addCount > 0 || replace) {
     saveParts();
