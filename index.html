@@ -56,12 +56,7 @@
     <div class="modal-icon">🔄</div>
     <div class="modal-title">모델 데이터 업로드</div>
     <div class="modal-body" id="replaceModalBody"></div>
-    <div style="width:100%;margin:12px 0 4px;">
-      <label style="font-size:11px;font-weight:700;color:var(--text3);">담당자 이름 (선택)</label>
-      <input id="replaceManagerInput" type="text" placeholder="예: 홍길동 책임"
-        style="width:100%;margin-top:6px;padding:10px 12px;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-family:var(--font-base);font-size:13px;font-weight:600;outline:none;box-sizing:border-box;" />
-    </div>
-    <div class="modal-actions" style="flex-direction:column;gap:8px;margin-top:8px;">
+    <div class="modal-actions" style="flex-direction:column;gap:8px;margin-top:12px;">
       <button class="modal-confirm" id="replaceBtn" style="background:var(--rose);box-shadow:0 6px 18px rgba(244,106,106,0.3);">기존 데이터 삭제 후 교체</button>
       <button class="modal-cancel" id="appendBtn">기존 유지 + 새 항목만 추가</button>
       <button class="modal-cancel" onclick="closeReplaceModal()" style="opacity:0.6;">취소</button>

@@ -29,18 +29,3 @@ function startEdit(id, field) {
   input.addEventListener('blur', save);
   input.addEventListener('keydown', e => { if(e.key==='Enter') input.blur(); if(e.key==='Escape'){ input.value=oldVal; input.blur(); } });
 }
-
-function setModelManager(modelName) {
-  const name = prompt(`"${modelName}" 모델의 담당자 이름을 입력하세요\n(예: 홍길동 책임)`);
-  if (!name || !name.trim()) return;
-  const val = name.trim();
-  parts.forEach(p => {
-    if (p.model === modelName && p.isAssembly) {
-      p.manager = val;
-      const span = document.getElementById(`field_${p.id}_manager`);
-      if (span) span.textContent = val;
-    }
-  });
-  saveParts();
-  renderParts();
-}

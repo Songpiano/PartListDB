@@ -159,9 +159,7 @@
   .status-model-row:hover .status-goto-btn { opacity: 1; color: var(--accent2); }
   .status-dl-btn { font-size: 11px; font-weight: 700; color: var(--accent); background: var(--accent-glow); border: 1px solid rgba(91,110,247,0.3); border-radius: 6px; padding: 4px 10px; transition: background 0.15s, box-shadow 0.15s; white-space: nowrap; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
   .status-dl-btn:hover { background: rgba(91,110,247,0.25); box-shadow: 0 2px 8px rgba(91,110,247,0.2); }
-  .status-manager-btn { font-size: 11px; font-weight: 700; color: var(--green); background: var(--green-dim); border: 1px solid rgba(34,211,160,0.3); border-radius: 6px; padding: 4px 10px; transition: background 0.15s; white-space: nowrap; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
-  .status-manager-btn:hover { background: rgba(34,211,160,0.25); }
-  .status-del-btn { font-size: 11px; font-weight: 700; color: var(--rose); background: var(--rose-dim); border: 1px solid rgba(244,106,106,0.3); border-radius: 6px; padding: 4px 10px; transition: background 0.15s, box-shadow 0.15s; white-space: nowrap; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
+.status-del-btn { font-size: 11px; font-weight: 700; color: var(--rose); background: var(--rose-dim); border: 1px solid rgba(244,106,106,0.3); border-radius: 6px; padding: 4px 10px; transition: background 0.15s, box-shadow 0.15s; white-space: nowrap; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
   .status-del-btn:hover { background: rgba(244,106,106,0.25); box-shadow: 0 2px 8px rgba(244,106,106,0.2); }
 
   /* ── 월별 승인 현황 그래프 ── */

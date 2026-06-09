@@ -271,8 +271,6 @@
   cursor: pointer;
 }
 .part-manager-col:hover .part-manager-name { color: var(--accent2); }
-.part-manager-col.manager-empty .part-manager-name { color: var(--text3); font-style: italic; font-size: 11px; }
-.part-manager-col.manager-empty:hover .part-manager-name { color: var(--accent); }
 .part-manager-label {
   font-family: var(--font-base);
   font-size: 10px; font-weight: 600;

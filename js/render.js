@@ -145,9 +145,9 @@ function renderParts() {
           </div>
         </div>
       </div>
-      ${!isSub ? `<div class="part-manager-col ${p.manager ? '' : 'manager-empty'}" onclick="startEdit('${p.id}','manager')" title="클릭하여 담당자 입력">
-        <div class="part-manager-label">담당자 ✎</div>
-        <div class="part-manager-name"><span id="field_${p.id}_manager">${escHtml(p.manager||'이름 입력')}</span></div>
+      ${!isSub ? `<div class="part-manager-col">
+        <div class="part-manager-label">담당자</div>
+        <div class="part-manager-name"><span id="field_${p.id}_manager">${escHtml(p.manager||'–')}</span></div>
       </div>` : ''}
     </div>`;
   }).join('');
@@ -237,8 +237,7 @@ function renderStatus() {
         <td class="status-td-goto">
           <span class="status-goto-btn">보기 →</span>
           <span class="status-dl-btn" onclick="event.stopPropagation();downloadModelXlsx('${escHtml(model)}')" title="파트리스트 엑셀 다운로드"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> 다운로드</span>
-          <span class="status-manager-btn" onclick="event.stopPropagation();setModelManager('${escHtml(model)}')" title="담당자 일괄 설정"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> 담당자</span>
-          <span class="status-del-btn" onclick="event.stopPropagation();askDeleteModel('${escHtml(model)}')" title="모델 삭제"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg> 삭제</span>
+<span class="status-del-btn" onclick="event.stopPropagation();askDeleteModel('${escHtml(model)}')" title="모델 삭제"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg> 삭제</span>
         </td>
       </tr>`;
     }).join('');

@@ -31,30 +31,52 @@ function handleFileUpload(e) {
         if (found2) { const sp = String(found2).trim().split('.'); approvalDate = '20'+sp[0]+'.'+sp[1]; break; }
       }
 
-      // ── 담당자 감지 (결재란) ──
+      // ── 담당자 감지 (결재란 전수 스캔) ──
+      // 직급: 책임/이사/과장/부장/차장/대리/팀장/수석/선임/주임
+      const TITLE_LIST = ['책임','이사','과장','부장','차장','대리','팀장','수석','선임','주임'];
+      const TITLE_PAT  = new RegExp(TITLE_LIST.join('|'));
+      const NAME_PAT   = /^[가-힣]{2,5}$/;
       let headerManager = '';
-      const TITLE_RE = /책임|담당자|담당/;
-      const NAME_RE  = /^[가-힣]{2,5}$/;
-      outer: for (let r = 0; r < Math.min(12, rows.length); r++) {
-        if (!rows[r]) continue;
-        for (let c = 0; c < rows[r].length; c++) {
-          const s = String(rows[r][c]||'').trim();
-          const m1 = s.match(/^([가-힣]{2,5})[\s\n]*책임/);
-          if (m1) { headerManager = m1[1] + ' 책임'; break outer; }
-          if (TITLE_RE.test(s) && s.length <= 6) {
-            for (let nr = r+1; nr < Math.min(r+4, rows.length); nr++) {
-              const ns = String((rows[nr]||[])[c]||'').trim();
-              if (NAME_RE.test(ns)) { headerManager = ns + ' ' + s; break outer; }
-            }
-            for (const nc of [c-1, c+1, c-2, c+2]) {
-              if (nc < 0) continue;
-              const ns = String((rows[r]||[])[nc]||'').trim();
-              if (NAME_RE.test(ns)) { headerManager = ns + ' ' + s; break outer; }
-            }
+
+      // 상위 20행 × 전체 컬럼 스캔
+      const headerRows = rows.slice(0, Math.min(20, rows.length));
+      // 모든 셀값 수집 (빈 셀 제외)
+      const allCells = [];
+      headerRows.forEach((row, ri) => {
+        if (!row) return;
+        row.forEach((cell, ci) => {
+          const s = String(cell||'').trim().replace(/\s+/g,' ');
+          if (s) allCells.push({ s, ri, ci });
+        });
+      });
+
+      // 패스1: "이름 직급" 또는 "이름\n직급" 같은 셀
+      for (const { s } of allCells) {
+        const m = s.match(/^([가-힣]{2,5})\s*(책임|이사|과장|부장|차장|대리|팀장|수석|선임|주임)/);
+        if (m) { headerManager = m[1] + ' ' + m[2]; break; }
+      }
+
+      // 패스2: "직급" 셀 인근(같은 행/인접 행)에서 이름 탐색
+      if (!headerManager) {
+        outer2: for (const { s, ri, ci } of allCells) {
+          if (!TITLE_PAT.test(s) || s.length > 6) continue;
+          const title = s.match(TITLE_PAT)?.[0];
+          if (!title) continue;
+          // 같은 행 인접 셀
+          for (const nc of [ci-1, ci+1, ci-2, ci+2]) {
+            if (nc < 0) continue;
+            const ns = String((headerRows[ri]||[])[nc]||'').trim();
+            if (NAME_PAT.test(ns)) { headerManager = ns + ' ' + title; break outer2; }
+          }
+          // 아래/위 행 같은 열
+          for (const nr of [ri+1, ri+2, ri-1]) {
+            if (nr < 0 || nr >= headerRows.length) continue;
+            const ns = String((headerRows[nr]||[])[ci]||'').trim();
+            if (NAME_PAT.test(ns)) { headerManager = ns + ' ' + title; break outer2; }
           }
         }
       }
-      console.log('[upload] headerManager:', headerManager);
+      console.log('[upload] 담당자 감지:', headerManager, '| 스캔 셀 수:', allCells.length);
 
       // ── 모델명 감지 ──
       let modelName = '';
@@ -85,50 +107,24 @@ function handleFileUpload(e) {
       // ── 기존 모델 존재 시 교체/추가 선택 모달 ──
       const existingCount = parts.filter(p => p.model === modelName).length;
       const existingManager = parts.find(p => p.model === modelName && p.manager)?.manager || '';
-
-      const openReplaceModal = () => {
-        const input = document.getElementById('replaceManagerInput');
-        input.value = headerManager || existingManager;
-        document.getElementById('replaceModalBody').innerHTML =
-          `<strong>${modelName}</strong> 모델의 기존 파트 <strong>${existingCount}개</strong>가 있습니다.<br>어떻게 처리하시겠습니까?`;
-        const getManager = () => input.value.trim() || headerManager || existingManager;
-        document.getElementById('replaceBtn').onclick = () => {
-          closeReplaceModal();
-          processUpload(rows, modelName, getManager(), xlsxImgMap, approvalDate, cavIdx, setIdx, managerIdx, true);
-        };
-        document.getElementById('appendBtn').onclick = () => {
-          closeReplaceModal();
-          processUpload(rows, modelName, getManager(), xlsxImgMap, approvalDate, cavIdx, setIdx, managerIdx, false);
-        };
-        document.getElementById('replaceModal').classList.add('open');
-        setTimeout(() => input.focus(), 80);
-      };
+      const resolvedManager = headerManager || existingManager;
 
       if (modelName && existingCount > 0) {
-        openReplaceModal();
-        return;
-      }
-
-      // 신규 모델 - 담당자 감지 실패 시 입력 모달 표시
-      if (!headerManager) {
-        const input = document.getElementById('replaceManagerInput');
-        input.value = '';
         document.getElementById('replaceModalBody').innerHTML =
-          `<strong>${modelName || '새 모델'}</strong> 담당자 이름을 입력해주세요.<br><span style="font-size:12px;color:var(--text3)">엑셀 결재란에서 자동 감지되지 않았습니다.</span>`;
-        document.getElementById('replaceBtn').style.display = 'none';
-        document.getElementById('appendBtn').textContent = '확인 후 업로드';
+          `<strong>${modelName}</strong> 모델의 기존 파트 <strong>${existingCount}개</strong>가 있습니다.<br>어떻게 처리하시겠습니까?`;
+        document.getElementById('replaceBtn').onclick = () => {
+          closeReplaceModal();
+          processUpload(rows, modelName, resolvedManager, xlsxImgMap, approvalDate, cavIdx, setIdx, managerIdx, true);
+        };
         document.getElementById('appendBtn').onclick = () => {
           closeReplaceModal();
-          document.getElementById('replaceBtn').style.display = '';
-          document.getElementById('appendBtn').textContent = '기존 유지 + 새 항목만 추가';
-          processUpload(rows, modelName, input.value.trim(), xlsxImgMap, approvalDate, cavIdx, setIdx, managerIdx, false);
+          processUpload(rows, modelName, resolvedManager, xlsxImgMap, approvalDate, cavIdx, setIdx, managerIdx, false);
         };
         document.getElementById('replaceModal').classList.add('open');
-        setTimeout(() => input.focus(), 80);
         return;
       }
 
-      processUpload(rows, modelName, headerManager, xlsxImgMap, approvalDate, cavIdx, setIdx, managerIdx, false);
+      processUpload(rows, modelName, resolvedManager, xlsxImgMap, approvalDate, cavIdx, setIdx, managerIdx, false);
 
     } catch(err) {
       console.error(err);
