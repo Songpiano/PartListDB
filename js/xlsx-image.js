@@ -5,29 +5,80 @@
 // ─── 도형(원형 스탬프 등) 텍스트에서 담당자 추출 ─────────────────────────────
 async function extractManagerFromShapes(uint8arr) {
   try {
-    const xmlResult = await _readZipDeflated(uint8arr, ['xl/drawings/drawing1.xml']);
-    const drawingXml = xmlResult['xl/drawings/drawing1.xml'];
-    if (!drawingXml) return '';
+    const u8   = uint8arr instanceof Uint8Array ? uint8arr : new Uint8Array(uint8arr);
+    const view = new DataView(u8.buffer, u8.byteOffset, u8.byteLength);
+    const dec  = new TextDecoder('utf-8');
 
-    // 모든 도형에서 텍스트 추출
-    const shapeTexts = [];
-    for (const am of drawingXml.matchAll(/<xdr:(?:twoCellAnchor|oneCellAnchor|absoluteAnchor)[\s\S]*?<\/xdr:(?:twoCellAnchor|oneCellAnchor|absoluteAnchor)>/g)) {
-      const txt = [...am[0].matchAll(/<a:t>([^<]+)<\/a:t>/g)].map(m=>m[1]).join('').trim();
-      if (txt) shapeTexts.push(txt);
+    // ZIP 중앙 디렉토리에서 모든 drawing XML 파일 이름 수집
+    let eocd = -1;
+    for (let i = u8.length - 22; i >= 0; i--) { if (view.getUint32(i, true) === 0x06054B50) { eocd = i; break; } }
+    if (eocd < 0) return '';
+
+    const cdN = view.getUint16(eocd + 8, true), cdOff = view.getUint32(eocd + 16, true);
+    let pos = cdOff;
+    const drawingFiles = [];
+    for (let i = 0; i < cdN; i++) {
+      if (view.getUint32(pos, true) !== 0x02014B50) break;
+      const fnLen = view.getUint16(pos + 28, true), exLen = view.getUint16(pos + 30, true), cmLen = view.getUint16(pos + 32, true);
+      const fname = dec.decode(u8.subarray(pos + 46, pos + 46 + fnLen));
+      if (/^xl\/drawings\/drawing\d+\.xml$/.test(fname)) drawingFiles.push(fname);
+      pos += 46 + fnLen + exLen + cmLen;
     }
-    console.log('[shapes] 도형 텍스트:', shapeTexts);
+    if (!drawingFiles.length) { console.log('[shapes] drawing XML 없음'); return ''; }
+    console.log('[shapes] drawing 파일 목록:', drawingFiles);
+
+    const xmlResult = await _readZipDeflated(uint8arr, drawingFiles);
 
     const TITLES = ['책임','이사','과장','부장','차장','대리','팀장','수석','선임','주임'];
     const NAME_PAT = /^[가-힣]{2,5}$/;
+    const TITLE_PAT = new RegExp(TITLES.join('|'));
 
-    for (const txt of shapeTexts) {
-      // "홍길동 책임" 또는 "홍길동책임" 패턴
-      for (const title of TITLES) {
-        const m = txt.match(new RegExp(`([가-힣]{2,5})\\s*${title}`));
-        if (m) return m[1] + ' ' + title;
+    for (const fname of drawingFiles) {
+      const xml = xmlResult[fname];
+      if (!xml) continue;
+
+      // 각 도형(sp/pic 등)의 단락(a:p) 단위로 텍스트 추출
+      // 한 단락 내 모든 <a:t> 를 합쳐서 한 줄로 처리
+      const paragraphs = [];
+      for (const pm of xml.matchAll(/<a:p\b[^>]*>([\s\S]*?)<\/a:p>/g)) {
+        const line = [...pm[1].matchAll(/<a:t[^>]*>([^<]*)<\/a:t>/g)].map(m => m[1]).join('').trim();
+        if (line) paragraphs.push(line);
       }
-      // 순수 이름만 있는 경우 (2~5자 한글)
-      if (NAME_PAT.test(txt)) return txt;
+      console.log('[shapes] 단락 텍스트 (' + fname + '):', paragraphs);
+
+      // 패스1: 한 단락에 "이름+직급" 또는 "직급+이름" 모두 포함
+      for (const line of paragraphs) {
+        for (const title of TITLES) {
+          const m = line.match(new RegExp(`([가-힣]{2,5})\\s*${title}`));
+          if (m) { console.log('[shapes] 감지(패스1):', m[1] + ' ' + title); return m[1] + ' ' + title; }
+          const m2 = line.match(new RegExp(`${title}\\s*([가-힣]{2,5})`));
+          if (m2) { console.log('[shapes] 감지(패스1b):', m2[1] + ' ' + title); return m2[1] + ' ' + title; }
+        }
+      }
+
+      // 패스2: 직급만 있는 단락 + 인접 단락에서 이름 탐색
+      for (let i = 0; i < paragraphs.length; i++) {
+        const line = paragraphs[i];
+        const titleMatch = TITLES.find(t => line.includes(t));
+        if (titleMatch && line.length <= 6) {
+          for (const j of [i - 1, i + 1, i - 2, i + 2]) {
+            if (j < 0 || j >= paragraphs.length) continue;
+            if (NAME_PAT.test(paragraphs[j])) {
+              const result = paragraphs[j] + ' ' + titleMatch;
+              console.log('[shapes] 감지(패스2):', result);
+              return result;
+            }
+          }
+        }
+      }
+
+      // 패스3: 이름만 있는 단락 (직급 없음) — 2~5자 순수 한글
+      for (const line of paragraphs) {
+        if (NAME_PAT.test(line)) {
+          console.log('[shapes] 감지(패스3 이름만):', line);
+          return line;
+        }
+      }
     }
   } catch(e) { console.warn('extractManagerFromShapes 오류:', e); }
   return '';
