@@ -112,6 +112,13 @@ function handleFileUpload(e) {
 
 // ─── CORE UPLOAD PROCESSING ───────────────────────────────────────────────────
 function processUpload(rows, modelName, headerManager, xlsxImgMap, approvalDate, cavIdx, setIdx, managerIdx, replace) {
+  // 교체 전 기존 담당자 이름 보존 (감지 실패 대비)
+  let preservedManager = headerManager;
+  if (!preservedManager && modelName) {
+    const existing = parts.find(p => p.model === modelName && p.manager);
+    if (existing) preservedManager = existing.manager;
+  }
+
   // 교체 모드: 기존 모델 파트 전체 삭제
   if (replace && modelName) {
     for (let i = parts.length - 1; i >= 0; i--) {
@@ -120,8 +127,8 @@ function processUpload(rows, modelName, headerManager, xlsxImgMap, approvalDate,
   }
 
   // 담당자 업데이트 (기존 파트 중 manager 비어있는 것)
-  if (headerManager && !replace) {
-    parts.forEach(p => { if (p.model === modelName && !p.manager) p.manager = headerManager; });
+  if (preservedManager && !replace) {
+    parts.forEach(p => { if (p.model === modelName && !p.manager) p.manager = preservedManager; });
   }
 
   const isHeaderRow = (row) => {
@@ -190,7 +197,7 @@ function processUpload(rows, modelName, headerManager, xlsxImgMap, approvalDate,
       cav:       (row[cavIdx] != null && row[cavIdx] !== '') ? row[cavIdx] : '-',
       set_qty:   (row[setIdx] != null && row[setIdx] !== '') ? row[setIdx] : '-',
       tray_qty:  trayQty,
-      manager:   colManagerVal || headerManager,
+      manager:   colManagerVal || preservedManager,
       approvalDate,
       uploadBatch,
       rowIndex: rowIndex++,
