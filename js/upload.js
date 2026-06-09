@@ -84,18 +84,47 @@ function handleFileUpload(e) {
 
       // ── 기존 모델 존재 시 교체/추가 선택 모달 ──
       const existingCount = parts.filter(p => p.model === modelName).length;
-      if (modelName && existingCount > 0) {
+      const existingManager = parts.find(p => p.model === modelName && p.manager)?.manager || '';
+
+      const openReplaceModal = () => {
+        const input = document.getElementById('replaceManagerInput');
+        input.value = headerManager || existingManager;
         document.getElementById('replaceModalBody').innerHTML =
           `<strong>${modelName}</strong> 모델의 기존 파트 <strong>${existingCount}개</strong>가 있습니다.<br>어떻게 처리하시겠습니까?`;
+        const getManager = () => input.value.trim() || headerManager || existingManager;
         document.getElementById('replaceBtn').onclick = () => {
           closeReplaceModal();
-          processUpload(rows, modelName, headerManager, xlsxImgMap, approvalDate, cavIdx, setIdx, managerIdx, true);
+          processUpload(rows, modelName, getManager(), xlsxImgMap, approvalDate, cavIdx, setIdx, managerIdx, true);
         };
         document.getElementById('appendBtn').onclick = () => {
           closeReplaceModal();
-          processUpload(rows, modelName, headerManager, xlsxImgMap, approvalDate, cavIdx, setIdx, managerIdx, false);
+          processUpload(rows, modelName, getManager(), xlsxImgMap, approvalDate, cavIdx, setIdx, managerIdx, false);
         };
         document.getElementById('replaceModal').classList.add('open');
+        setTimeout(() => input.focus(), 80);
+      };
+
+      if (modelName && existingCount > 0) {
+        openReplaceModal();
+        return;
+      }
+
+      // 신규 모델 - 담당자 감지 실패 시 입력 모달 표시
+      if (!headerManager) {
+        const input = document.getElementById('replaceManagerInput');
+        input.value = '';
+        document.getElementById('replaceModalBody').innerHTML =
+          `<strong>${modelName || '새 모델'}</strong> 담당자 이름을 입력해주세요.<br><span style="font-size:12px;color:var(--text3)">엑셀 결재란에서 자동 감지되지 않았습니다.</span>`;
+        document.getElementById('replaceBtn').style.display = 'none';
+        document.getElementById('appendBtn').textContent = '확인 후 업로드';
+        document.getElementById('appendBtn').onclick = () => {
+          closeReplaceModal();
+          document.getElementById('replaceBtn').style.display = '';
+          document.getElementById('appendBtn').textContent = '기존 유지 + 새 항목만 추가';
+          processUpload(rows, modelName, input.value.trim(), xlsxImgMap, approvalDate, cavIdx, setIdx, managerIdx, false);
+        };
+        document.getElementById('replaceModal').classList.add('open');
+        setTimeout(() => input.focus(), 80);
         return;
       }
 
