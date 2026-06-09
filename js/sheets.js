@@ -174,12 +174,24 @@ async function loadFromSheets() {
         return false;
       }
       // 로컬에 저장된 imageUrl 보존 (Sheets에는 이미지 미저장)
-      const localImageMap = {};
-      parts.forEach(p => { if (p.imageUrl) localImageMap[p.id] = p.imageUrl; });
+      // ID 기반 + (model|name|code) 정규화 키 기반 이중 매칭
+      const localImageById = {};
+      const localImageByKey = {};
+      parts.forEach(p => {
+        if (!p.imageUrl) return;
+        localImageById[p.id] = p.imageUrl;
+        const k = `${String(p.model||'').trim()}|${String(p.name||'').trim().replace(/\s+/g,' ')}|${String(p.code||'').trim()}`.toUpperCase();
+        localImageByKey[k] = p.imageUrl;
+      });
       parts = json.parts;
       parts.forEach((p, i) => {
         p.globalNo = i + 1;
-        if (localImageMap[p.id]) p.imageUrl = localImageMap[p.id];
+        if (localImageById[p.id]) {
+          p.imageUrl = localImageById[p.id];
+        } else if (!p.imageUrl) {
+          const k = `${String(p.model||'').trim()}|${String(p.name||'').trim().replace(/\s+/g,' ')}|${String(p.code||'').trim()}`.toUpperCase();
+          if (localImageByKey[k]) p.imageUrl = localImageByKey[k];
+        }
       });
       localStorage.setItem(STORAGE_KEY, JSON.stringify(parts));
       showSyncStatus(`Sheets에서 ${parts.length}건 불러옴`, 'success');

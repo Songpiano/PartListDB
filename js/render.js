@@ -266,6 +266,27 @@ function renderStatus() {
             <tbody>${tableRows}</tbody>
           </table>
         </div>
+
+        <!-- 월별 승인 모델 그래프 -->
+        <div class="monthly-chart">
+          <div class="monthly-chart-title">📅 월별 승인 현황</div>
+          <div class="monthly-chart-grid">
+            ${Array.from({length:12},(_,i)=>{
+              const m = String(i+1).padStart(2,'0');
+              const monthModels = modelList.filter(([,md])=>md.months.has(m));
+              return `<div class="monthly-col${monthModels.length?'':' monthly-col-empty'}">
+                <div class="monthly-label">${i+1}월</div>
+                <div class="monthly-bar-wrap">
+                  <div class="monthly-bar" style="height:${Math.min(4+monthModels.length*18,80)}px"></div>
+                </div>
+                <div class="monthly-models">
+                  ${monthModels.map(([model])=>`<div class="monthly-model-tag" onclick="navigateToModel('${escHtml(model)}')">${escHtml(model)}</div>`).join('')}
+                  ${monthModels.length===0?'<div class="monthly-none">-</div>':''}
+                </div>
+              </div>`;
+            }).join('')}
+          </div>
+        </div>
       </div>
     </div>`;
   }).join('');
