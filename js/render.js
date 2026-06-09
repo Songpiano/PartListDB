@@ -145,10 +145,10 @@ function renderParts() {
           </div>
         </div>
       </div>
-      <div class="part-manager-col">
+      ${!isSub ? `<div class="part-manager-col" onclick="startEdit('${p.id}','manager')" title="클릭하여 편집">
         <div class="part-manager-label">담당자</div>
-        <div class="part-manager-name">${escHtml(p.manager||'–')}</div>
-      </div>
+        <div class="part-manager-name"><span id="field_${p.id}_manager">${escHtml(p.manager||'–')}</span></div>
+      </div>` : ''}
     </div>`;
   }).join('');
 }
