@@ -55,6 +55,21 @@ function askDelete(id) {
   document.getElementById('confirmModal').classList.add('open');
   document.getElementById('confirmOk').onclick = pendingAction;
 }
+function askDeleteModel(modelName) {
+  const count = parts.filter(p => p.model === modelName).length;
+  document.getElementById('confirmBody').textContent = `"${modelName}" 모델의 파트 ${count}개를 모두 삭제합니다.`;
+  pendingAction = () => {
+    const before = parts.length;
+    for (let i = parts.length - 1; i >= 0; i--) {
+      if (parts[i].model === modelName) parts.splice(i, 1);
+    }
+    if (parts.length !== before) { saveParts(); renderParts(); renderStatus(); }
+    closeConfirm();
+  };
+  document.getElementById('confirmModal').classList.add('open');
+  document.getElementById('confirmOk').onclick = pendingAction;
+}
+
 function askClearAll() {
   const modal = document.getElementById('clearPwModal');
   const input = document.getElementById('clearPwInput');
