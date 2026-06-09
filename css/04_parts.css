@@ -214,82 +214,49 @@
 
 /* ══ 스펙 영역 (오른쪽) ══════════════════════════════════════ */
 .part-specs-right {
-  display: flex; flex-wrap: wrap; align-items: flex-end;
-  gap: 5px; flex: 1; min-width: 0;
+  display: flex; flex-wrap: nowrap; align-items: center;
+  gap: 4px; flex: 1; min-width: 0;
 }
 .part-card.is-sub .part-specs-right { gap: 4px; }
 
-/* 원소재·규격 인라인 그룹 */
-.spec-inline-group {
-  display: flex; flex-direction: column; justify-content: flex-end; align-items: center;
-  border: none !important;
-  border-radius: 0;
-  background: transparent !important;
-  padding: 4px 10px;
+/* 모든 스펙 항목 공통: 고정 높이, 라벨 위·값 아래 배치 */
+.spec-inline-group, .dim-box {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: space-between;
+  height: 46px; flex-shrink: 0;
   box-sizing: border-box;
+  background: transparent !important;
+  border: none !important;
+  padding: 2px 6px;
 }
-/* 원소재·규격 고정 너비로 칸 정렬 (원소재는 넉넉하게) */
-.spec-inline-group.spec-material { min-width: 140px; max-width: 200px; }
-.spec-inline-group.spec-dimension { min-width: 170px; max-width: 220px; }
-.spec-label {
-  font-family: var(--font-base);
-  font-size: 12px; font-weight: 600;
-  color: var(--text3); margin-bottom: 2px;
-}
-.spec-val {
-  font-family: var(--font-base);
-  font-size: 15px; font-weight: 700;
-  color: var(--text); white-space: nowrap;
-  overflow: hidden; text-overflow: ellipsis; max-width: 100%;
-}
-.spec-divider { width: 1px; height: 34px; background: var(--border2); margin: 0 6px; align-self: flex-end; }
-.part-card.is-sub .spec-label { font-size: 12px; }
-.part-card.is-sub .spec-val   { font-size: 15px; }
-.part-card.is-sub .spec-divider { height: 30px; }
 
-/* DIM BOX (가로/세로/높이/CAV/SET소요 등) */
+/* 원소재·규격 고정 너비 */
+.spec-inline-group.spec-material  { min-width: 130px; width: 130px; }
+.spec-inline-group.spec-dimension { min-width: 170px; width: 170px; }
+
+/* DIM BOX 고정 너비 */
 .dim-box {
-  background: transparent !important;
-  border: none !important;
-  border-radius: 0;
-  padding: 4px 4px;
-  text-align: center;
-  width: 60px; min-width: 60px; max-width: 60px; /* 고정 너비로 모든 행에서 칸 위치 일치 */
-  flex-shrink: 0;
-  box-sizing: border-box;
-  display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+  width: 62px; min-width: 62px; max-width: 62px;
 }
-.dim-box-label {
+
+.spec-label, .dim-box-label {
   font-family: var(--font-base);
   font-size: 12px; font-weight: 600; line-height: 14px;
-  color: var(--text3);
-  margin-bottom: 2px; white-space: nowrap;
-  overflow: hidden; text-overflow: ellipsis; max-width: 100%;
+  color: var(--text3); white-space: nowrap;
 }
-.dim-box-val {
+.spec-val, .dim-box-val {
   font-family: var(--font-base);
-  font-size: 15px; font-weight: 800; line-height: 18px; min-height: 18px;
-  color: var(--text);
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
+  font-size: 15px; font-weight: 800; line-height: 18px;
+  color: var(--text); white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis; max-width: 100%;
   display: flex; align-items: center; justify-content: center;
 }
-/* CAV / SET소요 */
-.dim-box-accent { background: none; }
-.dim-box-accent .dim-box-label { color: var(--text3); }
-.dim-box-accent .dim-box-val   { color: var(--text); }
-/* TRAY / 릴 업체명 */
-.dim-box-pkg { background: none; }
-.dim-box-pkg .dim-box-label { color: var(--text3); }
-.dim-box-pkg .dim-box-val   { color: var(--text); }
-/* Weight */
-.dim-box-weight { background: none; }
-.dim-box-weight .dim-box-label { color: var(--text3); }
-.dim-box-weight .dim-box-val   { color: var(--text); }
-
-/* SUB dim-box */
-.part-card.is-sub .dim-box { padding: 0 4px; width: 60px; min-width: 60px; max-width: 60px; }
-.part-card.is-sub .dim-box-val   { font-size: 15px; }
-.part-card.is-sub .dim-box-label { font-size: 12px; }
+.spec-divider { width: 1px; height: 34px; background: var(--border2); margin: 0 4px; flex-shrink: 0; align-self: center; }
+.part-card.is-sub .spec-label, .part-card.is-sub .dim-box-label { font-size: 12px; }
+.part-card.is-sub .spec-val,   .part-card.is-sub .dim-box-val   { font-size: 15px; }
+.part-card.is-sub .spec-divider { height: 34px; }
+/* SUB dim-box — 높이 통일 */
+.part-card.is-sub .dim-box { width: 62px; min-width: 62px; max-width: 62px; padding: 2px 4px; }
 
 /* ══ 담당자 컬럼 (카드 오른쪽 끝) ══════════════════════════ */
 .part-manager-col {
