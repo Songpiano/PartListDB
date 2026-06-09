@@ -173,8 +173,14 @@ async function loadFromSheets() {
         if (parts.length > 0) syncToSheets();
         return false;
       }
+      // 로컬에 저장된 imageUrl 보존 (Sheets에는 이미지 미저장)
+      const localImageMap = {};
+      parts.forEach(p => { if (p.imageUrl) localImageMap[p.id] = p.imageUrl; });
       parts = json.parts;
-      parts.forEach((p, i) => { p.globalNo = i + 1; });
+      parts.forEach((p, i) => {
+        p.globalNo = i + 1;
+        if (localImageMap[p.id]) p.imageUrl = localImageMap[p.id];
+      });
       localStorage.setItem(STORAGE_KEY, JSON.stringify(parts));
       showSyncStatus(`Sheets에서 ${parts.length}건 불러옴`, 'success');
       return true;
