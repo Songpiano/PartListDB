@@ -157,9 +157,10 @@ function processUpload(rows, modelName, headerManager, xlsxImgMap, approvalDate,
     }
   }
 
-  // 담당자 업데이트 (기존 파트 중 manager 비어있는 것)
+  // 담당자 업데이트 (기존 파트 중 manager 비어있거나 "-"인 것)
+  const isEmptyManager = (v) => !v || /^[-–—]+$/.test(v);
   if (preservedManager && !replace) {
-    parts.forEach(p => { if (p.model === modelName && !p.manager) p.manager = preservedManager; });
+    parts.forEach(p => { if (p.model === modelName && isEmptyManager(p.manager)) p.manager = preservedManager; });
   }
 
   const isHeaderRow = (row) => {
@@ -204,7 +205,8 @@ function processUpload(rows, modelName, headerManager, xlsxImgMap, approvalDate,
 
     const trayQtyRaw = row[setIdx + 1];
     const trayQty   = isPkg && trayQtyRaw != null && trayQtyRaw !== '' ? trayQtyRaw : null;
-    const colManagerVal = managerIdx >= 0 && row[managerIdx] != null ? String(row[managerIdx]).trim() : '';
+    const colManagerRaw = managerIdx >= 0 && row[managerIdx] != null ? String(row[managerIdx]).trim() : '';
+    const colManagerVal = /^[-–—]+$/.test(colManagerRaw) ? '' : colManagerRaw;
 
     parts.push({
       id: 'p_' + Date.now() + '_' + Math.random().toString(36).slice(2),
@@ -263,6 +265,14 @@ function processUpload(rows, modelName, headerManager, xlsxImgMap, approvalDate,
       }
     });
     if (imgApplied > 0) showSyncStatus(`이미지 ${imgApplied}개 자동 적용`, 'success');
+  }
+
+  // 감지된 담당자로 해당 모델의 ASSY 파트 전체 강제 갱신 (기존 데이터 포함)
+  if (preservedManager && modelName) {
+    parts.forEach(p => {
+      if (p.model === modelName && p.isAssembly && isEmptyManager(p.manager))
+        p.manager = preservedManager;
+    });
   }
 
   if (addCount > 0 || replace) {
