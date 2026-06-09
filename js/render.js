@@ -145,10 +145,10 @@ function renderParts() {
           </div>
         </div>
       </div>
-      ${p.manager ? `<div class="part-manager-col">
+      <div class="part-manager-col">
         <div class="part-manager-label">담당자</div>
-        <div class="part-manager-name">${escHtml(p.manager)}</div>
-      </div>` : ''}
+        <div class="part-manager-name">${escHtml(p.manager||'–')}</div>
+      </div>
     </div>`;
   }).join('');
 }
