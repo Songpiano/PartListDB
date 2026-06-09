@@ -1,10 +1,10 @@
-/* ================================================================
+﻿/* ================================================================
    Part List Database — 04_parts.css  (v2 clean)
 ================================================================ */
 
 /* ── 공통 타이포 변수 ── */
 :root {
-  --font-base: 'Noto Sans KR', 'Inter', sans-serif;
+  --font-base: 'Pretendard', 'Inter', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
   --fs-xs:   11px;
   --fs-sm:   12px;
@@ -302,3 +302,4 @@
   outline: none; width: 160px;
   box-shadow: 0 0 0 3px var(--accent-glow);
 }
+

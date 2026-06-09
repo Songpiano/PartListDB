@@ -224,3 +224,32 @@ function handleFileUpload(e) {
 function normalizeKey(model, name, code) {
   return `${String(model||'').trim()}|${String(name||'').trim().replace(/\s+/g,' ')}|${String(code||'').trim()}`.toUpperCase();
 }
+
+function downloadModelXlsx(modelName) {
+  if (!window.XLSX) { alert('XLSX 라이브러리가 로드되지 않았습니다.'); return; }
+  const modelParts = parts.filter(p => p.model === modelName);
+  if (!modelParts.length) { alert('해당 모델의 파트가 없습니다.'); return; }
+
+  const headers = ['NO', '제품구분', '품명', 'CODE NO.', '재질', '두께(T)', '폭(W)', '피치(P)', '밀도', '무게(kg)',
+    '가로', '세로', '높이', '무게(g)', '공정1', '공정2', 'CAV', 'SET당소요량', 'TRAY포장수량', '승인일자'];
+
+  const rows = modelParts.map(p => [
+    p.displayId, p.category, p.name, p.code, p.material,
+    p.thickness, p.width_raw, p.pitch, p.density ?? '-', p.weight_raw ?? '-',
+    p.dim_l, p.dim_w, p.dim_h, p.weight_g,
+    p.process1 ?? '-', p.process2 ?? '-',
+    p.cav, p.set_qty, p.tray_qty ?? '-', p.approvalDate ?? '-'
+  ]);
+
+  const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+
+  // 컬럼 너비 자동 조정
+  ws['!cols'] = headers.map((h, i) => {
+    const maxLen = Math.max(h.length, ...rows.map(r => String(r[i] ?? '').length));
+    return { wch: Math.min(maxLen + 2, 30) };
+  });
+
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, modelName.slice(0, 31));
+  XLSX.writeFile(wb, `${modelName}_PartList.xlsx`);
+}

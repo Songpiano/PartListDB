@@ -1,4 +1,4 @@
-/* ================================================================
+﻿/* ================================================================
    Part List Database — 03_header.css
    헤더, 탭, 필터바
 ================================================================ */
@@ -29,13 +29,13 @@
     box-shadow: 0 4px 16px rgba(91,110,247,0.4);
     flex-shrink: 0;
   }
-  .brand-name { font-family: var(--font-base, 'Noto Sans KR', sans-serif); font-size: 18px; font-weight: 900; color: var(--text); letter-spacing: -0.02em; }
+  .brand-name { font-family: var(--font-base, 'Pretendard', sans-serif); font-size: 18px; font-weight: 900; color: var(--text); letter-spacing: -0.02em; }
   .brand-tag {
-    font-family: var(--font-base, 'Noto Sans KR', sans-serif); font-size: 10px; font-weight: 600;
+    font-family: var(--font-base, 'Pretendard', sans-serif); font-size: 10px; font-weight: 600;
     background: rgba(255,255,255,0.06); border: 1px solid var(--border2);
     padding: 2px 8px; border-radius: 5px; color: var(--text3); margin-top: 2px;
   }
-  .brand-sub { font-family: var(--font-base, 'Noto Sans KR', sans-serif); font-size: 10px; color: var(--text3); font-weight: 600; margin-top: 2px; }
+  .brand-sub { font-family: var(--font-base, 'Pretendard', sans-serif); font-size: 10px; color: var(--text3); font-weight: 600; margin-top: 2px; }
 
   .tab-bar {
     background: var(--bg);
@@ -50,7 +50,7 @@
     border: none;
     background: transparent;
     color: var(--text3);
-    font-family: var(--font-base, 'Noto Sans KR', sans-serif);
+    font-family: var(--font-base, 'Pretendard', sans-serif);
     font-size: 13px; font-weight: 700;
     cursor: pointer;
     transition: all 0.2s;
@@ -67,7 +67,7 @@
     border: 1px solid var(--border2);
     background: var(--surface2);
     color: var(--text2);
-    font-family: var(--font-base, 'Noto Sans KR', sans-serif);
+    font-family: var(--font-base, 'Pretendard', sans-serif);
     font-size: 13px; font-weight: 600;
     cursor: pointer; transition: all 0.2s;
   }
@@ -75,7 +75,7 @@
   .btn.danger:hover { border-color: var(--rose); color: var(--rose); background: var(--rose-dim); }
   .btn svg { width: 15px; height: 15px; }
   .status-badge {
-    font-size: 11px; font-family: var(--font-base, 'Noto Sans KR', sans-serif); font-weight: 600;
+    font-size: 11px; font-family: var(--font-base, 'Pretendard', sans-serif); font-weight: 600;
     padding: 4px 10px; border-radius: 6px;
     display: flex; align-items: center; gap: 6px;
   }
@@ -102,7 +102,7 @@
     border-radius: var(--radius-sm);
     padding: 11px 14px 11px 42px;
     color: var(--text);
-    font-family: 'Noto Sans KR', sans-serif;
+    font-family: 'Pretendard', sans-serif;
     font-size: 13px; font-weight: 500;
     outline: none; width: 100%;
     transition: border-color 0.2s, box-shadow 0.2s;
@@ -110,8 +110,8 @@
   .filter-input { padding-left: 14px; }
   .search-input:focus, .filter-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
   .dim-group { display: flex; align-items: center; gap: 6px; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px 12px; }
-  .dim-label { font-size: 11px; font-family: var(--font-base, 'Noto Sans KR', sans-serif); font-weight: 600; color: var(--text3); white-space: nowrap; }
-  .dim-input { background: transparent; border: none; outline: none; width: 48px; font-size: 13px; font-weight: 700; font-family: var(--font-base, 'Noto Sans KR', sans-serif); color: var(--text); }
+  .dim-label { font-size: 11px; font-family: var(--font-base, 'Pretendard', sans-serif); font-weight: 600; color: var(--text3); white-space: nowrap; }
+  .dim-input { background: transparent; border: none; outline: none; width: 48px; font-size: 13px; font-weight: 700; font-family: var(--font-base, 'Pretendard', sans-serif); color: var(--text); }
   .dim-sep { color: var(--border2); font-size: 16px; font-weight: 200; }
   .btn-reset { background: none; border: none; color: var(--text3); cursor: pointer; padding: 8px; border-radius: 8px; transition: all 0.2s; display: flex; align-items: center; }
   .btn-reset:hover { color: var(--accent); background: var(--accent-glow); }
@@ -139,14 +139,14 @@
   .search-dropdown-item:last-child { border-bottom: none; }
   .search-dropdown-item:hover { background: var(--surface2); }
   .search-dropdown-type {
-    font-family: var(--font-base, 'Noto Sans KR', sans-serif); font-size: 10px; font-weight: 700;
+    font-family: var(--font-base, 'Pretendard', sans-serif); font-size: 10px; font-weight: 700;
     color: var(--accent2); background: var(--accent-glow);
     border: 1px solid rgba(91,110,247,0.2);
     border-radius: 4px; padding: 1px 7px;
     white-space: nowrap; flex-shrink: 0;
   }
   .search-dropdown-label {
-    font-family: var(--font-base, 'Noto Sans KR', sans-serif);
+    font-family: var(--font-base, 'Pretendard', sans-serif);
     font-size: 13px; font-weight: 600; color: var(--text);
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
@@ -155,10 +155,11 @@
   .parts-count {
     padding: 10px 48px 4px;
     color: var(--text3);
-    font-family: var(--font-base, 'Noto Sans KR', sans-serif);
+    font-family: var(--font-base, 'Pretendard', sans-serif);
     font-size: 12px; font-weight: 600;
   }
   .parts-count span { color: var(--accent2); font-weight: 700; }
 
   /* MAIN */
   main { flex: 1; padding: 12px 48px 40px; overflow-y: auto; max-width: 1600px; margin: 0 auto; width: 100%; }
+

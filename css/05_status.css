@@ -1,4 +1,4 @@
-/* ================================================================
+﻿/* ================================================================
    Part List Database — 05_status.css
    연간 현황, 아코디언, 타임라인
 ================================================================ */
@@ -6,7 +6,7 @@
 /* EMPTY STATE */
   .empty-state { text-align: center; padding: 80px 20px; color: var(--text3); }
   .empty-state svg { width: 64px; height: 64px; margin: 0 auto 20px; opacity: 0.3; display: block; }
-  .empty-state h3 { font-family: 'Inter', 'Noto Sans KR', sans-serif; font-size: 20px; font-weight: 700; color: var(--text2); margin-bottom: 8px; }
+  .empty-state h3 { font-family: 'Pretendard', 'Inter', sans-serif; font-size: 20px; font-weight: 700; color: var(--text2); margin-bottom: 8px; }
   .empty-state p { font-size: 13px; line-height: 1.6; }
 
   /* ── 년도 아코디언 ── */
@@ -62,7 +62,7 @@
   .month-head { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
   .month-dot { position: absolute; left: 2px; width: 12px; height: 12px; border-radius: 50%; background: var(--surface); border: 2px solid var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); flex-shrink: 0; margin-top: 2px; }
   .month-label-wrap { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-  .month-label { font-family: 'Inter', 'Noto Sans KR', sans-serif; font-size: 15px; font-weight: 800; color: var(--text); letter-spacing: -0.02em; }
+  .month-label { font-family: 'Pretendard', 'Inter', sans-serif; font-size: 15px; font-weight: 800; color: var(--text); letter-spacing: -0.02em; }
   .month-stats { font-size: 11px; font-family: 'JetBrains Mono', monospace; font-weight: 600; color: var(--text3); background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 2px 8px; }
 
   /* 모델 카드 내 완제품/하위 배지 */
@@ -73,7 +73,7 @@
 
   /* STATUS TAB */
   .status-header { margin-bottom: 40px; }
-  .status-header h2 { font-family: 'Inter', 'Noto Sans KR', sans-serif; font-size: 28px; font-weight: 800; color: var(--text); margin-bottom: 6px; }
+  .status-header h2 { font-family: 'Pretendard', 'Inter', sans-serif; font-size: 28px; font-weight: 800; color: var(--text); margin-bottom: 6px; }
   .status-header p { color: var(--text3); font-size: 13px; }
 
   .timeline { display: flex; flex-direction: column; gap: 0; }
@@ -83,11 +83,11 @@
   .year-dot { position: absolute; left: 6px; top: 6px; width: 18px; height: 18px; border-radius: 50%; background: var(--accent); border: 3px solid var(--bg); box-shadow: 0 0 0 3px rgba(91,110,247,0.3); }
   .year-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
   .year-label { font-size: 11px; font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--accent2); text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 4px; }
-  .year-title { font-family: 'Inter', 'Noto Sans KR', sans-serif; font-size: 32px; font-weight: 900; color: var(--text); line-height: 1; letter-spacing: -0.04em; }
+  .year-title { font-family: 'Pretendard', 'Inter', sans-serif; font-size: 32px; font-weight: 900; color: var(--text); line-height: 1; letter-spacing: -0.04em; }
   .year-stats { display: flex; gap: 10px; }
   .stat-pill { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 20px; text-align: center; min-width: 100px; }
   .stat-pill-label { font-size: 9px; font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px; }
-  .stat-pill-val { font-family: 'Inter', 'Noto Sans KR', sans-serif; font-size: 22px; font-weight: 900; color: var(--text); letter-spacing: -0.03em; }
+  .stat-pill-val { font-family: 'Pretendard', 'Inter', sans-serif; font-size: 22px; font-weight: 900; color: var(--text); letter-spacing: -0.03em; }
   .models-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
   .model-card {
     background: var(--surface2);
@@ -101,11 +101,11 @@
   .model-card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
   .model-icon { width: 38px; height: 38px; background: var(--accent-glow); border: 1px solid rgba(91,110,247,0.2); border-radius: 11px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
   .model-card:hover .model-icon { background: var(--accent); border-color: var(--accent); }
-  .model-name { font-family: 'Inter', 'Noto Sans KR', sans-serif; font-size: 15px; font-weight: 800; color: var(--text); margin-bottom: 4px; letter-spacing: -0.02em; }
+  .model-name { font-family: 'Pretendard', 'Inter', sans-serif; font-size: 15px; font-weight: 800; color: var(--text); margin-bottom: 4px; letter-spacing: -0.02em; }
   .model-parts-count { font-size: 11px; font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--text3); }
   .model-card-goto {
     margin-top: 12px;
-    font-size: 11px; font-family: 'Inter', 'Noto Sans KR', sans-serif; font-weight: 700;
+    font-size: 11px; font-family: 'Pretendard', 'Inter', sans-serif; font-weight: 700;
     color: var(--text3);
     opacity: 0;
     transform: translateX(-4px);
@@ -140,7 +140,7 @@
   .status-model-row:last-child { border-bottom: none; }
   .status-table td { padding: 12px 14px; vertical-align: middle; }
 
-  .status-model-name { display: flex; align-items: center; gap: 10px; font-family: 'Inter','Noto Sans KR',sans-serif; font-size: 20px; font-weight: 800; color: var(--text); }
+  .status-model-name { display: flex; align-items: center; gap: 10px; font-family: 'Pretendard','Inter',sans-serif; font-size: 20px; font-weight: 800; color: var(--text); }
   .status-model-thumb { width: 44px; height: 44px; border-radius: 10px; object-fit: cover; border: 1px solid var(--border2); flex-shrink: 0; }
   .status-model-icon { width: 44px; height: 44px; border-radius: 10px; background: var(--accent-glow); border: 1px solid rgba(91,110,247,0.2); display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
 
@@ -148,25 +148,30 @@
   .status-cat-badge strong { color: var(--text); }
 
   .status-td-num { text-align: center; }
-  .status-num { display: inline-block; font-family: 'Inter','Noto Sans KR',sans-serif; font-size: 24px; font-weight: 900; border-radius: 8px; padding: 5px 18px; }
+  .status-num { display: inline-block; font-family: 'Pretendard','Inter',sans-serif; font-size: 24px; font-weight: 900; border-radius: 8px; padding: 5px 18px; }
   .status-num.assy { background: var(--assembly-bg); color: var(--text); border: 1px solid var(--assembly-border); }
   .status-num.sub  { background: var(--accent-glow); color: var(--text); border: 1px solid rgba(91,110,247,0.2); }
 
   .status-td-approval { font-size: 18px; font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--text); white-space: nowrap; }
 
+  .status-td-goto { display: flex; align-items: center; gap: 8px; white-space: nowrap; }
   .status-goto-btn { font-size: 14px; font-weight: 700; color: var(--text3); opacity: 0; transition: opacity 0.2s, color 0.2s; white-space: nowrap; }
   .status-model-row:hover .status-goto-btn { opacity: 1; color: var(--accent2); }
+  .status-dl-btn { font-size: 11px; font-weight: 700; color: var(--accent); background: var(--accent-glow); border: 1px solid rgba(91,110,247,0.3); border-radius: 6px; padding: 4px 10px; transition: background 0.15s, box-shadow 0.15s; white-space: nowrap; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
+  .status-dl-btn:hover { background: rgba(91,110,247,0.25); box-shadow: 0 2px 8px rgba(91,110,247,0.2); }
 
   /* ── 월별 승인 현황 그래프 ── */
   .monthly-chart { margin-top: 24px; padding: 20px 24px; background: var(--surface2); border-radius: 14px; border: 1px solid var(--border); }
-  .monthly-chart-title { font-family: var(--font-base,'Noto Sans KR',sans-serif); font-size: 15px; font-weight: 800; color: var(--text); margin-bottom: 16px; }
-  .monthly-chart-grid { display: flex; gap: 6px; align-items: flex-end; }
-  .monthly-col { display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; }
-  .monthly-label { font-family: var(--font-base,'Noto Sans KR',sans-serif); font-size: 12px; font-weight: 700; color: var(--text3); }
-  .monthly-bar-wrap { width: 100%; display: flex; justify-content: center; }
-  .monthly-bar { width: 70%; border-radius: 6px 6px 0 0; background: var(--accent); opacity: 0.85; transition: opacity 0.2s; min-height: 4px; }
-  .monthly-col-empty .monthly-bar { background: var(--border2); opacity: 0.5; }
-  .monthly-models { display: flex; flex-direction: column; align-items: center; gap: 3px; width: 100%; }
-  .monthly-model-tag { font-family: var(--font-base,'Noto Sans KR',sans-serif); font-size: 11px; font-weight: 700; color: var(--text); background: var(--accent-glow); border: 1px solid rgba(91,110,247,0.25); border-radius: 5px; padding: 2px 5px; white-space: nowrap; cursor: pointer; text-align: center; width: 100%; overflow: hidden; text-overflow: ellipsis; transition: background 0.15s; }
+  .monthly-chart-title { font-family: var(--font-base,'Pretendard',sans-serif); font-size: 15px; font-weight: 800; color: var(--text); margin-bottom: 12px; }
+  .monthly-line-wrap { width: 100%; }
+  .monthly-line-svg { width: 100%; height: auto; display: block; overflow: visible; }
+  .monthly-dot { transition: r 0.15s; }
+  .monthly-dot:hover { r: 7; }
+  .monthly-dot-label { font-family: var(--font-base,'Pretendard',sans-serif); font-size: 11px; font-weight: 800; fill: var(--accent); }
+  .monthly-x-label { font-family: var(--font-base,'Pretendard',sans-serif); font-size: 11px; font-weight: 700; fill: var(--text3); }
+  .monthly-tags-row { display: flex; gap: 4px; margin-top: 8px; }
+  .monthly-month-tags { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+  .monthly-model-tag { font-family: var(--font-base,'Pretendard',sans-serif); font-size: 11px; font-weight: 700; color: var(--text); background: var(--accent-glow); border: 1px solid rgba(91,110,247,0.25); border-radius: 5px; padding: 2px 4px; white-space: nowrap; cursor: pointer; text-align: center; width: 100%; overflow: hidden; text-overflow: ellipsis; transition: background 0.15s; box-sizing: border-box; }
   .monthly-model-tag:hover { background: rgba(91,110,247,0.2); }
   .monthly-none { font-size: 11px; color: var(--text3); }
+

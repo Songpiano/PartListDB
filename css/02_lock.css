@@ -1,4 +1,4 @@
-/* ================================================================
+﻿/* ================================================================
    Part List Database — 02_lock.css
    잠금 화면
 ================================================================ */
@@ -42,7 +42,7 @@
     margin: 0 auto 28px;
     font-size: 32px;
   }
-  .lock-title { font-family: 'Inter', 'Noto Sans KR', sans-serif; font-size: 24px; font-weight: 800; margin-bottom: 8px; color: var(--text); }
+  .lock-title { font-family: 'Pretendard', 'Inter', sans-serif; font-size: 24px; font-weight: 800; margin-bottom: 8px; color: var(--text); }
   .lock-sub { color: var(--text3); font-size: 13px; margin-bottom: 32px; }
   .pw-input {
     width: 100%;
@@ -71,7 +71,7 @@
     border: none;
     border-radius: var(--radius-sm);
     padding: 16px;
-    font-family: 'Inter', 'Noto Sans KR', sans-serif;
+    font-family: 'Pretendard', 'Inter', sans-serif;
     font-size: 15px;
     font-weight: 700;
     cursor: pointer;
@@ -80,3 +80,4 @@
   }
   .btn-unlock:hover { background: var(--accent2); box-shadow: 0 12px 32px rgba(91,110,247,0.5); }
   .btn-unlock:active { transform: scale(0.97); }
+

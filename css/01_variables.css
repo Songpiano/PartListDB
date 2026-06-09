@@ -1,4 +1,4 @@
-/* ================================================================
+﻿/* ================================================================
    Part List Database — 01_variables.css
    CSS 변수 (색상, 테마, 트랜지션)
 ================================================================ */
@@ -60,7 +60,7 @@
   body {
     background: var(--bg);
     color: var(--text);
-    font-family: 'Noto Sans KR', sans-serif;
+    font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
     min-height: 100vh;
     overflow-x: hidden;
   }
@@ -72,3 +72,4 @@
     padding: 0 24px;
     width: 100%;
   }
+

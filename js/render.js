@@ -234,7 +234,10 @@ function renderStatus() {
         <td class="status-td-num"><span class="status-num assy">${assyCount}</span></td>
         <td class="status-td-num"><span class="status-num sub">${subCount}</span></td>
         <td class="status-td-approval">${escHtml(approvalStr)}</td>
-        <td class="status-td-goto"><span class="status-goto-btn">보기 →</span></td>
+        <td class="status-td-goto">
+          <span class="status-goto-btn">보기 →</span>
+          <span class="status-dl-btn" onclick="event.stopPropagation();downloadModelXlsx('${escHtml(model)}')" title="파트리스트 엑셀 다운로드"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> 다운로드</span>
+        </td>
       </tr>`;
     }).join('');
 
@@ -270,22 +273,49 @@ function renderStatus() {
         <!-- 월별 승인 모델 그래프 -->
         <div class="monthly-chart">
           <div class="monthly-chart-title">📅 월별 승인 현황</div>
-          <div class="monthly-chart-grid">
-            ${Array.from({length:12},(_,i)=>{
+          ${(()=>{
+            const months = Array.from({length:12},(_,i)=>{
               const m = String(i+1).padStart(2,'0');
-              const monthModels = modelList.filter(([,md])=>md.months.has(m));
-              return `<div class="monthly-col${monthModels.length?'':' monthly-col-empty'}">
-                <div class="monthly-label">${i+1}월</div>
-                <div class="monthly-bar-wrap">
-                  <div class="monthly-bar" style="height:${Math.min(4+monthModels.length*18,80)}px"></div>
-                </div>
-                <div class="monthly-models">
-                  ${monthModels.map(([model])=>`<div class="monthly-model-tag" onclick="navigateToModel('${escHtml(model)}')">${escHtml(model)}</div>`).join('')}
-                  ${monthModels.length===0?'<div class="monthly-none">-</div>':''}
-                </div>
-              </div>`;
-            }).join('')}
-          </div>
+              return modelList.filter(([,md])=>md.months.has(m));
+            });
+            const maxCount = Math.max(...months.map(m=>m.length), 1);
+            const W = 780, H = 110, padL = 28, padR = 12, padT = 12, padB = 0;
+            const cols = 12;
+            const xStep = (W - padL - padR) / (cols - 1);
+            const points = months.map((m,i)=>{
+              const x = padL + i * xStep;
+              const y = padT + (1 - m.length / maxCount) * (H - padT - padB);
+              return {x, y, models: m, count: m.length};
+            });
+            const polyline = points.map(p=>`${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
+            const area = `${points.map(p=>`${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ')} ${points[11].x.toFixed(1)},${H} ${points[0].x.toFixed(1)},${H}`;
+            const dots = points.map((p,i)=>`
+              <circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${p.count?5:3}" fill="${p.count?'var(--accent)':'var(--border2)'}" stroke="var(--surface2)" stroke-width="2" class="monthly-dot" data-month="${i+1}" style="cursor:${p.count?'pointer':'default'}"/>
+              ${p.count?`<text x="${p.x.toFixed(1)}" y="${(p.y-9).toFixed(1)}" text-anchor="middle" class="monthly-dot-label">${p.count}</text>`:''}
+            `).join('');
+            const xLabels = points.map((p,i)=>`<text x="${p.x.toFixed(1)}" y="${H+14}" text-anchor="middle" class="monthly-x-label">${i+1}월</text>`).join('');
+            const modelTags = months.map((m,i)=>
+              m.length ? `<div class="monthly-month-tags" data-month="${i+1}">
+                ${m.map(([model])=>`<div class="monthly-model-tag" onclick="navigateToModel('${escHtml(model)}')">${escHtml(model)}</div>`).join('')}
+              </div>` : `<div class="monthly-month-tags monthly-month-tags-empty" data-month="${i+1}"><span class="monthly-none">-</span></div>`
+            ).join('');
+            return `
+            <div class="monthly-line-wrap">
+              <svg viewBox="0 0 ${W} ${H+20}" class="monthly-line-svg" preserveAspectRatio="xMidYMid meet">
+                <defs>
+                  <linearGradient id="lineAreaGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.22"/>
+                    <stop offset="100%" stop-color="var(--accent)" stop-opacity="0.02"/>
+                  </linearGradient>
+                </defs>
+                <polygon points="${area}" fill="url(#lineAreaGrad)"/>
+                <polyline points="${polyline}" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+                ${dots}
+                ${xLabels}
+              </svg>
+            </div>
+            <div class="monthly-tags-row">${modelTags}</div>`;
+          })()}
         </div>
       </div>
     </div>`;

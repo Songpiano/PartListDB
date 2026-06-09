@@ -1,4 +1,4 @@
-/* ================================================================
+﻿/* ================================================================
    Part List Database — 08_theme-toggle.css
    테마 토글 버튼
 ================================================================ */
@@ -60,3 +60,4 @@
   [data-theme="light"] .model-img-thumb { border-color: var(--surface); }
   [data-theme="light"] .model-img-more { background: var(--border); border-color: var(--surface); }
   [data-theme="light"] .img-remove { background: rgba(0,0,0,0.55); }
+
