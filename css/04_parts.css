@@ -222,8 +222,8 @@
 /* 원소재·규격 인라인 그룹 */
 .spec-inline-group {
   display: flex; flex-direction: column; justify-content: flex-end; align-items: center;
-  border: 1px solid var(--text3);
-  border-radius: 8px;
+  border: none;
+  border-radius: 0;
   background: none;
   padding: 4px 10px;
   box-sizing: border-box;
@@ -250,8 +250,8 @@
 /* DIM BOX (가로/세로/높이/CAV/SET소요 등) */
 .dim-box {
   background: none;
-  border: 1px solid var(--text3);
-  border-radius: 8px;
+  border: none;
+  border-radius: 0;
   padding: 4px 4px;
   text-align: center;
   width: 60px; min-width: 60px; max-width: 60px; /* 고정 너비로 모든 행에서 칸 위치 일치 */
