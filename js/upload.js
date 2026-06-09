@@ -42,18 +42,36 @@ function handleFileUpload(e) {
         }
       }
 
-      // 담당자 감지 (상단 결재란에서 "이름 책임" 패턴 추출)
+      // 담당자 감지 (상단 결재란에서 추출)
+      // 케이스1: 같은 셀에 "홍길동 책임" / "홍길동\n책임"
+      // 케이스2: "책임" 셀 바로 아래 행에 이름이 있는 경우
+      // 케이스3: "책임" 셀과 같은 행의 인접 셀에 이름이 있는 경우
       let headerManager = '';
-      for (let r = 0; r < Math.min(12, rows.length); r++) {
+      const TITLE_RE = /책임|담당자|담당/;
+      const NAME_RE  = /^[가-힣]{2,5}$/;
+      outer: for (let r = 0; r < Math.min(12, rows.length); r++) {
         if (!rows[r]) continue;
-        for (const cell of rows[r]) {
-          const s = String(cell||'').trim();
-          // "홍길동 책임" 또는 "홍길동\n책임" 형태
-          const m = s.match(/^([가-힣]{2,5})\s*책임/);
-          if (m) { headerManager = m[1]; break; }
+        for (let c = 0; c < rows[r].length; c++) {
+          const s = String(rows[r][c]||'').trim();
+          // 케이스1: 같은 셀 "홍길동 책임" or "홍길동\n책임"
+          const m1 = s.match(/^([가-힣]{2,5})[\s\n]*책임/);
+          if (m1) { headerManager = m1[1] + ' 책임'; break outer; }
+          // 케이스2: 이 셀이 "책임"이면 → 같은 열 다음 행에서 이름 탐색
+          if (TITLE_RE.test(s) && s.length <= 6) {
+            for (let nr = r + 1; nr < Math.min(r + 4, rows.length); nr++) {
+              const ns = String((rows[nr]||[])[c]||'').trim();
+              if (NAME_RE.test(ns)) { headerManager = ns + ' ' + s; break outer; }
+            }
+            // 케이스3: 같은 행 인접 셀에서 이름 탐색
+            for (const nc of [c-1, c+1, c-2, c+2]) {
+              if (nc < 0) continue;
+              const ns = String((rows[r]||[])[nc]||'').trim();
+              if (NAME_RE.test(ns)) { headerManager = ns + ' ' + s; break outer; }
+            }
+          }
         }
-        if (headerManager) break;
       }
+      console.log('[upload] headerManager:', headerManager);
 
       // 모델명 감지 (MODEL : SM-XXXXX 패턴)
       let modelName = '';
