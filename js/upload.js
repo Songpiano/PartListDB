@@ -15,11 +15,15 @@ function handleFileUpload(e) {
       const ws = wb.Sheets[wb.SheetNames[0]];
       const rows = XLSX.utils.sheet_to_json(ws, { header: 1 });
 
-      // ── 엑셀 내장 이미지 추출 ──
+      // ── 엑셀 내장 이미지 추출 + 도형 텍스트에서 담당자 추출 ──
       const xlsxImgMap = {};
-      await extractXlsxImages(data, xlsxImgMap);
+      const [, shapeManager] = await Promise.all([
+        extractXlsxImages(data, xlsxImgMap),
+        extractManagerFromShapes(data)
+      ]);
       if (Object.keys(xlsxImgMap).length > 0)
         console.log(`이미지 ${Object.keys(xlsxImgMap).length}개 추출 완료`, Object.keys(xlsxImgMap));
+      if (shapeManager) console.log('[upload] 도형에서 담당자 감지:', shapeManager);
 
       // ── 승인일자 감지 ──
       let approvalDate = new Date().getFullYear() + '.' + String(new Date().getMonth()+1).padStart(2,'0');
@@ -76,7 +80,9 @@ function handleFileUpload(e) {
           }
         }
       }
-      console.log('[upload] 담당자 감지:', headerManager, '| 스캔 셀 수:', allCells.length);
+      // 도형 텍스트 결과가 있으면 우선 사용
+      if (shapeManager) headerManager = shapeManager;
+      console.log('[upload] 담당자 최종:', headerManager, '(도형:', shapeManager, '| 셀 스캔 수:', allCells.length, ')');
 
       // ── 모델명 감지 ──
       let modelName = '';

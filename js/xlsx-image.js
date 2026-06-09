@@ -2,6 +2,37 @@
 // Part List Database — xlsx-image.js
 // ============================================================
 
+// ─── 도형(원형 스탬프 등) 텍스트에서 담당자 추출 ─────────────────────────────
+async function extractManagerFromShapes(uint8arr) {
+  try {
+    const xmlResult = await _readZipDeflated(uint8arr, ['xl/drawings/drawing1.xml']);
+    const drawingXml = xmlResult['xl/drawings/drawing1.xml'];
+    if (!drawingXml) return '';
+
+    // 모든 도형에서 텍스트 추출
+    const shapeTexts = [];
+    for (const am of drawingXml.matchAll(/<xdr:(?:twoCellAnchor|oneCellAnchor|absoluteAnchor)[\s\S]*?<\/xdr:(?:twoCellAnchor|oneCellAnchor|absoluteAnchor)>/g)) {
+      const txt = [...am[0].matchAll(/<a:t>([^<]+)<\/a:t>/g)].map(m=>m[1]).join('').trim();
+      if (txt) shapeTexts.push(txt);
+    }
+    console.log('[shapes] 도형 텍스트:', shapeTexts);
+
+    const TITLES = ['책임','이사','과장','부장','차장','대리','팀장','수석','선임','주임'];
+    const NAME_PAT = /^[가-힣]{2,5}$/;
+
+    for (const txt of shapeTexts) {
+      // "홍길동 책임" 또는 "홍길동책임" 패턴
+      for (const title of TITLES) {
+        const m = txt.match(new RegExp(`([가-힣]{2,5})\\s*${title}`));
+        if (m) return m[1] + ' ' + title;
+      }
+      // 순수 이름만 있는 경우 (2~5자 한글)
+      if (NAME_PAT.test(txt)) return txt;
+    }
+  } catch(e) { console.warn('extractManagerFromShapes 오류:', e); }
+  return '';
+}
+
 // ─── XLSX 내장 이미지 추출 (SheetJS 내부 파싱 결과 활용) ─────────────────────
 function normalizeImgKey(s) {
   return String(s||'').toUpperCase().replace(/[\s\-_\/\(\)\.\,]/g,'');
