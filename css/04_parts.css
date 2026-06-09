@@ -222,9 +222,9 @@
 /* 원소재·규격 인라인 그룹 */
 .spec-inline-group {
   display: flex; flex-direction: column; justify-content: flex-end; align-items: center;
-  border: none;
+  border: none !important;
   border-radius: 0;
-  background: none;
+  background: transparent !important;
   padding: 4px 10px;
   box-sizing: border-box;
 }
@@ -249,8 +249,8 @@
 
 /* DIM BOX (가로/세로/높이/CAV/SET소요 등) */
 .dim-box {
-  background: none;
-  border: none;
+  background: transparent !important;
+  border: none !important;
   border-radius: 0;
   padding: 4px 4px;
   text-align: center;
