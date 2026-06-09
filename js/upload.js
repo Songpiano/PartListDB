@@ -67,6 +67,12 @@ function handleFileUpload(e) {
       }
 
       const existKeys = new Set(parts.map(p => normalizeKey(p.model, p.name, p.code)));
+      // 결재란에서 담당자 추출됐으면 기존 파트 중 manager 비어있는 것도 업데이트
+      if (headerManager) {
+        parts.forEach(p => {
+          if (p.model === modelName && !p.manager) p.manager = headerManager;
+        });
+      }
       let addCount = 0;
 
       // 헤더/메타 행 판별: row[0]이 유효한 NO 형식(숫자 or "숫자-숫자")이 아니면 건너뜀
