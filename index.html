@@ -216,9 +216,12 @@
     <div class="filter-bar">
       <div class="search-wrap">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input type="text" class="search-input" id="searchInput" placeholder="품명, 코드, 모델명, 승인일자 등으로 검색..." oninput="onSearchInput()" onfocus="showSearchDropdown()" onblur="setTimeout(closeSearchDropdown,150)" autocomplete="off" />
+        <input type="text" class="search-input" id="searchInput" placeholder="품명, 코드, 모델명으로 검색..." oninput="onSearchInput()" onfocus="showSearchDropdown()" onblur="setTimeout(closeSearchDropdown,150)" autocomplete="off" />
       </div>
-      <div style="position:relative;min-width:160px;">
+      <div style="position:relative;min-width:150px;">
+        <input type="text" class="filter-input" id="categoryInput" placeholder="아이템군 (BRK류...)" oninput="onCategoryInput()" onfocus="showCategoryDropdown()" onblur="setTimeout(closeCategoryDropdown,150)" autocomplete="off" style="padding-left:14px;" />
+      </div>
+      <div style="position:relative;min-width:150px;">
         <input type="text" class="filter-input" id="matInput" placeholder="원소재 검색..." oninput="onMatInput()" onfocus="showMatDropdown()" onblur="setTimeout(closeMatDropdown,150)" autocomplete="off" style="padding-left:14px;" />
       </div>
       <div class="dim-group">
@@ -264,7 +267,7 @@
   <!-- JavaScript (순서 중요: core → ... → sheets → bulk) -->
   <script src="js/core.js?v=20260609e"></script>
   <script src="js/upload.js?v=20260609e"></script>
-  <script src="js/filter.js?v=20260609e"></script>
+  <script src="js/filter.js?v=20260609f"></script>
   <script src="js/render.js?v=20260609e"></script>
   <script src="js/edit.js?v=20260609e"></script>
   <script src="js/image.js?v=20260609e"></script>
