@@ -42,6 +42,19 @@ function handleFileUpload(e) {
         }
       }
 
+      // 담당자 감지 (상단 결재란에서 "이름 책임" 패턴 추출)
+      let headerManager = '';
+      for (let r = 0; r < Math.min(12, rows.length); r++) {
+        if (!rows[r]) continue;
+        for (const cell of rows[r]) {
+          const s = String(cell||'').trim();
+          // "홍길동 책임" 또는 "홍길동\n책임" 형태
+          const m = s.match(/^([가-힣]{2,5})\s*책임/);
+          if (m) { headerManager = m[1]; break; }
+        }
+        if (headerManager) break;
+      }
+
       // 모델명 감지 (MODEL : SM-XXXXX 패턴)
       let modelName = '';
       for (let r = 0; r < Math.min(10, rows.length); r++) {
@@ -154,7 +167,12 @@ function handleFileUpload(e) {
           cav:       (row[cavIdx] != null && row[cavIdx] !== '') ? row[cavIdx] : '-',
           set_qty:   (row[setIdx] != null && row[setIdx] !== '') ? row[setIdx] : '-',
           tray_qty:  trayQty,
-          manager:   managerIdx >= 0 && row[managerIdx] != null ? String(row[managerIdx]).trim() : '',
+          manager:   (() => {
+            // 1) 행 내 컬럼에서 담당자 값 시도
+            const colVal = managerIdx >= 0 && row[managerIdx] != null ? String(row[managerIdx]).trim() : '';
+            // 2) 없으면 결재란에서 추출한 담당자명 사용
+            return colVal || headerManager;
+          })(),
           approvalDate,
           uploadBatch,                    // 파일 단위 묶음 키
           rowIndex: rowIndex++,           // 엑셀 행 순서
