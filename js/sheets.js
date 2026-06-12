@@ -238,6 +238,23 @@ async function loadFromSheets(retry = true) {
   }
 }
 
+// ── 현재 전체 데이터(이미지/금형TYPE/담당자 포함)를 data/parts.json 형식으로 내보내기 ──
+// 다른 PC에서 Sheets 연동이 실패했을 때 사용되는 정적 백업 파일을 최신화하기 위함.
+// 다운로드된 parts.json 파일을 프로젝트의 data/parts.json 으로 교체 후 배포하면 됩니다.
+function exportBackupSnapshot() {
+  const json = JSON.stringify({ ok: true, parts }, null, 0);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'parts.json';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+  showSyncStatus('parts.json 다운로드됨 (data/parts.json으로 교체해주세요)', 'info');
+}
+
 // ── Sheets 연동이 실패하고 로컬 데이터도 없는 신규 사용자를 위한 정적 백업 데이터 ──
 // (data/parts.json은 마지막으로 동기화된 데이터의 스냅샷이며, 새 사용자의 첫 화면을
 //  비어있지 않게 보여주기 위한 안전망입니다. 실시간 데이터는 Sheets 연동이 정상이면
