@@ -4,9 +4,28 @@
 
 // ─── FILE UPLOAD ──────────────────────────────────────────────────────────────
 function handleFileUpload(e) {
-  const file = e.target.files[0];
-  if (!file || !window.XLSX) { showSyncStatus('라이브러리 로딩 중...', 'info'); return; }
-  showSyncStatus('파일 처리 중...', 'info');
+  const files = Array.from(e.target.files || []);
+  if (!files.length || !window.XLSX) { showSyncStatus('라이브러리 로딩 중...', 'info'); return; }
+  e.target.value = '';
+  const summary = { total: files.length, done: 0, added: 0 };
+  processFileQueue(files, 0, summary);
+}
+
+// 여러 파일을 순차적으로 처리 (모델 중복 시 모달 응답을 기다린 뒤 다음 파일 진행)
+function processFileQueue(files, index, summary) {
+  if (index >= files.length) {
+    if (summary.total > 1) {
+      showSyncStatus(`파일 ${summary.total}개 처리 완료 (총 ${summary.added}건 추가)`, 'success');
+    }
+    return;
+  }
+  const file = files[index];
+  const next = () => processFileQueue(files, index + 1, summary);
+  showSyncStatus(`(${index + 1}/${summary.total}) ${file.name} 처리 중...`, 'info');
+  processSingleFile(file, summary, next);
+}
+
+function processSingleFile(file, summary, next) {
   const reader = new FileReader();
   reader.onload = async (ev) => {
     try {
@@ -84,25 +103,28 @@ function handleFileUpload(e) {
           `<strong>${modelName}</strong> 모델의 기존 파트 <strong>${existingCount}개</strong>가 있습니다.<br>어떻게 처리하시겠습니까?`;
         document.getElementById('replaceBtn').onclick = () => {
           closeReplaceModal();
-          processUpload(rows, modelName, xlsxImgMap, approvalDate, cavIdx, setIdx, managerIdx, moldIdx, true);
+          summary.added += processUpload(rows, modelName, xlsxImgMap, approvalDate, cavIdx, setIdx, managerIdx, moldIdx, true);
+          next();
         };
         document.getElementById('appendBtn').onclick = () => {
           closeReplaceModal();
-          processUpload(rows, modelName, xlsxImgMap, approvalDate, cavIdx, setIdx, managerIdx, moldIdx, false);
+          summary.added += processUpload(rows, modelName, xlsxImgMap, approvalDate, cavIdx, setIdx, managerIdx, moldIdx, false);
+          next();
         };
         document.getElementById('replaceModal').classList.add('open');
         return;
       }
 
-      processUpload(rows, modelName, xlsxImgMap, approvalDate, cavIdx, setIdx, managerIdx, moldIdx, false);
+      summary.added += processUpload(rows, modelName, xlsxImgMap, approvalDate, cavIdx, setIdx, managerIdx, moldIdx, false);
+      next();
 
     } catch(err) {
       console.error(err);
       showSyncStatus('처리 오류', 'error');
+      next();
     }
   };
   reader.readAsArrayBuffer(file);
-  e.target.value = '';
 }
 
 // ─── CORE UPLOAD PROCESSING ───────────────────────────────────────────────────
@@ -251,6 +273,7 @@ function processUpload(rows, modelName, xlsxImgMap, approvalDate, cavIdx, setIdx
   } else {
     showSyncStatus('새 항목 없음', 'info');
   }
+  return addCount;
 }
 
 function closeReplaceModal() {
