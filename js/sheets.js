@@ -173,25 +173,25 @@ async function loadFromSheets() {
         if (parts.length > 0) syncToSheets();
         return false;
       }
-      // 로컬에 저장된 imageUrl 보존 (Sheets에는 이미지 미저장)
+      // 로컬에 저장된 imageUrl / moldType / manager 보존 (Sheets 스키마에 없는 필드는 응답에서 누락됨)
       // ID 기반 + (model|name|code) 정규화 키 기반 이중 매칭
-      const localImageById = {};
-      const localImageByKey = {};
+      const normKey = (p) => `${String(p.model||'').trim()}|${String(p.name||'').trim().replace(/\s+/g,' ')}|${String(p.code||'').trim()}`.toUpperCase();
+      const PRESERVE_FIELDS = ['imageUrl', 'moldType', 'manager'];
+      const localById = {};
+      const localByKey = {};
       parts.forEach(p => {
-        if (!p.imageUrl) return;
-        localImageById[p.id] = p.imageUrl;
-        const k = `${String(p.model||'').trim()}|${String(p.name||'').trim().replace(/\s+/g,' ')}|${String(p.code||'').trim()}`.toUpperCase();
-        localImageByKey[k] = p.imageUrl;
+        localById[p.id] = p;
+        localByKey[normKey(p)] = p;
       });
       parts = json.parts;
       parts.forEach((p, i) => {
         p.globalNo = i + 1;
-        if (localImageById[p.id]) {
-          p.imageUrl = localImageById[p.id];
-        } else if (!p.imageUrl) {
-          const k = `${String(p.model||'').trim()}|${String(p.name||'').trim().replace(/\s+/g,' ')}|${String(p.code||'').trim()}`.toUpperCase();
-          if (localImageByKey[k]) p.imageUrl = localImageByKey[k];
-        }
+        const localP = localById[p.id] || localByKey[normKey(p)];
+        if (!localP) return;
+        PRESERVE_FIELDS.forEach(f => {
+          const isEmpty = (v) => v === undefined || v === null || v === '' || v === '-';
+          if (isEmpty(p[f]) && !isEmpty(localP[f])) p[f] = localP[f];
+        });
       });
       localStorage.setItem(STORAGE_KEY, JSON.stringify(parts));
       showSyncStatus(`Sheets에서 ${parts.length}건 불러옴`, 'success');
