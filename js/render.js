@@ -104,7 +104,6 @@ function renderParts() {
             ${!isSub ? `<span class="tag date" onclick="startEdit('${p.id}','approvalDate')" title="클릭하여 편집">
               📅 승인 일자 <span id="field_${p.id}_approvalDate">${escHtml(p.approvalDate||'–')}</span>
             </span>` : ''}
-            ${p.moldType && p.moldType !== '-' ? `<span class="tag mold">🔧 금형 TYPE : ${escHtml(p.moldType)}</span>` : ''}
           </div>
           <div class="part-name" onclick="startEdit('${p.id}','name')">
             <span class="part-field-label">품명 :</span> <span id="field_${p.id}_name">${escHtml(p.name)}</span>
@@ -127,6 +126,11 @@ function renderParts() {
               <div class="dim-box-label">${d==='l'?'가로':d==='w'?'세로':'높이'}</div>
               <div class="dim-box-val">${p['dim_'+d]}</div>
             </div>`).join('')}
+          ${p.moldType && p.moldType !== '-' ? `
+          <div class="dim-box dim-box-mold">
+            <div class="dim-box-label">금형TYPE</div>
+            <div class="dim-box-val">${escHtml(p.moldType)}</div>
+          </div>` : ''}
           <div class="dim-box dim-box-accent">
             <div class="dim-box-label">CAV</div>
             <div class="dim-box-val">${p.cav != null && p.cav !== '-' ? escHtml(String(p.cav)) : '-'}</div>

@@ -171,7 +171,6 @@
 }
 .tag.date { background: var(--green-dim); color: var(--text); border-color: rgba(34,211,160,0.2); cursor: pointer; }
 .tag.date:hover { border-color: var(--green); }
-.tag.mold { background: rgba(168,85,247,0.10); color: var(--text); border-color: rgba(168,85,247,0.25); }
 .tag.category-brk   { background: rgba(91,110,247,0.10); color: var(--text); border-color: rgba(91,110,247,0.2); }
 .tag.category-sub   { background: rgba(34,211,160,0.08); color: var(--text); border-color: rgba(34,211,160,0.2); }
 .tag.category-pkg   { background: rgba(245,158,11,0.10); color: var(--text); border-color: rgba(245,158,11,0.2); }
@@ -242,6 +241,7 @@
 .dim-box {
   width: 54px; min-width: 54px; max-width: 54px;
 }
+.dim-box.dim-box-mold { width: 76px; min-width: 76px; max-width: 76px; }
 
 .spec-label, .dim-box-label {
   font-family: var(--font-base);
