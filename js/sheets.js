@@ -158,22 +158,39 @@ async function syncToSheets() {
 
     await gasJsonpRetry({ action: 'clearAll' });
 
-    // clearAll 이후 Sheets가 비어있는 시간을 최소화하기 위해 일정 개수씩 동시 요청
-    const CONCURRENCY = 5;
+    // clearAll 이후 순차적으로 재업서트 (동시 요청은 Apps Script 실행 충돌/지연으로
+    // 일부 항목이 실패하면 clearAll 이후 영구적으로 데이터가 사라질 수 있어 위험함)
+    const CONCURRENCY = 1;
     let completed = 0;
+    const failedParts = [];
     for (let i = 0; i < partsData.length; i += CONCURRENCY) {
       const batch = partsData.slice(i, i + CONCURRENCY);
       await Promise.all(batch.map(async (p) => {
         try {
           await gasJsonpRetry({ action: 'upsert', part: JSON.stringify(p) });
         } catch(e) {
-          failed++;
+          failedParts.push(p);
           console.warn(`upsert 실패 (${p.name}):`, e.message);
         }
         completed++;
       }));
       showSyncStatus(`저장 중... (${Math.min(completed, partsData.length)}/${partsData.length})`, 'info');
     }
+
+    // clearAll 직후 실패한 항목은 데이터 영구 손실로 이어지므로 한 번 더 재시도
+    if (failedParts.length > 0) {
+      showSyncStatus(`실패 항목 재시도 중... (${failedParts.length}건)`, 'info');
+      for (let i = failedParts.length - 1; i >= 0; i--) {
+        const p = failedParts[i];
+        try {
+          await gasJsonpRetry({ action: 'upsert', part: JSON.stringify(p) }, 5);
+          failedParts.splice(i, 1);
+        } catch(e) {
+          console.warn(`upsert 재시도 실패 (${p.name}):`, e.message);
+        }
+      }
+    }
+    failed = failedParts.length;
 
     if (failed > 0) {
       showSyncStatus(`저장 완료 (${partsData.length - failed}건 성공, ${failed}건 실패)`, 'error');
@@ -281,8 +298,10 @@ async function loadFromSheets(retry = true) {
       parts.forEach((p, i) => { p.globalNo = i + 1; });
       localStorage.setItem(STORAGE_KEY, JSON.stringify(parts));
       showSyncStatus(`Sheets에서 ${parts.length}건 불러옴`, 'success');
-      // 로컬 전용 항목 추가 또는 중복 제거가 있었다면 정리된 결과를 Sheets에도 반영
-      if (localOnlyParts.length > 0 || dedupRemoved > 0) syncToSheets();
+      // 로컬 전용 항목(Sheets에서 누락된 데이터)이 있다면 Sheets에 복원
+      // (중복 제거만 발생한 경우는 별도 동기화를 트리거하지 않음 — clearAll 이후
+      //  일부 upsert가 실패하면 데이터가 영구 손실될 수 있어, 불필요한 재동기화는 피함)
+      if (localOnlyParts.length > 0) syncToSheets();
       return true;
     }
     if (parts.length === 0) return await loadFromStaticFallback();
