@@ -262,6 +262,8 @@
 .part-card.is-sub .spec-divider { height: 26px; }
 /* SUB dim-box — 높이 통일 */
 .part-card.is-sub .dim-box { width: 54px; min-width: 54px; max-width: 54px; padding: 2px 3px; }
+/* 금형TYPE 칸은 ASSY/SUB 동일 너비 유지 */
+.part-card.is-sub .dim-box.dim-box-mold { width: 100px; min-width: 100px; max-width: 100px; padding: 2px 5px; }
 
 /* ══ 담당자 컬럼 (ASSY 카드 오른쪽 끝) ══════════════════════ */
 .part-manager-col {
