@@ -222,8 +222,46 @@ async function loadFromSheets(retry = true) {
       if (localOnlyParts.length > 0) syncToSheets();
       return true;
     }
+    if (parts.length === 0) return await loadFromStaticFallback();
     showSyncStatus('로컬 저장됨', 'success');
     return false;
+  } catch(e) {
+    console.warn('loadFromSheets 실패:', e.message);
+    // 네트워크/방화벽 등으로 Sheets 연동 자체가 막힌 PC 대비: 1회 재시도 후 정적 백업 데이터 사용
+    if (retry) {
+      await new Promise(r => setTimeout(r, 1500));
+      return loadFromSheets(false);
+    }
+    if (parts.length === 0) return await loadFromStaticFallback();
+    showSyncStatus('Sheets 불러오기 실패', 'error');
+    return false;
+  }
+}
+
+// ── Sheets 연동이 실패하고 로컬 데이터도 없는 신규 사용자를 위한 정적 백업 데이터 ──
+// (data/parts.json은 마지막으로 동기화된 데이터의 스냅샷이며, 새 사용자의 첫 화면을
+//  비어있지 않게 보여주기 위한 안전망입니다. 실시간 데이터는 Sheets 연동이 정상이면
+//  계속 갱신됩니다.)
+async function loadFromStaticFallback() {
+  try {
+    const res = await fetch('data/parts.json', { cache: 'no-store' });
+    if (!res.ok) throw new Error('status ' + res.status);
+    const json = await res.json();
+    if (!json.parts || json.parts.length === 0) {
+      showSyncStatus('Sheets 불러오기 실패', 'error');
+      return false;
+    }
+    json.parts.forEach(p => {
+      p.approvalDate = String(p.approvalDate || '');
+      p.displayId    = String(p.displayId || '');
+      p.isAssembly   = p.isAssembly === true || p.isAssembly === 'true';
+      p.isSub        = p.isSub === true || p.isSub === 'true';
+    });
+    parts = json.parts;
+    parts.forEach((p, i) => { p.globalNo = i + 1; });
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(parts));
+    showSyncStatus(`백업 데이터 ${parts.length}건 불러옴 (Sheets 연동 확인 필요)`, 'info');
+    return true;
   } catch(e) {
     showSyncStatus('Sheets 불러오기 실패', 'error');
     return false;
