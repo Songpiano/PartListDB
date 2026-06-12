@@ -35,9 +35,18 @@ let parts = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
   const isTestRecord = (p) => p.id === '__test_img__' || p.model === 'TESTMODEL' || p.code === 'TESTCODE';
   const seen = new Set();
   const before = parts.length;
+  // 중복 판정 키: CODE가 있으면 모델+CODE, 없으면 모델+품명
+  // (같은 부품을 다른 파일로 재업로드할 때 품명에 "(일관 2열)" 등 줄바꿈/표기 차이가
+  //  있어도 CODE NO.가 같으면 동일 부품으로 간주하여 중복 제거)
+  const dedupKey = (p) => {
+    const model = String(p.model||'').trim().toUpperCase();
+    const code = String(p.code||'').trim().toUpperCase();
+    if (code) return `${model}|${code}`;
+    return `${model}|${String(p.name||'').trim().replace(/\s+/g,' ').toUpperCase()}`;
+  };
   parts = parts.filter(p => {
     if (isGhost(p) || isTestRecord(p)) return false;
-    const key = `${String(p.model||'').trim()}|${String(p.name||'').trim().replace(/\s+/g,' ')}|${String(p.code||'').trim()}`.toUpperCase();
+    const key = dedupKey(p);
     if (seen.has(key)) return false;
     seen.add(key);
     return true;

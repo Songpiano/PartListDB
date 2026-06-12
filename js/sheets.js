@@ -220,7 +220,15 @@ async function loadFromSheets(retry = true) {
       }
       // 로컬에 저장된 imageUrl / moldType / manager 보존 (Sheets 스키마에 없는 필드는 응답에서 누락됨)
       // ID 기반 + (model|name|code) 정규화 키 기반 이중 매칭
-      const normKey = (p) => `${String(p.model||'').trim()}|${String(p.name||'').trim().replace(/\s+/g,' ')}|${String(p.code||'').trim()}`.toUpperCase();
+      // CODE가 있으면 모델+CODE, 없으면 모델+품명으로 동일 부품 판정
+      // (같은 부품을 다른 파일로 재업로드하면 품명에 "(일관 2열)" 등 표기 차이가
+      //  생길 수 있으나 CODE NO.는 동일하므로 이를 기준으로 중복을 잡아냄)
+      const normKey = (p) => {
+        const model = String(p.model||'').trim().toUpperCase();
+        const code = String(p.code||'').trim().toUpperCase();
+        if (code) return `${model}|${code}`;
+        return `${model}|${String(p.name||'').trim().replace(/\s+/g,' ').toUpperCase()}`;
+      };
       const PRESERVE_FIELDS = ['imageUrl', 'moldType', 'manager'];
       const localById = {};
       const localByKey = {};
@@ -248,7 +256,8 @@ async function loadFromSheets(retry = true) {
         parts = parts.concat(localOnlyParts);
         console.log('[sheets] Sheets에 없는 로컬 전용 항목 보존:', localOnlyParts.length, '건');
       }
-      // 동기화 과정에서 생긴 중복 항목 제거 (model|name|code 기준, 먼저 등장한 것 유지)
+      // 동기화 과정에서 생긴 중복 항목 제거 (model|code 또는 model|name 기준, 먼저 등장한 것 유지)
+      let dedupRemoved = 0;
       {
         const seenKeys = new Set();
         const beforeLen = parts.length;
@@ -258,8 +267,9 @@ async function loadFromSheets(retry = true) {
           seenKeys.add(key);
           return true;
         });
-        if (parts.length !== beforeLen) {
-          console.log('[sheets] 중복 항목 제거:', beforeLen - parts.length, '건');
+        dedupRemoved = beforeLen - parts.length;
+        if (dedupRemoved > 0) {
+          console.log('[sheets] 중복 항목 제거:', dedupRemoved, '건');
         }
       }
       // Sheets 저장 순서가 뒤틀릴 수 있으므로 uploadBatch → rowIndex 기준으로 재정렬
@@ -271,8 +281,8 @@ async function loadFromSheets(retry = true) {
       parts.forEach((p, i) => { p.globalNo = i + 1; });
       localStorage.setItem(STORAGE_KEY, JSON.stringify(parts));
       showSyncStatus(`Sheets에서 ${parts.length}건 불러옴`, 'success');
-      // 로컬 전용 항목을 Sheets에도 반영
-      if (localOnlyParts.length > 0) syncToSheets();
+      // 로컬 전용 항목 추가 또는 중복 제거가 있었다면 정리된 결과를 Sheets에도 반영
+      if (localOnlyParts.length > 0 || dedupRemoved > 0) syncToSheets();
       return true;
     }
     if (parts.length === 0) return await loadFromStaticFallback();
@@ -331,7 +341,15 @@ async function loadFromStaticFallback() {
     parts = json.parts;
     // 중복 항목 제거 (model|name|code 기준)
     {
-      const normKey = (p) => `${String(p.model||'').trim()}|${String(p.name||'').trim().replace(/\s+/g,' ')}|${String(p.code||'').trim()}`.toUpperCase();
+      // CODE가 있으면 모델+CODE, 없으면 모델+품명으로 동일 부품 판정
+      // (같은 부품을 다른 파일로 재업로드하면 품명에 "(일관 2열)" 등 표기 차이가
+      //  생길 수 있으나 CODE NO.는 동일하므로 이를 기준으로 중복을 잡아냄)
+      const normKey = (p) => {
+        const model = String(p.model||'').trim().toUpperCase();
+        const code = String(p.code||'').trim().toUpperCase();
+        if (code) return `${model}|${code}`;
+        return `${model}|${String(p.name||'').trim().replace(/\s+/g,' ').toUpperCase()}`;
+      };
       const seenKeys = new Set();
       parts = parts.filter(p => {
         const key = normKey(p);
