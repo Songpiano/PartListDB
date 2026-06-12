@@ -48,24 +48,33 @@ function handleFileUpload(e) {
         }
       }
 
-      // ── CAV / SET / 금형TYPE / 비고(담당자) 컬럼 인덱스 탐지 ──
-      let cavIdx = 16, setIdx = 17, managerIdx = -1, deliverIdx = -1, moldIdx = -1;
+      // ── CAV가 있는 실제 표 헤더 행을 먼저 찾음 (결재란 등 상단 타이틀 영역의 "담당자" 라벨과 혼동 방지) ──
+      let cavIdx = 16, setIdx = 17, managerIdx = -1, deliverIdx = -1, moldIdx = -1, headerRowIdx = -1;
       for (let r = 0; r < Math.min(15, rows.length); r++) {
         if (!rows[r]) continue;
         rows[r].forEach((cell, ci) => {
           const s = String(cell||'').replace(/[\s\n\r\t]/g,'').toUpperCase();
-          if (s === 'CAV') cavIdx = ci;
+          if (s === 'CAV') { cavIdx = ci; headerRowIdx = r; }
+        });
+      }
+      // 표 헤더 행(다단 헤더 대비 위/아래 1행 포함)에서만 컬럼 라벨 탐지
+      const headerRowsToScan = headerRowIdx >= 0
+        ? [headerRowIdx - 1, headerRowIdx, headerRowIdx + 1].filter(r => r >= 0 && r < rows.length && rows[r])
+        : rows.slice(0, 15).map((_, i) => i).filter(r => rows[r]); // CAV 못찾으면 기존 방식(상단 15행 전체) 대비
+      headerRowsToScan.forEach(r => {
+        rows[r].forEach((cell, ci) => {
+          const s = String(cell||'').replace(/[\s\n\r\t]/g,'').toUpperCase();
           if (s.includes('SET') && s.includes('소요')) setIdx = ci;
           if (s.includes('담당자')) managerIdx = ci;
           if (s === '비고') managerIdx = ci;           // 비고 컬럼 명시 감지
           if (s.includes('납품처') || s.includes('납품')) deliverIdx = ci;
           if (s.includes('금형')) moldIdx = ci;        // 금형TYPE 컬럼 감지
         });
-      }
+      });
       // 비고 컬럼 미감지 시 납품처 다음 컬럼으로 추정
       if (managerIdx === -1 && deliverIdx >= 0) managerIdx = deliverIdx + 1;
       if (managerIdx === -1) managerIdx = setIdx + 4;
-      console.log('[upload] managerIdx:', managerIdx, '(deliverIdx:', deliverIdx, ') moldIdx:', moldIdx);
+      console.log('[upload] headerRowIdx:', headerRowIdx, 'cavIdx:', cavIdx, 'setIdx:', setIdx, 'managerIdx:', managerIdx, '(deliverIdx:', deliverIdx, ') moldIdx:', moldIdx);
 
       // ── 기존 모델 존재 시 교체/추가 선택 모달 ──
       const existingCount = parts.filter(p => p.model === modelName).length;
