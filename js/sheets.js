@@ -126,14 +126,21 @@ async function syncToSheets() {
 
     await gasJsonpRetry({ action: 'clearAll' });
 
-    for (let i = 0; i < partsData.length; i++) {
-      try {
-        await gasJsonpRetry({ action: 'upsert', part: JSON.stringify(partsData[i]) });
-      } catch(e) {
-        failed++;
-        console.warn(`upsert 실패 (${partsData[i].name}):`, e.message);
-      }
-      if (i % 3 === 0) showSyncStatus(`저장 중... (${i+1}/${partsData.length})`, 'info');
+    // clearAll 이후 Sheets가 비어있는 시간을 최소화하기 위해 일정 개수씩 동시 요청
+    const CONCURRENCY = 5;
+    let completed = 0;
+    for (let i = 0; i < partsData.length; i += CONCURRENCY) {
+      const batch = partsData.slice(i, i + CONCURRENCY);
+      await Promise.all(batch.map(async (p) => {
+        try {
+          await gasJsonpRetry({ action: 'upsert', part: JSON.stringify(p) });
+        } catch(e) {
+          failed++;
+          console.warn(`upsert 실패 (${p.name}):`, e.message);
+        }
+        completed++;
+      }));
+      showSyncStatus(`저장 중... (${Math.min(completed, partsData.length)}/${partsData.length})`, 'info');
     }
 
     if (failed > 0) {
@@ -150,11 +157,16 @@ async function syncToSheets() {
   }
 }
 
-async function loadFromSheets() {
+async function loadFromSheets(retry = true) {
   if (!gasUrl) return false;
   showSyncStatus('Sheets에서 불러오는 중...', 'info');
   try {
     const json = await gasJsonp({ action: 'getAll' });
+    // Sheets가 동기화(clearAll→재upsert) 도중이라 일시적으로 비어있을 수 있음 — 잠시 후 한 번 재시도
+    if (json.ok && (!json.parts || json.parts.length === 0) && retry) {
+      await new Promise(r => setTimeout(r, 1500));
+      return loadFromSheets(false);
+    }
     if (json.ok && json.parts && json.parts.length > 0) {
       // 모든 필드를 안전하게 문자열/숫자 변환
       json.parts.forEach(p => {
