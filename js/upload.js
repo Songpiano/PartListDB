@@ -150,7 +150,15 @@ function processUpload(rows, modelName, xlsxImgMap, approvalDate, cavIdx, setIdx
     const trayQtyRaw = row[setIdx + 1];
     const trayQty   = isPkg && trayQtyRaw != null && trayQtyRaw !== '' ? trayQtyRaw : null;
     const colManagerRaw = managerIdx >= 0 && row[managerIdx] != null ? String(row[managerIdx]).trim() : '';
-    const colManagerVal = /^[-–—]+$/.test(colManagerRaw) ? '' : colManagerRaw;
+    let colManagerVal = /^[-–—]+$/.test(colManagerRaw) ? '' : colManagerRaw;
+    // 컬럼 인덱스가 빗나간 경우 대비: managerIdx 주변 ~ 행 끝까지 순수 한글 이름(2~5자) 탐색
+    if (!colManagerVal) {
+      const NAME_PAT = /^[가-힣]{2,5}$/;
+      for (let ci = row.length - 1; ci >= Math.max(0, managerIdx - 2); ci--) {
+        const v = String(row[ci]||'').trim();
+        if (NAME_PAT.test(v)) { colManagerVal = v; break; }
+      }
+    }
 
     parts.push({
       id: 'p_' + Date.now() + '_' + Math.random().toString(36).slice(2),
