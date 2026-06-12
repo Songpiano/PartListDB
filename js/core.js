@@ -23,7 +23,7 @@ applyTheme(currentTheme);
 const STORAGE_KEY = 'shieldcan_parts_v1';
 let parts = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
 
-// ── 손상/유령 데이터 정리 (이름은 있으나 코드·모델·NO가 모두 비어있는 항목 제거 + 중복 제거) ──
+// ── 손상/유령/테스트 데이터 정리 (이름은 있으나 코드·모델·NO가 모두 비어있는 항목 제거 + 중복 제거) ──
 (function cleanupGhostParts() {
   const isGhost = (p) => {
     const noCode = !p.code || !String(p.code).trim();
@@ -31,17 +31,28 @@ let parts = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
     const noDisplay = !p.displayId || !String(p.displayId).trim() || String(p.displayId).trim() === '-';
     return noCode && noModel && noDisplay;
   };
+  // Sheets 연동 점검 중 잘못 들어간 테스트 레코드 제거
+  const isTestRecord = (p) => p.id === '__test_img__' || p.model === 'TESTMODEL' || p.code === 'TESTCODE';
   const seen = new Set();
   const before = parts.length;
   parts = parts.filter(p => {
-    if (isGhost(p)) return false;
+    if (isGhost(p) || isTestRecord(p)) return false;
     const key = `${String(p.model||'').trim()}|${String(p.name||'').trim().replace(/\s+/g,' ')}|${String(p.code||'').trim()}`.toUpperCase();
     if (seen.has(key)) return false;
     seen.add(key);
     return true;
   });
+  // 정렬 복원: uploadBatch → rowIndex 순 (Sheets 동기화로 순서가 뒤틀린 경우 대비)
+  parts.sort((a, b) => {
+    const bA = Number(a.uploadBatch) || 0, bB = Number(b.uploadBatch) || 0;
+    if (bA !== bB) return bA - bB;
+    return (Number(a.rowIndex) || 0) - (Number(b.rowIndex) || 0);
+  });
+  parts.forEach((p, i) => { p.globalNo = i + 1; });
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(parts));
   if (parts.length !== before) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(parts));
+    // 테스트/유령 데이터가 제거됐다면 Sheets에도 반영 (gasUrl/syncToSheets 로드 이후 실행)
+    setTimeout(() => { if (typeof syncToSheets === 'function' && gasUrl) syncToSheets(); }, 0);
   }
 })();
 

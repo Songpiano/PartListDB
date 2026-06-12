@@ -248,6 +248,12 @@ async function loadFromSheets(retry = true) {
         parts = parts.concat(localOnlyParts);
         console.log('[sheets] Sheets에 없는 로컬 전용 항목 보존:', localOnlyParts.length, '건');
       }
+      // Sheets 저장 순서가 뒤틀릴 수 있으므로 uploadBatch → rowIndex 기준으로 재정렬
+      parts.sort((a, b) => {
+        const bA = Number(a.uploadBatch) || 0, bB = Number(b.uploadBatch) || 0;
+        if (bA !== bB) return bA - bB;
+        return (Number(a.rowIndex) || 0) - (Number(b.rowIndex) || 0);
+      });
       parts.forEach((p, i) => { p.globalNo = i + 1; });
       localStorage.setItem(STORAGE_KEY, JSON.stringify(parts));
       showSyncStatus(`Sheets에서 ${parts.length}건 불러옴`, 'success');
@@ -309,6 +315,11 @@ async function loadFromStaticFallback() {
       decodeMetaFromImage(p);
     });
     parts = json.parts;
+    parts.sort((a, b) => {
+      const bA = Number(a.uploadBatch) || 0, bB = Number(b.uploadBatch) || 0;
+      if (bA !== bB) return bA - bB;
+      return (Number(a.rowIndex) || 0) - (Number(b.rowIndex) || 0);
+    });
     parts.forEach((p, i) => { p.globalNo = i + 1; });
     localStorage.setItem(STORAGE_KEY, JSON.stringify(parts));
     showSyncStatus(`백업 데이터 ${parts.length}건 불러옴 (Sheets 연동 확인 필요)`, 'info');
