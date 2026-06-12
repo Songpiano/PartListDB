@@ -121,7 +121,15 @@ async function syncToSheets() {
   pendingSync = false;
   showSyncStatus('Sheets 동기화 중...', 'info');
   try {
-    const partsData = parts.map(p => ({ ...p, imageUrl: null }));
+    // Sheets 셀/URL 길이 제한(약 50,000자)을 넘는 이미지만 제외하고 나머지는 그대로 동기화
+    // (이전에는 imageUrl을 항상 null로 보내서, 전체 동기화 시마다 Sheets에 저장된
+    //  이미지가 매번 삭제되어 다른 PC에서 이미지가 사라지는 문제가 있었음)
+    const MAX_IMG_LEN = 40000;
+    const partsData = parts.map(p => {
+      const img = p.imageUrl;
+      const keepImg = typeof img === 'string' && img.length > 0 && img.length <= MAX_IMG_LEN;
+      return { ...p, imageUrl: keepImg ? img : null };
+    });
     let failed = 0;
 
     await gasJsonpRetry({ action: 'clearAll' });
