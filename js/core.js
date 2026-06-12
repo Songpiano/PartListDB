@@ -50,10 +50,11 @@ let parts = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
   });
   parts.forEach((p, i) => { p.globalNo = i + 1; });
   localStorage.setItem(STORAGE_KEY, JSON.stringify(parts));
-  if (parts.length !== before) {
-    // 테스트/유령 데이터가 제거됐다면 Sheets에도 반영 (gasUrl/syncToSheets 로드 이후 실행)
-    setTimeout(() => { if (typeof syncToSheets === 'function' && gasUrl) syncToSheets(); }, 0);
-  }
+  // 주의: 여기서 자동으로 syncToSheets()를 호출하지 않음.
+  // 페이지 로드 시점의 localStorage는 Sheets의 최신 데이터를 반영하기 전이므로,
+  // 이 시점에 clearAll+재업서트를 하면 오래된 로컬 스냅샷으로 Sheets를 덮어써
+  // 중복/누락 데이터가 발생함. 정리는 로컬에서만 수행하고, 실제 동기화는
+  // loadFromSheets() 이후 사용자가 데이터를 변경할 때(saveParts) 이루어짐.
 })();
 
 // 초기 로드 시 globalNo 재계산

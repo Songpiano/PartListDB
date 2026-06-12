@@ -152,7 +152,7 @@ async function syncToSheets() {
     // Sheets 셀/URL 길이 제한(약 50,000자)을 넘는 이미지만 제외하고 나머지는 그대로 동기화
     // (이전에는 imageUrl을 항상 null로 보내서, 전체 동기화 시마다 Sheets에 저장된
     //  이미지가 매번 삭제되어 다른 PC에서 이미지가 사라지는 문제가 있었음)
-    const MAX_IMG_LEN = 40000;
+    const MAX_IMG_LEN = 8000;
     const partsData = parts.map(p => ({ ...p, imageUrl: encodeMetaIntoImage(p, MAX_IMG_LEN) }));
     let failed = 0;
 
@@ -248,6 +248,20 @@ async function loadFromSheets(retry = true) {
         parts = parts.concat(localOnlyParts);
         console.log('[sheets] Sheets에 없는 로컬 전용 항목 보존:', localOnlyParts.length, '건');
       }
+      // 동기화 과정에서 생긴 중복 항목 제거 (model|name|code 기준, 먼저 등장한 것 유지)
+      {
+        const seenKeys = new Set();
+        const beforeLen = parts.length;
+        parts = parts.filter(p => {
+          const key = normKey(p);
+          if (seenKeys.has(key)) return false;
+          seenKeys.add(key);
+          return true;
+        });
+        if (parts.length !== beforeLen) {
+          console.log('[sheets] 중복 항목 제거:', beforeLen - parts.length, '건');
+        }
+      }
       // Sheets 저장 순서가 뒤틀릴 수 있으므로 uploadBatch → rowIndex 기준으로 재정렬
       parts.sort((a, b) => {
         const bA = Number(a.uploadBatch) || 0, bB = Number(b.uploadBatch) || 0;
@@ -315,6 +329,17 @@ async function loadFromStaticFallback() {
       decodeMetaFromImage(p);
     });
     parts = json.parts;
+    // 중복 항목 제거 (model|name|code 기준)
+    {
+      const normKey = (p) => `${String(p.model||'').trim()}|${String(p.name||'').trim().replace(/\s+/g,' ')}|${String(p.code||'').trim()}`.toUpperCase();
+      const seenKeys = new Set();
+      parts = parts.filter(p => {
+        const key = normKey(p);
+        if (seenKeys.has(key)) return false;
+        seenKeys.add(key);
+        return true;
+      });
+    }
     parts.sort((a, b) => {
       const bA = Number(a.uploadBatch) || 0, bB = Number(b.uploadBatch) || 0;
       if (bA !== bB) return bA - bB;
