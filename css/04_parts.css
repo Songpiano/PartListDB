@@ -241,7 +241,8 @@
 .dim-box {
   width: 54px; min-width: 54px; max-width: 54px;
 }
-.dim-box.dim-box-mold { width: 76px; min-width: 76px; max-width: 76px; }
+.dim-box.dim-box-mold { width: 100px; min-width: 100px; max-width: 100px; }
+.dim-box.dim-box-mold .dim-box-val { font-size: 12px; }
 
 .spec-label, .dim-box-label {
   font-family: var(--font-base);

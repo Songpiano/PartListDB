@@ -126,11 +126,10 @@ function renderParts() {
               <div class="dim-box-label">${d==='l'?'가로':d==='w'?'세로':'높이'}</div>
               <div class="dim-box-val">${p['dim_'+d]}</div>
             </div>`).join('')}
-          ${p.moldType && p.moldType !== '-' ? `
           <div class="dim-box dim-box-mold">
             <div class="dim-box-label">금형TYPE</div>
-            <div class="dim-box-val">${escHtml(p.moldType)}</div>
-          </div>` : ''}
+            <div class="dim-box-val">${p.moldType && p.moldType !== '-' ? escHtml(p.moldType) : '-'}</div>
+          </div>
           <div class="dim-box dim-box-accent">
             <div class="dim-box-label">CAV</div>
             <div class="dim-box-val">${p.cav != null && p.cav !== '-' ? escHtml(String(p.cav)) : '-'}</div>
