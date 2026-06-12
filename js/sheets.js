@@ -11,6 +11,34 @@ let gasUrl    = localStorage.getItem(GAS_URL_KEY) || GAS_DEFAULT_URL;
 if (!localStorage.getItem(GAS_URL_KEY)) localStorage.setItem(GAS_URL_KEY, GAS_DEFAULT_URL);
 let gasSyncing = false;
 
+// ── moldType/manager 등 Sheets 스키마에 없는 필드를 imageUrl 컬럼에 함께 인코딩 ──
+// (Sheets에 컬럼을 추가하지 않고도 금형TYPE/담당자를 다른 PC와 동기화하기 위함)
+const META_DELIM = '@@META@@';
+function encodeMetaIntoImage(p, maxLen) {
+  const img = (typeof p.imageUrl === 'string') ? p.imageUrl : '';
+  const meta = {};
+  if (p.moldType && p.moldType !== '-') meta.moldType = p.moldType;
+  if (p.manager) meta.manager = p.manager;
+  const metaStr = Object.keys(meta).length ? META_DELIM + JSON.stringify(meta) : '';
+  let combined = img + metaStr;
+  if (combined.length > maxLen) combined = metaStr; // 용량 초과 시 이미지 제외, 메타만 우선
+  return combined.length > 0 ? combined : null;
+}
+function decodeMetaFromImage(p) {
+  const raw = p.imageUrl;
+  if (typeof raw !== 'string') return;
+  const idx = raw.indexOf(META_DELIM);
+  if (idx < 0) return;
+  const imgPart  = raw.slice(0, idx);
+  const metaStr  = raw.slice(idx + META_DELIM.length);
+  try {
+    const meta = JSON.parse(metaStr);
+    if (meta.moldType) p.moldType = meta.moldType;
+    if (meta.manager)  p.manager  = meta.manager;
+  } catch(e) { /* ignore */ }
+  p.imageUrl = imgPart || null;
+}
+
 function initGasBadge() {
   const badge = document.getElementById('gasSyncBadge');
   if (!badge) return;
@@ -125,11 +153,7 @@ async function syncToSheets() {
     // (이전에는 imageUrl을 항상 null로 보내서, 전체 동기화 시마다 Sheets에 저장된
     //  이미지가 매번 삭제되어 다른 PC에서 이미지가 사라지는 문제가 있었음)
     const MAX_IMG_LEN = 40000;
-    const partsData = parts.map(p => {
-      const img = p.imageUrl;
-      const keepImg = typeof img === 'string' && img.length > 0 && img.length <= MAX_IMG_LEN;
-      return { ...p, imageUrl: keepImg ? img : null };
-    });
+    const partsData = parts.map(p => ({ ...p, imageUrl: encodeMetaIntoImage(p, MAX_IMG_LEN) }));
     let failed = 0;
 
     await gasJsonpRetry({ action: 'clearAll' });
@@ -182,6 +206,7 @@ async function loadFromSheets(retry = true) {
         p.displayId    = String(p.displayId || '');
         p.isAssembly   = p.isAssembly === true || p.isAssembly === 'true';
         p.isSub        = p.isSub === true || p.isSub === 'true';
+        decodeMetaFromImage(p); // imageUrl에 인코딩된 moldType/manager 분리
       });
       // 날짜 변환 오염 감지 — displayId가 ISO 날짜 형식이면 로컬 데이터 유지
       const isCorrupted = json.parts.some(p =>
@@ -281,6 +306,7 @@ async function loadFromStaticFallback() {
       p.displayId    = String(p.displayId || '');
       p.isAssembly   = p.isAssembly === true || p.isAssembly === 'true';
       p.isSub        = p.isSub === true || p.isSub === 'true';
+      decodeMetaFromImage(p);
     });
     parts = json.parts;
     parts.forEach((p, i) => { p.globalNo = i + 1; });
