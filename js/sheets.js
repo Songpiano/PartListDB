@@ -179,13 +179,19 @@ async function loadFromSheets() {
       const PRESERVE_FIELDS = ['imageUrl', 'moldType', 'manager'];
       const localById = {};
       const localByKey = {};
-      parts.forEach(p => {
+      const oldParts = parts;
+      oldParts.forEach(p => {
         localById[p.id] = p;
         localByKey[normKey(p)] = p;
       });
+
+      // Sheets 응답에 없는 로컬 전용 항목(아직 동기화 안 된 모델 등)은 유지
+      const sheetIds  = new Set(json.parts.map(p => p.id));
+      const sheetKeys = new Set(json.parts.map(p => normKey(p)));
+      const localOnlyParts = oldParts.filter(p => !sheetIds.has(p.id) && !sheetKeys.has(normKey(p)));
+
       parts = json.parts;
       parts.forEach((p, i) => {
-        p.globalNo = i + 1;
         const localP = localById[p.id] || localByKey[normKey(p)];
         if (!localP) return;
         PRESERVE_FIELDS.forEach(f => {
@@ -193,8 +199,15 @@ async function loadFromSheets() {
           if (isEmpty(p[f]) && !isEmpty(localP[f])) p[f] = localP[f];
         });
       });
+      if (localOnlyParts.length > 0) {
+        parts = parts.concat(localOnlyParts);
+        console.log('[sheets] Sheets에 없는 로컬 전용 항목 보존:', localOnlyParts.length, '건');
+      }
+      parts.forEach((p, i) => { p.globalNo = i + 1; });
       localStorage.setItem(STORAGE_KEY, JSON.stringify(parts));
       showSyncStatus(`Sheets에서 ${parts.length}건 불러옴`, 'success');
+      // 로컬 전용 항목을 Sheets에도 반영
+      if (localOnlyParts.length > 0) syncToSheets();
       return true;
     }
     showSyncStatus('로컬 저장됨', 'success');
