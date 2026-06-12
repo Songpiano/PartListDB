@@ -171,6 +171,7 @@
 }
 .tag.date { background: var(--green-dim); color: var(--text); border-color: rgba(34,211,160,0.2); cursor: pointer; }
 .tag.date:hover { border-color: var(--green); }
+.tag.mold { background: rgba(168,85,247,0.10); color: var(--text); border-color: rgba(168,85,247,0.25); }
 .tag.category-brk   { background: rgba(91,110,247,0.10); color: var(--text); border-color: rgba(91,110,247,0.2); }
 .tag.category-sub   { background: rgba(34,211,160,0.08); color: var(--text); border-color: rgba(34,211,160,0.2); }
 .tag.category-pkg   { background: rgba(245,158,11,0.10); color: var(--text); border-color: rgba(245,158,11,0.2); }

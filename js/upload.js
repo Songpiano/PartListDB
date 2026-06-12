@@ -48,8 +48,8 @@ function handleFileUpload(e) {
         }
       }
 
-      // ── CAV / SET / 비고(담당자) 컬럼 인덱스 탐지 ──
-      let cavIdx = 16, setIdx = 17, managerIdx = -1, deliverIdx = -1;
+      // ── CAV / SET / 금형TYPE / 비고(담당자) 컬럼 인덱스 탐지 ──
+      let cavIdx = 16, setIdx = 17, managerIdx = -1, deliverIdx = -1, moldIdx = -1;
       for (let r = 0; r < Math.min(15, rows.length); r++) {
         if (!rows[r]) continue;
         rows[r].forEach((cell, ci) => {
@@ -59,12 +59,13 @@ function handleFileUpload(e) {
           if (s.includes('담당자')) managerIdx = ci;
           if (s === '비고') managerIdx = ci;           // 비고 컬럼 명시 감지
           if (s.includes('납품처') || s.includes('납품')) deliverIdx = ci;
+          if (s.includes('금형')) moldIdx = ci;        // 금형TYPE 컬럼 감지
         });
       }
       // 비고 컬럼 미감지 시 납품처 다음 컬럼으로 추정
       if (managerIdx === -1 && deliverIdx >= 0) managerIdx = deliverIdx + 1;
       if (managerIdx === -1) managerIdx = setIdx + 4;
-      console.log('[upload] managerIdx:', managerIdx, '(deliverIdx:', deliverIdx, ')');
+      console.log('[upload] managerIdx:', managerIdx, '(deliverIdx:', deliverIdx, ') moldIdx:', moldIdx);
 
       // ── 기존 모델 존재 시 교체/추가 선택 모달 ──
       const existingCount = parts.filter(p => p.model === modelName).length;
@@ -74,17 +75,17 @@ function handleFileUpload(e) {
           `<strong>${modelName}</strong> 모델의 기존 파트 <strong>${existingCount}개</strong>가 있습니다.<br>어떻게 처리하시겠습니까?`;
         document.getElementById('replaceBtn').onclick = () => {
           closeReplaceModal();
-          processUpload(rows, modelName, xlsxImgMap, approvalDate, cavIdx, setIdx, managerIdx, true);
+          processUpload(rows, modelName, xlsxImgMap, approvalDate, cavIdx, setIdx, managerIdx, moldIdx, true);
         };
         document.getElementById('appendBtn').onclick = () => {
           closeReplaceModal();
-          processUpload(rows, modelName, xlsxImgMap, approvalDate, cavIdx, setIdx, managerIdx, false);
+          processUpload(rows, modelName, xlsxImgMap, approvalDate, cavIdx, setIdx, managerIdx, moldIdx, false);
         };
         document.getElementById('replaceModal').classList.add('open');
         return;
       }
 
-      processUpload(rows, modelName, xlsxImgMap, approvalDate, cavIdx, setIdx, managerIdx, false);
+      processUpload(rows, modelName, xlsxImgMap, approvalDate, cavIdx, setIdx, managerIdx, moldIdx, false);
 
     } catch(err) {
       console.error(err);
@@ -96,7 +97,7 @@ function handleFileUpload(e) {
 }
 
 // ─── CORE UPLOAD PROCESSING ───────────────────────────────────────────────────
-function processUpload(rows, modelName, xlsxImgMap, approvalDate, cavIdx, setIdx, managerIdx, replace) {
+function processUpload(rows, modelName, xlsxImgMap, approvalDate, cavIdx, setIdx, managerIdx, moldIdx, replace) {
   const isEmptyManager = (v) => !v || /^[-–—\s]+$/.test(v);
 
   // 교체 모드: 기존 모델 파트 전체 삭제
@@ -173,6 +174,7 @@ function processUpload(rows, modelName, xlsxImgMap, approvalDate, cavIdx, setIdx
       cav:       (row[cavIdx] != null && row[cavIdx] !== '') ? row[cavIdx] : '-',
       set_qty:   (row[setIdx] != null && row[setIdx] !== '') ? row[setIdx] : '-',
       tray_qty:  trayQty,
+      moldType:  moldIdx >= 0 && row[moldIdx] != null && String(row[moldIdx]).trim() !== '' ? String(row[moldIdx]).replace(/\n/g,' ').trim() : '-',
       manager:   colManagerVal,
       approvalDate,
       uploadBatch,
@@ -248,13 +250,14 @@ function downloadModelXlsx(modelName) {
   if (!modelParts.length) { alert('해당 모델의 파트가 없습니다.'); return; }
 
   const headers = ['NO', '제품구분', '품명', 'CODE NO.', '재질', '두께(T)', '폭(W)', '피치(P)', '밀도', '무게(kg)',
-    '가로', '세로', '높이', '무게(g)', '공정1', '공정2', 'CAV', 'SET당소요량', 'TRAY포장수량', '승인일자'];
+    '가로', '세로', '높이', '무게(g)', '공정1', '공정2', '금형TYPE', 'CAV', 'SET당소요량', 'TRAY포장수량', '승인일자'];
 
   const dataRows = modelParts.map(p => [
     p.displayId, p.category, p.name, p.code, p.material,
     p.thickness, p.width_raw, p.pitch, p.density ?? '-', p.weight_raw ?? '-',
     p.dim_l, p.dim_w, p.dim_h, p.weight_g,
     p.process1 ?? '-', p.process2 ?? '-',
+    p.moldType ?? '-',
     p.cav, p.set_qty, p.tray_qty ?? '-', p.approvalDate ?? '-'
   ]);
 
