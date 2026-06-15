@@ -3,34 +3,6 @@
 // 일괄 이미지 업로드, 연간 현황, 네비게이션
 // ============================================================
 
-const json = await gasGetRequest({ action: 'getAll' });
-    if (json.ok && json.parts && json.parts.length > 0) {
-      parts = json.parts;
-      parts.forEach((p, i) => { p.globalNo = i + 1; });
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(parts));
-      showSyncStatus(`Sheets에서 ${parts.length}건 불러옴`, 'success');
-      return true;
-    }
-    showSyncStatus('로컬 저장됨', 'success');
-    return false;
-  } catch(e) {
-    showSyncStatus('Sheets 불러오기 실패', 'error');
-    return false;
-  }
-}
-
-async function updateImageOnSheets(id, imageUrl) {
-  if (!gasUrl) return;
-  try { await gasPostForm({ action: 'updateImage', id, imageUrl: imageUrl || '' }); }
-  catch(e) { console.warn('이미지 Sheets 업데이트 실패:', e); }
-}
-
-async function updateFieldOnSheets(id, field, value) {
-  if (!gasUrl) return;
-  try { await gasPostForm({ action: 'updateField', id, field, value }); }
-  catch(e) { console.warn('필드 Sheets 업데이트 실패:', e); }
-}
-
 let bulkQueue = []; // [{ file, dataUrl, partId, partName, matched }]
 
 function openBulkModal() {
