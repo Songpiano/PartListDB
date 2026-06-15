@@ -122,6 +122,7 @@ function tryUnlock(e) {
     // 로컬 데이터 즉시 렌더링
     renderParts();
     renderStatus();
+    renderQna();
     // Sheets 연동 시 최신 데이터로 갱신
     if (gasUrl) {
       loadFromSheets().then(loaded => {
@@ -130,6 +131,7 @@ function tryUnlock(e) {
           renderStatus();
         }
       });
+      loadQnaFromSheets();
     }
   } else {
     const inp = document.getElementById('pwInput');
@@ -150,9 +152,12 @@ function switchTab(tab) {
   currentTab = tab;
   document.getElementById('panelList').style.display = tab === 'list' ? '' : 'none';
   document.getElementById('panelStatus').style.display = tab === 'status' ? '' : 'none';
+  document.getElementById('panelQna').style.display = tab === 'qna' ? '' : 'none';
   document.getElementById('tabList').className = 'tab-btn' + (tab === 'list' ? ' active' : '');
   document.getElementById('tabStatus').className = 'tab-btn' + (tab === 'status' ? ' active' : '');
+  document.getElementById('tabQna').className = 'tab-btn' + (tab === 'qna' ? ' active' : '');
   if (tab === 'status') renderStatus();
+  if (tab === 'qna') renderQna();
 }
 
 // ─── SYNC STATUS ──────────────────────────────────────────────────────────────

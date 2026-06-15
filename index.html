@@ -20,6 +20,7 @@
   <link rel="stylesheet" href="css/07_footer.css?v=20260609e">
   <link rel="stylesheet" href="css/08_theme-toggle.css?v=20260609e">
   <link rel="stylesheet" href="css/09_sheets-ui.css?v=20260609e">
+  <link rel="stylesheet" href="css/10_qna.css?v=20260615a">
 </head>
 <body>
 
@@ -83,6 +84,38 @@
 </div>
 
 <!-- GOOGLE SHEETS 연동 모달 -->
+<!-- QNA: 새 요청 작성 모달 -->
+<div class="modal-overlay" id="qnaModal">
+  <div class="modal-card qna-form-card">
+    <div class="modal-icon qna-icon">📝</div>
+    <div class="modal-title">새 요청 작성</div>
+    <form onsubmit="submitQna(event)">
+      <input type="text" id="qnaTitleInput" class="qna-input" placeholder="제목" required autocomplete="off" />
+      <textarea id="qnaContentInput" class="qna-textarea" placeholder="요청 내용을 입력해주세요" required></textarea>
+      <input type="text" id="qnaAuthorInput" class="qna-input" placeholder="작성자 (선택)" autocomplete="off" />
+      <div class="modal-actions">
+        <button type="button" class="modal-cancel" onclick="closeQnaModal()">취소</button>
+        <button type="submit" class="modal-confirm qna-confirm">등록</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- QNA: 답변 작성 모달 -->
+<div class="modal-overlay" id="qnaAnswerModal">
+  <div class="modal-card qna-form-card">
+    <div class="modal-icon qna-icon">💬</div>
+    <div class="modal-title">답변 작성</div>
+    <form onsubmit="submitAnswer(event)">
+      <textarea id="qnaAnswerInput" class="qna-textarea" placeholder="답변을 입력해주세요 (비워두면 '대기중' 상태로 돌아갑니다)"></textarea>
+      <div class="modal-actions">
+        <button type="button" class="modal-cancel" onclick="closeAnswerModal()">취소</button>
+        <button type="submit" class="modal-confirm qna-confirm">저장</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <div class="gas-modal-overlay" id="gasModal">
   <div class="gas-modal">
     <div class="gas-modal-title">🔗 Google Sheets 연동</div>
@@ -169,6 +202,10 @@
       <button class="tab-btn" id="tabList" onclick="switchTab('list')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
         부품 리스트
+      </button>
+      <button class="tab-btn" id="tabQna" onclick="switchTab('qna')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><path d="M21 11.5a8.38 8.38 0 01-1.9 5.4L21 21l-4.1-1.1a8.38 8.38 0 01-5.4 1.9 8.5 8.5 0 110-17 8.5 8.5 0 018.5 8.5z"/></svg>
+        요청 게시판
       </button>
     </div>
 
@@ -259,6 +296,23 @@
     </main>
   </div>
 
+  <!-- QNA TAB -->
+  <div id="panelQna" style="display:none;">
+    <main>
+      <div class="status-header qna-header">
+        <div>
+          <h2>요청 게시판</h2>
+          <p>원하는 기능, 데이터 추가/수정 요청 등을 자유롭게 남겨주세요.</p>
+        </div>
+        <button class="btn" onclick="openQnaModal()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          새 요청 작성
+        </button>
+      </div>
+      <div class="qna-list" id="qnaList"></div>
+    </main>
+  </div>
+
   <footer>
     <div class="footer-text">Part List Database • Local Persistent Storage</div>
     <div style="display:flex;align-items:center;gap:10px;">
@@ -278,6 +332,7 @@
   <script src="js/xlsx-image.js?v=20260609g"></script>
   <script src="js/sheets.js?v=20260609s"></script>
   <script src="js/bulk.js?v=20260609h"></script>
+  <script src="js/qna.js?v=20260615a"></script>
 
 </body>
 </html>

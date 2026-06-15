@@ -9,6 +9,12 @@ const HEADERS = [
   'approvalDate','uploadBatch','rowIndex','createdAt','imageUrl'
 ];
 
+// ── 요청 게시판(Q&A) 시트 ──
+const QNA_SHEET_NAME = 'QnA';
+const QNA_HEADERS = [
+  'id','title','content','author','status','answer','createdAt','answeredAt'
+];
+
 function doGet(e) {
   const action   = e.parameter.action;
   const callback = e.parameter.callback;
@@ -21,6 +27,10 @@ function doGet(e) {
     else if (action === 'updateField') result = updateField(e.parameter.id, e.parameter.field, e.parameter.value);
     else if (action === 'uploadImage') result = uploadImageToDrive(e.parameter.id, e.parameter.imageData);
     else if (action === 'deleteImage') result = deleteImageFromDrive(e.parameter.id);
+    else if (action === 'getQna')      result = getAllQna();
+    else if (action === 'addQna')      result = addQna(e.parameter);
+    else if (action === 'answerQna')   result = answerQna(e.parameter);
+    else if (action === 'deleteQna')   result = deleteQna(e.parameter.id);
     else result = { ok: false, error: 'unknown action' };
   } catch(err) {
     result = { ok: false, error: err.message };
@@ -42,6 +52,10 @@ function doPost(e) {
     if      (action === 'uploadImage') result = uploadImageToDrive(e.parameter.id, e.parameter.imageData);
     else if (action === 'deleteImage') result = deleteImageFromDrive(e.parameter.id);
     else if (action === 'upsert')      result = upsert(e.parameter);
+    else if (action === 'getQna')      result = getAllQna();
+    else if (action === 'addQna')      result = addQna(e.parameter);
+    else if (action === 'answerQna')   result = answerQna(e.parameter);
+    else if (action === 'deleteQna')   result = deleteQna(e.parameter.id);
     else result = { ok: false, error: 'unknown action' };
   } catch(err) {
     result = { ok: false, error: err.message };
@@ -189,4 +203,77 @@ function deleteImageFromDrive(id) {
   }
   updateField(id, 'imageUrl', '');
   return { ok: true, found };
+}
+
+// ── 요청 게시판(Q&A) ──────────────────────────────────────────
+function getQnaSheet() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName(QNA_SHEET_NAME);
+  if (!sheet) {
+    sheet = ss.insertSheet(QNA_SHEET_NAME);
+    sheet.getRange(1, 1, 1, QNA_HEADERS.length).setValues([QNA_HEADERS]);
+  }
+  return sheet;
+}
+
+function getAllQna() {
+  const sheet = getQnaSheet();
+  const rows  = sheet.getDataRange().getValues();
+  if (rows.length <= 1) return { ok: true, qna: [] };
+  const headers = rows[0];
+  const qna = rows.slice(1)
+    .filter(row => row[headers.indexOf('id')]) // 빈 행 제외
+    .map(row => {
+      const obj = {};
+      headers.forEach((h, i) => {
+        const v = row[i];
+        obj[h] = v instanceof Date ? v.toISOString() : v;
+      });
+      return obj;
+    });
+  return { ok: true, qna };
+}
+
+function addQna(params) {
+  const post  = JSON.parse(params.post || '{}');
+  const sheet = getQnaSheet();
+  const row = QNA_HEADERS.map(h => {
+    const v = post[h];
+    if (v === undefined || v === null) return '';
+    return String(v);
+  });
+  sheet.getRange(sheet.getLastRow() + 1, 1, 1, QNA_HEADERS.length).setValues([row]);
+  return { ok: true };
+}
+
+function answerQna(params) {
+  const sheet   = getQnaSheet();
+  const data    = sheet.getDataRange().getValues();
+  const headers = data[0];
+  const idCol     = headers.indexOf('id');
+  const answerCol = headers.indexOf('answer');
+  const statusCol = headers.indexOf('status');
+  const answeredAtCol = headers.indexOf('answeredAt');
+  for (let i = 1; i < data.length; i++) {
+    if (String(data[i][idCol]) === String(params.id)) {
+      sheet.getRange(i+1, answerCol+1).setValue(String(params.answer || ''));
+      sheet.getRange(i+1, statusCol+1).setValue(String(params.status || '대기'));
+      sheet.getRange(i+1, answeredAtCol+1).setValue(String(params.answeredAt || ''));
+      return { ok: true };
+    }
+  }
+  return { ok: false, error: 'not found' };
+}
+
+function deleteQna(id) {
+  const sheet   = getQnaSheet();
+  const data    = sheet.getDataRange().getValues();
+  const idCol   = data[0].indexOf('id');
+  for (let i = 1; i < data.length; i++) {
+    if (String(data[i][idCol]) === String(id)) {
+      sheet.deleteRow(i+1);
+      return { ok: true };
+    }
+  }
+  return { ok: false, error: 'not found' };
 }

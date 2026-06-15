@@ -1,0 +1,162 @@
+/* ================================================================
+   Part List Database — 10_qna.css
+   요청 게시판 (Q&A)
+================================================================ */
+
+.qna-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.qna-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 20px;
+}
+
+.qna-empty {
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--text3);
+  font-size: 14px;
+  border: 1px dashed var(--border2);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.qna-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--border2);
+  border-radius: var(--radius-sm);
+  padding: 18px 22px;
+  transition: border-color 0.2s, transform 0.2s;
+}
+.qna-card.pending { border-left-color: var(--accent2); }
+.qna-card.done    { border-left-color: var(--green); }
+.qna-card:hover   { transform: translateY(-2px); }
+
+.qna-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.qna-status-badge {
+  font-size: 11px;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 999px;
+  letter-spacing: 0.02em;
+}
+.qna-status-badge.pending { background: var(--accent-glow); color: var(--accent2); }
+.qna-status-badge.done    { background: var(--green-dim); color: var(--green); }
+
+.qna-date {
+  font-size: 11px;
+  color: var(--text3);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.qna-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+.qna-content {
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.6;
+  margin-bottom: 10px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.qna-author {
+  font-size: 11px;
+  color: var(--text3);
+  margin-bottom: 12px;
+}
+
+.qna-answer {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin-bottom: 12px;
+}
+.qna-answer-label {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--green);
+  margin-bottom: 4px;
+}
+.qna-answer-text {
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.qna-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.btn-qna-answer, .btn-qna-delete {
+  font-family: 'Pretendard', 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid var(--border2);
+  background: var(--surface2);
+  color: var(--text2);
+}
+.btn-qna-answer:hover { border-color: var(--accent2); color: var(--accent2); }
+.btn-qna-delete:hover { border-color: var(--rose); color: var(--rose); }
+
+/* ── QNA 모달 폼 ── */
+.qna-form-card {
+  max-width: 460px;
+  text-align: left;
+}
+.qna-form-card .modal-title { text-align: center; margin-bottom: 20px; }
+.qna-icon { background: var(--accent-glow); border: 1px solid rgba(91,110,247,0.3); }
+
+.qna-input, .qna-textarea {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  font-family: 'Pretendard', 'Inter', sans-serif;
+  font-size: 13px;
+  color: var(--text);
+  margin-bottom: 10px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.qna-input:focus, .qna-textarea:focus { border-color: var(--accent2); }
+.qna-textarea {
+  resize: vertical;
+  min-height: 110px;
+  line-height: 1.6;
+}
+
+.qna-confirm {
+  background: var(--accent) !important;
+  box-shadow: 0 6px 18px var(--accent-glow) !important;
+}
