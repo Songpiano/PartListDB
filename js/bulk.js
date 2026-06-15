@@ -101,18 +101,33 @@ function renderBulkResults() {
   document.getElementById('bulkApplyBtn').disabled = matchedCount === 0;
 }
 
-function bulkApply() {
+async function bulkApply() {
   const toApply = bulkQueue.filter(q => q.matched);
   if (!toApply.length) return;
 
+  // 즉시 미리보기 (base64)
   toApply.forEach(q => {
     const part = parts.find(p => p.id === q.partId);
     if (part) part.imageUrl = q.dataUrl;
   });
-
-  saveParts();
   renderParts();
   closeBulkModal();
+
+  if (gasUrl) {
+    // Google Drive에 순차 업로드하여 영구 링크로 교체 (모든 PC에서 보이도록)
+    showSyncStatus(`이미지 ${toApply.length}개 업로드 중...`, 'info');
+    let uploaded = 0, failed = 0;
+    for (const q of toApply) {
+      const part = parts.find(p => p.id === q.partId);
+      if (!part) continue;
+      const driveUrl = await uploadImageToDrive(q.partId, q.dataUrl);
+      if (driveUrl) { part.imageUrl = driveUrl; uploaded++; }
+      else failed++;
+    }
+    renderParts();
+  }
+
+  saveParts();
   showSyncStatus(`이미지 ${toApply.length}개 저장됨`, 'success');
 }
 function navigateToModel(model) {

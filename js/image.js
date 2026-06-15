@@ -14,14 +14,25 @@ function handleImgDrop(e, id) {
 }
 function loadImg(id, file) {
   const reader = new FileReader();
-  reader.onloadend = () => {
+  reader.onloadend = async () => {
     const part = parts.find(p=>p.id===id);
-    if (part) {
-      part.imageUrl = reader.result;
-      saveParts();
-      renderParts();
-      if (gasUrl) updateImageOnSheets(id, reader.result);
+    if (!part) return;
+    // 즉시 미리보기 (base64)
+    part.imageUrl = reader.result;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(parts));
+    renderParts();
+    if (gasUrl) {
+      // Google Drive에 업로드하여 영구 링크로 교체 (모든 PC에서 보이도록)
+      showSyncStatus('이미지 업로드 중...', 'info');
+      const driveUrl = await uploadImageToDrive(id, reader.result);
+      if (driveUrl) {
+        part.imageUrl = driveUrl;
+        renderParts();
+      } else {
+        showSyncStatus('이미지 업로드 실패 (이 PC에만 표시됨)', 'error');
+      }
     }
+    saveParts();
   };
   reader.readAsDataURL(file);
 }
@@ -31,7 +42,7 @@ function removeImage(id) {
     part.imageUrl = null;
     saveParts();
     renderParts();
-    if (gasUrl) updateImageOnSheets(id, null);
+    if (gasUrl) deleteImageFromDrive(id);
   }
 }
 function openZoom(id) {
