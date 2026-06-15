@@ -165,7 +165,7 @@
   /* ── 월별 승인 현황 그래프 ── */
   .monthly-chart { margin-top: 24px; padding: 20px 24px; background: var(--surface2); border-radius: 14px; border: 1px solid var(--border); }
   .monthly-chart-title { font-family: var(--font-base,'Pretendard',sans-serif); font-size: 15px; font-weight: 800; color: var(--text); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
-  .monthly-chart-total { font-size: 12px; font-weight: 800; color: var(--accent); background: var(--accent-glow); border: 1px solid rgba(91,110,247,0.3); border-radius: 999px; padding: 3px 12px; }
+  .monthly-chart-total { font-family: var(--font-base,'Pretendard',sans-serif); font-size: 15px; font-weight: 800; color: var(--text); background: var(--accent-glow); border: 1px solid rgba(91,110,247,0.3); border-radius: 999px; padding: 3px 12px; }
   .monthly-line-wrap { width: 100%; }
   .monthly-line-svg { width: 100%; height: auto; display: block; overflow: visible; }
   .monthly-dot { transition: r 0.15s; }
