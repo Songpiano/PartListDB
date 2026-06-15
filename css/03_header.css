@@ -36,6 +36,7 @@
     padding: 2px 8px; border-radius: 5px; color: var(--text3); margin-top: 2px;
   }
   .brand-sub { font-family: var(--font-base, 'Pretendard', sans-serif); font-size: 10px; color: var(--text3); font-weight: 600; margin-top: 2px; }
+  .brand-desc { font-family: var(--font-base, 'Pretendard', sans-serif); font-size: 10px; color: var(--accent2); font-weight: 700; margin-top: 1px; }
 
   .tab-bar {
     background: var(--bg);
