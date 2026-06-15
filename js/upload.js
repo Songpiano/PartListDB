@@ -25,6 +25,88 @@ function processFileQueue(files, index, summary) {
   processSingleFile(file, summary, next);
 }
 
+// ── 업로드 데이터 검증: NO 순서 / 아이템군 분류 규칙 ──────────────────────────
+const VALID_CATEGORIES = [
+  'SMD SHIELD CAN류 완제품',
+  'SMD SHIELD CAN류 반제품',
+  'BRK류 완제품',
+  'BRK류 반제품',
+  'SMD PLATE류 완제품',
+  'SMD PLATE류 반제품',
+  'CAM DECO류 완제품',
+  'CAM DECO류 반제품',
+  '부자재',
+  '포장재'
+];
+
+function isUploadHeaderRow(row) {
+  if (!row || row.length < 3) return true;
+  const no = String(row[0]||'').trim();
+  return !/^\d+$/.test(no) && !/^\d+-\d+$/.test(no);
+}
+
+// 규칙 1: 상위코드(1,2,3...)와 하위코드(1-1,1-2,1-3...)가 빠짐없이 순서대로 이어지는지 검증
+function validateNoSequence(rows) {
+  const mains = [];
+  const subsByMain = {};
+  rows.forEach(row => {
+    if (isUploadHeaderRow(row)) return;
+    const no = String(row[0]).trim();
+    const name = String(row[2]||'').trim();
+    const code = String(row[3]||'').trim();
+    if (!name && !code) return;
+    const m1 = no.match(/^(\d+)$/);
+    const m2 = no.match(/^(\d+)-(\d+)$/);
+    if (m1) {
+      mains.push(parseInt(m1[1], 10));
+    } else if (m2) {
+      const main = parseInt(m2[1], 10), sub = parseInt(m2[2], 10);
+      (subsByMain[main] = subsByMain[main] || []).push(sub);
+    }
+  });
+
+  const sortedMains = [...new Set(mains)].sort((a,b) => a - b);
+  for (let i = 0; i < sortedMains.length; i++) {
+    if (sortedMains[i] !== i + 1) {
+      return { valid: false, message:
+        `상위 코드(NO)의 순서가 1, 2, 3... 순서로 빠짐없이 이어지지 않습니다.\n` +
+        `(감지된 NO: ${sortedMains.join(', ') || '없음'})` };
+    }
+  }
+  for (const main of Object.keys(subsByMain)) {
+    const subs = [...new Set(subsByMain[main])].sort((a,b) => a - b);
+    for (let i = 0; i < subs.length; i++) {
+      if (subs[i] !== i + 1) {
+        return { valid: false, message:
+          `${main}번 항목의 하위 코드(NO)가 ${main}-1, ${main}-2... 순서로 빠짐없이 이어지지 않습니다.\n` +
+          `(감지된 하위 NO: ${subs.map(s => main + '-' + s).join(', ')})` };
+      }
+    }
+  }
+  return { valid: true };
+}
+
+// 규칙 2: 아이템군(제품구분) 분류가 정해진 목록에 속하는지 검증
+function validateCategories(rows) {
+  const invalid = new Set();
+  rows.forEach(row => {
+    if (isUploadHeaderRow(row)) return;
+    const name = String(row[2]||'').trim();
+    const code = String(row[3]||'').trim();
+    if (!name && !code) return;
+    const category = String(row[1]||'').trim();
+    if (!VALID_CATEGORIES.includes(category)) {
+      invalid.add(`NO ${String(row[0]).trim()}: "${category || '(빈칸)'}"`);
+    }
+  });
+  if (invalid.size > 0) {
+    return { valid: false, message:
+      `아이템군(제품구분) 분류가 올바르지 않은 항목이 있습니다:\n${[...invalid].join('\n')}\n\n` +
+      `허용되는 분류:\n${VALID_CATEGORIES.join(', ')}` };
+  }
+  return { valid: true };
+}
+
 function processSingleFile(file, summary, next) {
   const reader = new FileReader();
   reader.onload = async (ev) => {
@@ -33,6 +115,22 @@ function processSingleFile(file, summary, next) {
       const wb = XLSX.read(data, { type: 'array' });
       const ws = wb.Sheets[wb.SheetNames[0]];
       const rows = XLSX.utils.sheet_to_json(ws, { header: 1 });
+
+      // ── 등록 규칙 검증: 위반 시 등록 불가 처리 ──
+      const noCheck = validateNoSequence(rows);
+      if (!noCheck.valid) {
+        alert(`[${file.name}] 파트리스트 오류로 등록할 수 없습니다.\n\n${noCheck.message}`);
+        showSyncStatus(`등록 불가: ${file.name} (NO 순서 오류)`, 'error');
+        next();
+        return;
+      }
+      const catCheck = validateCategories(rows);
+      if (!catCheck.valid) {
+        alert(`[${file.name}] 파트리스트 품명을 확인해주세요. 등록할 수 없습니다.\n\n${catCheck.message}`);
+        showSyncStatus(`등록 불가: ${file.name} (아이템군 분류 오류)`, 'error');
+        next();
+        return;
+      }
 
       // ── 엑셀 내장 이미지 추출 + 도형 텍스트에서 담당자 추출 ──
       const xlsxImgMap = {};

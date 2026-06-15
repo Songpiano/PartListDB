@@ -101,13 +101,12 @@ function renderParts() {
         <div class="part-main">
           <div class="part-tags">
             <span class="tag ${catCls}">${categoryEmoji(catCls)} ${escHtml(catLabel)}</span>
-            ${!isSub ? `<span class="tag date" onclick="startEdit('${p.id}','approvalDate')" title="클릭하여 편집">
+            ${!isSub ? `<span class="tag date">
               📅 승인 일자 <span id="field_${p.id}_approvalDate">${escHtml(p.approvalDate||'–')}</span>
             </span>` : ''}
           </div>
-          <div class="part-name" onclick="startEdit('${p.id}','name')">
+          <div class="part-name">
             <span class="part-field-label">품명 :</span> <span id="field_${p.id}_name">${escHtml(p.name)}</span>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
           </div>
           <div class="part-code">CODE: ${escHtml(p.code)}</div>
         </div>
