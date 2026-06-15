@@ -243,7 +243,30 @@ function addQna(params) {
     return String(v);
   });
   sheet.getRange(sheet.getLastRow() + 1, 1, 1, QNA_HEADERS.length).setValues([row]);
+  notifyNewQna(post);
   return { ok: true };
+}
+
+// ── 새 요청 등록 시 관리자에게 메일 알림 ──
+// 받을 주소는 코드에 직접 적지 않고, Apps Script "프로젝트 설정 > 스크립트 속성"에
+// ADMIN_EMAIL 값으로 등록해두면 자동으로 사용됩니다. (속성을 등록하지 않으면 메일 발송을 건너뜁니다)
+function notifyNewQna(post) {
+  try {
+    const email = PropertiesService.getScriptProperties().getProperty('ADMIN_EMAIL');
+    if (!email) return;
+    MailApp.sendEmail({
+      to: email,
+      subject: '[PartListDB] 새 요청: ' + (post.title || '(제목 없음)'),
+      body:
+        '요청 게시판에 새 글이 등록되었습니다.\n\n' +
+        '제목: ' + (post.title || '') + '\n' +
+        '내용: ' + (post.content || '') + '\n' +
+        '작성자: ' + (post.author || '익명') + '\n\n' +
+        '바로가기: https://songpiano.github.io/PartListDB/'
+    });
+  } catch(e) {
+    // 메일 발송 실패는 무시 (요청 등록 자체는 정상 처리)
+  }
 }
 
 function answerQna(params) {
