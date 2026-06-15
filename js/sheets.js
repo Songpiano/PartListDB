@@ -5,10 +5,17 @@
 
 // ─── GOOGLE SHEETS 연동 ───────────────────────────────────────────────────────
 const GAS_URL_KEY = 'partlist_gas_url';
-const GAS_DEFAULT_URL = 'https://script.google.com/macros/s/AKfycbw23LS1mGOh27Nm51WKS_bzdX2os2EPigpZyBgbKcQR03RT1ipKHFXdKRKz68iCZ0sS/exec';
-let gasUrl    = localStorage.getItem(GAS_URL_KEY) || GAS_DEFAULT_URL;
-// 기본 URL을 localStorage에 저장
-if (!localStorage.getItem(GAS_URL_KEY)) localStorage.setItem(GAS_URL_KEY, GAS_DEFAULT_URL);
+// 이미지 Drive 업로드 기능 추가로 재배포된 새 URL
+const GAS_DEFAULT_URL = 'https://script.google.com/macros/s/AKfycbxoQ-WC1pSaA8KjBaKprcECbyP7GqDv31VL_1g7OQjeT_C6B_KxCtcP-fvpZU-BtraO/exec';
+// 예전 배포 URL들 — localStorage에 캐시되어 있으면 새 URL로 자동 교체
+const GAS_OLD_DEFAULT_URLS = [
+  'https://script.google.com/macros/s/AKfycbw23LS1mGOh27Nm51WKS_bzdX2os2EPigpZyBgbKcQR03RT1ipKHFXdKRKz68iCZ0sS/exec'
+];
+let gasUrl = localStorage.getItem(GAS_URL_KEY);
+if (!gasUrl || GAS_OLD_DEFAULT_URLS.includes(gasUrl)) {
+  gasUrl = GAS_DEFAULT_URL;
+  localStorage.setItem(GAS_URL_KEY, GAS_DEFAULT_URL);
+}
 let gasSyncing = false;
 
 // ── moldType/manager 등 Sheets 스키마에 없는 필드를 imageUrl 컬럼에 함께 인코딩 ──
