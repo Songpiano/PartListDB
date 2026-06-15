@@ -240,12 +240,7 @@ async function loadFromSheets(retry = true) {
       // CODE가 있으면 모델+CODE, 없으면 모델+품명으로 동일 부품 판정
       // (같은 부품을 다른 파일로 재업로드하면 품명에 "(일관 2열)" 등 표기 차이가
       //  생길 수 있으나 CODE NO.는 동일하므로 이를 기준으로 중복을 잡아냄)
-      const normKey = (p) => {
-        const model = String(p.model||'').trim().toUpperCase();
-        const code = String(p.code||'').trim().toUpperCase();
-        if (code) return `${model}|${code}`;
-        return `${model}|${String(p.name||'').trim().replace(/\s+/g,' ').toUpperCase()}`;
-      };
+      const normKey = partDedupKey;
       const PRESERVE_FIELDS = ['imageUrl', 'moldType', 'manager'];
       const localById = {};
       const localByKey = {};
@@ -273,29 +268,13 @@ async function loadFromSheets(retry = true) {
         parts = parts.concat(localOnlyParts);
         console.log('[sheets] Sheets에 없는 로컬 전용 항목 보존:', localOnlyParts.length, '건');
       }
-      // 동기화 과정에서 생긴 중복 항목 제거 (model|code 또는 model|name 기준, 먼저 등장한 것 유지)
-      let dedupRemoved = 0;
-      {
-        const seenKeys = new Set();
-        const beforeLen = parts.length;
-        parts = parts.filter(p => {
-          const key = normKey(p);
-          if (seenKeys.has(key)) return false;
-          seenKeys.add(key);
-          return true;
-        });
-        dedupRemoved = beforeLen - parts.length;
-        if (dedupRemoved > 0) {
-          console.log('[sheets] 중복 항목 제거:', dedupRemoved, '건');
-        }
+      // 동기화 과정에서 생긴 중복 항목을 병합 제거하고, 모델별로 묶어 NO 순서대로 정렬
+      const beforeLen = parts.length;
+      parts = dedupAndSortParts(parts);
+      const dedupRemoved = beforeLen - parts.length;
+      if (dedupRemoved > 0) {
+        console.log('[sheets] 중복 항목 제거:', dedupRemoved, '건');
       }
-      // Sheets 저장 순서가 뒤틀릴 수 있으므로 uploadBatch → rowIndex 기준으로 재정렬
-      parts.sort((a, b) => {
-        const bA = Number(a.uploadBatch) || 0, bB = Number(b.uploadBatch) || 0;
-        if (bA !== bB) return bA - bB;
-        return (Number(a.rowIndex) || 0) - (Number(b.rowIndex) || 0);
-      });
-      parts.forEach((p, i) => { p.globalNo = i + 1; });
       localStorage.setItem(STORAGE_KEY, JSON.stringify(parts));
       showSyncStatus(`Sheets에서 ${parts.length}건 불러옴`, 'success');
       // 로컬 전용 항목(Sheets에서 누락된 데이터)이 있다면 Sheets에 복원
@@ -358,31 +337,8 @@ async function loadFromStaticFallback() {
       decodeMetaFromImage(p);
     });
     parts = json.parts;
-    // 중복 항목 제거 (model|name|code 기준)
-    {
-      // CODE가 있으면 모델+CODE, 없으면 모델+품명으로 동일 부품 판정
-      // (같은 부품을 다른 파일로 재업로드하면 품명에 "(일관 2열)" 등 표기 차이가
-      //  생길 수 있으나 CODE NO.는 동일하므로 이를 기준으로 중복을 잡아냄)
-      const normKey = (p) => {
-        const model = String(p.model||'').trim().toUpperCase();
-        const code = String(p.code||'').trim().toUpperCase();
-        if (code) return `${model}|${code}`;
-        return `${model}|${String(p.name||'').trim().replace(/\s+/g,' ').toUpperCase()}`;
-      };
-      const seenKeys = new Set();
-      parts = parts.filter(p => {
-        const key = normKey(p);
-        if (seenKeys.has(key)) return false;
-        seenKeys.add(key);
-        return true;
-      });
-    }
-    parts.sort((a, b) => {
-      const bA = Number(a.uploadBatch) || 0, bB = Number(b.uploadBatch) || 0;
-      if (bA !== bB) return bA - bB;
-      return (Number(a.rowIndex) || 0) - (Number(b.rowIndex) || 0);
-    });
-    parts.forEach((p, i) => { p.globalNo = i + 1; });
+    // 중복 항목 병합 제거 + 모델별 그룹화 + NO 순서 정렬
+    parts = dedupAndSortParts(parts);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(parts));
     showSyncStatus(`백업 데이터 ${parts.length}건 불러옴 (Sheets 연동 확인 필요)`, 'info');
     return true;
