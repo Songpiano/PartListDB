@@ -285,7 +285,7 @@ function renderStatus() {
 
         <!-- 월별 승인 모델 그래프 -->
         <div class="monthly-chart">
-          <div class="monthly-chart-title">📅 월별 승인 현황</div>
+          <div class="monthly-chart-title">📅 월별 승인 현황 <span class="monthly-chart-total">총 ${modelList.length}개 모델 승인완료</span></div>
           ${(()=>{
             const months = Array.from({length:12},(_,i)=>{
               const m = String(i+1).padStart(2,'0');
