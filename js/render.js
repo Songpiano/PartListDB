@@ -47,11 +47,13 @@ function renderParts() {
     }
   });
 
-  grid.innerHTML = filtered.map(p => {
+  let gridHtml = '';
+  let inSubGroup = false;
+  filtered.forEach(p => {
     const isAssy = p.isAssembly;
     const isSub  = p.isSub;
     const hasSubs = isAssy && assyHasSubs.has(p.id);
-    const cardClass = `part-card${isAssy ? ' is-assembly' : ''}${isSub ? ' is-sub' : ''}`;
+    const cardClass = isSub ? 'sub-row' : `part-card${isAssy ? ' is-assembly' : ''}`;
     const catCls = p.categoryClass || 'category-other';
     const catLabel = p.category || '–';
     const noValClass = isAssy ? 'part-no-val assy-no' : 'part-no-val';
@@ -63,7 +65,12 @@ function renderParts() {
     const assyAttr  = isAssy ? `data-assy-id="${p.id}"` : '';
     const subAttr   = (isSub && p._assyParentId) ? `data-parent-assy="${p._assyParentId}"` : '';
 
-    return `
+    // 하위코드(2-1, 2-2, 2-3...)는 개별 카드 대신 하나의 그룹 박스 안에
+    // 행(row) 형태로 묶어서 시인성을 높임
+    if (isSub && !inSubGroup) { gridHtml += '<div class="sub-group">'; inSubGroup = true; }
+    if (!isSub && inSubGroup) { gridHtml += '</div>'; inSubGroup = false; }
+
+    gridHtml += `
     <div class="${cardClass}" id="card_${p.id}" ${assyAttr} ${subAttr}
       ${hasSubs ? `onclick="toggleSubParts('${p.id}', event)" style="cursor:pointer;"` : ''}>
       <button class="btn-delete" onclick="askDelete('${p.id}')" title="삭제">
@@ -153,7 +160,9 @@ function renderParts() {
         <div class="part-manager-name"><span id="field_${p.id}_manager">${escHtml(p.manager||'–')}</span></div>
       </div>` : ''}
     </div>`;
-  }).join('');
+  });
+  if (inSubGroup) gridHtml += '</div>';
+  grid.innerHTML = gridHtml;
 }
 
 // ─── ASSY 하위 토글 ───────────────────────────────────────────
