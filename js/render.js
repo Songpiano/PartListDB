@@ -80,7 +80,7 @@ function renderParts() {
 
         <div class="part-no">
           <div class="part-no-label">NO</div>
-          <div class="part-no-val">${escHtml(String(p.displayId))}</div>
+          <div class="part-no-val assy-no">${escHtml(String(p.displayId))}</div>
         </div>
 
         <div class="sub-img-spacer"></div>
