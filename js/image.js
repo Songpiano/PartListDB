@@ -54,6 +54,11 @@ function openZoom(id) {
 }
 function closeZoom() { document.getElementById('zoomModal').classList.remove('open'); }
 
+// ESC 키로 이미지 줌 닫기
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeZoom();
+});
+
 // ─── DELETE / CLEAR ───────────────────────────────────────────────────────────
 function askDelete(id) {
   document.getElementById('confirmBody').textContent = '선택한 항목을 삭제합니다. 삭제 후 리스트에서 제거됩니다.';
