@@ -67,9 +67,56 @@ function renderParts() {
 
     // 하위코드(2-1, 2-2, 2-3...)는 개별 카드 대신 하나의 그룹 박스 안에
     // 행(row) 형태로 묶어서 시인성을 높임
-    if (isSub && !inSubGroup) { gridHtml += '<div class="sub-group">'; inSubGroup = true; }
+    if (isSub && !inSubGroup) {
+      gridHtml += `<div class="sub-group">
+        <div class="sub-group-header">
+          <span class="sg-h sg-h-no">NO</span>
+          <span class="sg-h sg-h-tag">품목</span>
+          <span class="sg-h sg-h-name">품명 / CODE</span>
+          <span class="sg-h sg-h-specs">원소재 &nbsp;·&nbsp; 규격 &nbsp;·&nbsp; 가로 &nbsp;·&nbsp; 세로 &nbsp;·&nbsp; 높이 &nbsp;·&nbsp; 금형TYPE &nbsp;·&nbsp; CAV &nbsp;·&nbsp; SET &nbsp;·&nbsp; TRAY &nbsp;·&nbsp; Weight</span>
+        </div>`;
+      inSubGroup = true;
+    }
     if (!isSub && inSubGroup) { gridHtml += '</div>'; inSubGroup = false; }
 
+    // ── SUB 항목: 심플 테이블 행 ──────────────────────────────
+    if (isSub) {
+      const setVal = p.set_qty != null && p.set_qty !== '-'
+        ? (() => { const v = parseFloat(p.set_qty); return isNaN(v) ? String(p.set_qty) : (v < 1 ? v.toFixed(4) : String(p.set_qty)); })()
+        : '-';
+      gridHtml += `
+      <div class="sub-row" id="card_${p.id}" ${subAttr}>
+        <button class="btn-delete" onclick="askDelete('${p.id}')" title="삭제">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+        </button>
+        <div class="sr-no">
+          <span class="sr-no-label">NO</span>
+          <span class="sr-no-val">${escHtml(String(p.displayId))}</span>
+        </div>
+        <span class="tag ${catCls} sr-tag">${categoryEmoji(catCls)} ${escHtml(catLabel)}</span>
+        <div class="sr-name-block">
+          <span class="sr-name" id="field_${p.id}_name">${escHtml(p.name)}</span>
+          <span class="sr-code">CODE: ${escHtml(p.code)}</span>
+        </div>
+        <div class="sr-specs">
+          <div class="sr-spec"><span class="sr-spec-label">원소재</span><span class="sr-spec-val">${escHtml(String(p.material||'–'))}</span></div>
+          <div class="sr-spec"><span class="sr-spec-label">규격</span><span class="sr-spec-val sr-spec-dim">T:${p.thickness} / W:${p.width_raw} / P:${p.pitch}</span></div>
+          <div class="sr-divider"></div>
+          <div class="sr-spec"><span class="sr-spec-label">가로</span><span class="sr-spec-val">${p.dim_l||'–'}</span></div>
+          <div class="sr-spec"><span class="sr-spec-label">세로</span><span class="sr-spec-val">${p.dim_w||'–'}</span></div>
+          <div class="sr-spec"><span class="sr-spec-label">높이</span><span class="sr-spec-val">${p.dim_h||'–'}</span></div>
+          <div class="sr-divider"></div>
+          <div class="sr-spec"><span class="sr-spec-label">금형TYPE</span><span class="sr-spec-val">${p.moldType && p.moldType !== '-' ? escHtml(p.moldType) : '–'}</span></div>
+          <div class="sr-spec"><span class="sr-spec-label">CAV</span><span class="sr-spec-val">${p.cav != null && p.cav !== '-' ? escHtml(String(p.cav)) : '–'}</span></div>
+          <div class="sr-spec"><span class="sr-spec-label">SET소요</span><span class="sr-spec-val">${setVal}</span></div>
+          ${p.tray_qty != null ? `<div class="sr-spec"><span class="sr-spec-label">${trayLabel}</span><span class="sr-spec-val">${escHtml(String(p.tray_qty))}</span></div>` : ''}
+          <div class="sr-spec"><span class="sr-spec-label">Weight</span><span class="sr-spec-val">${escHtml(String(weightVal))} <small>g</small></span></div>
+        </div>
+      </div>`;
+      return;
+    }
+
+    // ── ASSY / 일반 카드 ─────────────────────────────────────
     gridHtml += `
     <div class="${cardClass}" id="card_${p.id}" ${assyAttr} ${subAttr}
       ${hasSubs ? `onclick="toggleSubParts('${p.id}', event)" style="cursor:pointer;"` : ''}>
@@ -89,7 +136,7 @@ function renderParts() {
         </div>` : ''}
       </div>
 
-      ${isSub ? '<div class="sub-img-spacer"></div>' : `<div class="part-img-col">
+      <div class="part-img-col">
         ${p.imageUrl
           ? `<div class="part-img-wrap">
               <img src="${p.imageUrl}" alt="${escHtml(p.name)}" onclick="openZoom('${p.id}')" />
@@ -102,15 +149,15 @@ function renderParts() {
               <input type="file" accept="image/*" style="display:none" onchange="handleImgFile(event,'${p.id}')" />
             </label>`
         }
-      </div>`}
+      </div>
 
       <div class="part-info">
         <div class="part-main">
           <div class="part-tags">
             <span class="tag ${catCls}">${categoryEmoji(catCls)} ${escHtml(catLabel)}</span>
-            ${!isSub ? `<span class="tag date">
+            <span class="tag date">
               📅 승인 일자 <span id="field_${p.id}_approvalDate">${escHtml(p.approvalDate||'–')}</span>
-            </span>` : ''}
+            </span>
           </div>
           <div class="part-name">
             <span class="part-field-label">품명 :</span> <span id="field_${p.id}_name">${escHtml(p.name)}</span>
@@ -155,10 +202,10 @@ function renderParts() {
           </div>
         </div>
       </div>
-      ${!isSub ? `<div class="part-manager-col">
+      <div class="part-manager-col">
         <div class="part-manager-label">담당자</div>
         <div class="part-manager-name"><span id="field_${p.id}_manager">${escHtml(p.manager||'–')}</span></div>
-      </div>` : ''}
+      </div>
     </div>`;
   });
   if (inSubGroup) gridHtml += '</div>';
