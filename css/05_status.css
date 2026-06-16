@@ -146,6 +146,8 @@
 
   .status-cat-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 14px; font-family: 'JetBrains Mono', monospace; font-weight: 700; background: var(--surface); border: 1px solid var(--border2); border-radius: 6px; padding: 3px 10px; margin: 2px 4px 2px 0; color: var(--text); white-space: nowrap; }
   .status-cat-badge strong { color: var(--text); }
+  .status-cat-badge.assy-cat { background: rgba(91,110,247,0.12); border-color: rgba(91,110,247,0.35); color: var(--text); }
+  .status-cat-badge.assy-cat strong { color: var(--accent2); }
 
   .status-td-num { text-align: center; }
   .status-num { display: inline-block; font-family: 'Pretendard','Inter',sans-serif; font-size: 24px; font-weight: 900; border-radius: 8px; padding: 5px 18px; }

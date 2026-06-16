@@ -303,7 +303,10 @@ function renderStatus() {
       const subCount  = md.parts.filter(p => p.isSub).length;
       const monthsSorted = [...md.months].sort();
       const approvalStr = monthsSorted.map(m => MONTH_KO[parseInt(m)] || m+'월').join(', ') || '미지정';
-      const catStr = Object.entries(md.cats).map(([c,n]) => `<span class="status-cat-badge">${escHtml(c)} <strong>${n}</strong></span>`).join('');
+      const catStr = Object.entries(md.cats).map(([c,n]) => {
+        const isAssy = c.includes('완제품');
+        return `<span class="status-cat-badge${isAssy ? ' assy-cat' : ''}">${escHtml(c)} <strong>${n}</strong></span>`;
+      }).join('');
       const imgs = md.parts.filter(p => p.imageUrl).slice(0,1);
 
       return `<tr class="status-model-row" onclick="navigateToModel('${escHtml(model)}')" title="부품 리스트 보기">
