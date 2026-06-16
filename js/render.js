@@ -303,10 +303,16 @@ function renderStatus() {
       const subCount  = md.parts.filter(p => p.isSub).length;
       const monthsSorted = [...md.months].sort();
       const approvalStr = monthsSorted.map(m => MONTH_KO[parseInt(m)] || m+'월').join(', ') || '미지정';
-      const catStr = Object.entries(md.cats).map(([c,n]) => {
-        const isAssy = c.includes('완제품');
-        return `<span class="status-cat-badge${isAssy ? ' assy-cat' : ''}">${escHtml(c)} <strong>${n}</strong></span>`;
-      }).join('');
+      const catStr = Object.entries(md.cats)
+        .sort(([a],[b]) => {
+          // 완제품 → 반제품 → 부자재 → 포장재 → 기타 순
+          const order = v => v.includes('완제품') ? 0 : v.includes('반제품') ? 1 : v.includes('부자재') ? 2 : v.includes('포장재') ? 3 : 4;
+          return order(a) - order(b);
+        })
+        .map(([c,n]) => {
+          const isAssy = c.includes('완제품');
+          return `<span class="status-cat-badge${isAssy ? ' assy-cat' : ''}">${escHtml(c)} <strong>${n}</strong></span>`;
+        }).join('');
       const imgs = md.parts.filter(p => p.imageUrl).slice(0,1);
 
       return `<tr class="status-model-row" onclick="navigateToModel('${escHtml(model)}')" title="부품 리스트 보기">
