@@ -67,50 +67,69 @@ function renderParts() {
 
     // 하위코드(2-1, 2-2, 2-3...)는 개별 카드 대신 하나의 그룹 박스 안에
     // 행(row) 형태로 묶어서 시인성을 높임
-    if (isSub && !inSubGroup) {
-      gridHtml += `<div class="sub-group">
-        <div class="sub-group-header">
-          <span class="sg-h sg-h-no">NO</span>
-          <span class="sg-h sg-h-tag">품목</span>
-          <span class="sg-h sg-h-name">품명 / CODE</span>
-          <span class="sg-h sg-h-specs">원소재 &nbsp;·&nbsp; 규격 &nbsp;·&nbsp; 가로 &nbsp;·&nbsp; 세로 &nbsp;·&nbsp; 높이 &nbsp;·&nbsp; 금형TYPE &nbsp;·&nbsp; CAV &nbsp;·&nbsp; SET &nbsp;·&nbsp; TRAY &nbsp;·&nbsp; Weight</span>
-        </div>`;
-      inSubGroup = true;
-    }
+    if (isSub && !inSubGroup) { gridHtml += '<div class="sub-group">'; inSubGroup = true; }
     if (!isSub && inSubGroup) { gridHtml += '</div>'; inSubGroup = false; }
 
-    // ── SUB 항목: 심플 테이블 행 ──────────────────────────────
+    // ── SUB 항목: 상위카드 컬럼 너비 그대로 맞춤 ───────────────
     if (isSub) {
-      const setVal = p.set_qty != null && p.set_qty !== '-'
-        ? (() => { const v = parseFloat(p.set_qty); return isNaN(v) ? String(p.set_qty) : (v < 1 ? v.toFixed(4) : String(p.set_qty)); })()
-        : '-';
       gridHtml += `
       <div class="sub-row" id="card_${p.id}" ${subAttr}>
         <button class="btn-delete" onclick="askDelete('${p.id}')" title="삭제">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
         </button>
-        <div class="sr-no">
-          <span class="sr-no-label">NO</span>
-          <span class="sr-no-val">${escHtml(String(p.displayId))}</span>
+
+        <div class="part-no">
+          <div class="part-no-label">NO</div>
+          <div class="part-no-val">${escHtml(String(p.displayId))}</div>
         </div>
-        <span class="tag ${catCls} sr-tag">${categoryEmoji(catCls)} ${escHtml(catLabel)}</span>
-        <div class="sr-name-block">
-          <span class="sr-name" id="field_${p.id}_name">${escHtml(p.name)}</span>
-          <span class="sr-code">CODE: ${escHtml(p.code)}</span>
-        </div>
-        <div class="sr-specs">
-          <div class="sr-spec"><span class="sr-spec-label">원소재</span><span class="sr-spec-val">${escHtml(String(p.material||'–'))}</span></div>
-          <div class="sr-spec"><span class="sr-spec-label">규격</span><span class="sr-spec-val sr-spec-dim">T:${p.thickness} / W:${p.width_raw} / P:${p.pitch}</span></div>
-          <div class="sr-divider"></div>
-          <div class="sr-spec"><span class="sr-spec-label">가로</span><span class="sr-spec-val">${p.dim_l||'–'}</span></div>
-          <div class="sr-spec"><span class="sr-spec-label">세로</span><span class="sr-spec-val">${p.dim_w||'–'}</span></div>
-          <div class="sr-spec"><span class="sr-spec-label">높이</span><span class="sr-spec-val">${p.dim_h||'–'}</span></div>
-          <div class="sr-divider"></div>
-          <div class="sr-spec"><span class="sr-spec-label">금형TYPE</span><span class="sr-spec-val">${p.moldType && p.moldType !== '-' ? escHtml(p.moldType) : '–'}</span></div>
-          <div class="sr-spec"><span class="sr-spec-label">CAV</span><span class="sr-spec-val">${p.cav != null && p.cav !== '-' ? escHtml(String(p.cav)) : '–'}</span></div>
-          <div class="sr-spec"><span class="sr-spec-label">SET소요</span><span class="sr-spec-val">${setVal}</span></div>
-          ${p.tray_qty != null ? `<div class="sr-spec"><span class="sr-spec-label">${trayLabel}</span><span class="sr-spec-val">${escHtml(String(p.tray_qty))}</span></div>` : ''}
-          <div class="sr-spec"><span class="sr-spec-label">Weight</span><span class="sr-spec-val">${escHtml(String(weightVal))} <small>g</small></span></div>
+
+        <div class="sub-img-spacer"></div>
+
+        <div class="part-info">
+          <div class="part-main">
+            <div class="part-tags">
+              <span class="tag ${catCls}">${categoryEmoji(catCls)} ${escHtml(catLabel)}</span>
+            </div>
+            <div class="part-name"><span id="field_${p.id}_name">${escHtml(p.name)}</span></div>
+            <div class="part-code">CODE: ${escHtml(p.code)}</div>
+          </div>
+          <div class="part-specs-right">
+            <div class="spec-inline-group spec-material">
+              <div class="spec-label">원소재</div>
+              <div class="spec-val">${escHtml(String(p.material||'–'))}</div>
+            </div>
+            <div class="spec-inline-group spec-dimension">
+              <div class="spec-label">규격</div>
+              <div class="spec-val">T:${p.thickness} / W:${p.width_raw} / P:${p.pitch}</div>
+            </div>
+            <div class="spec-divider"></div>
+            ${['l','w','h'].map(d=>`
+              <div class="dim-box">
+                <div class="dim-box-label">${d==='l'?'가로':d==='w'?'세로':'높이'}</div>
+                <div class="dim-box-val">${p['dim_'+d]}</div>
+              </div>`).join('')}
+            <div class="dim-box dim-box-mold">
+              <div class="dim-box-label">금형TYPE</div>
+              <div class="dim-box-val">${p.moldType && p.moldType !== '-' ? escHtml(p.moldType) : '-'}</div>
+            </div>
+            <div class="dim-box dim-box-accent">
+              <div class="dim-box-label">CAV</div>
+              <div class="dim-box-val">${p.cav != null && p.cav !== '-' ? escHtml(String(p.cav)) : '-'}</div>
+            </div>
+            <div class="dim-box dim-box-accent">
+              <div class="dim-box-label">SET소요</div>
+              <div class="dim-box-val" style="font-size:${setFontSize}">${p.set_qty != null && p.set_qty !== '-' ? (() => { const v = parseFloat(p.set_qty); return isNaN(v) ? String(p.set_qty) : (v < 1 ? v.toFixed(4) : String(p.set_qty)); })() : '-'}</div>
+            </div>
+            ${p.tray_qty != null ? `
+            <div class="dim-box dim-box-pkg">
+              <div class="dim-box-label">${trayLabel}</div>
+              <div class="dim-box-val" style="font-size:${trayFontSize}">${escHtml(String(p.tray_qty))}</div>
+            </div>` : ''}
+            <div class="dim-box dim-box-weight">
+              <div class="dim-box-label">Weight</div>
+              <div class="dim-box-val">${escHtml(String(weightVal))}<span style="font-size:9px;font-weight:600;opacity:0.7"> g</span></div>
+            </div>
+          </div>
         </div>
       </div>`;
       return;
