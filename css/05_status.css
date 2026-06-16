@@ -168,24 +168,13 @@
   .status-total-row { border-top: 2px solid var(--border2); background: var(--surface2); }
   .status-total-row td { padding: 14px 14px; vertical-align: middle; }
   .status-total-label { }
-  .status-total-model-wrap {
-    display: flex; align-items: center; gap: 8px;
-  }
-  .status-total-models-label {
+  .status-total-model-wrap { display: flex; align-items: center; }
+  .status-total-text {
     font-family: 'Pretendard','Inter',sans-serif;
-    font-size: 12px; font-weight: 700; color: var(--text3);
-    white-space: nowrap;
+    font-size: 20px; font-weight: 800; color: var(--text);
   }
-  .status-total-models-unit {
-    font-family: 'Pretendard','Inter',sans-serif;
-    font-size: 14px; font-weight: 700; color: var(--text2);
-  }
+  .status-total-text strong { font-size: 20px; font-weight: 800; color: var(--text); }
   .status-total-num { font-size: 24px !important; }
-  .status-total-sum {
-    font-family: 'Pretendard','Inter',sans-serif;
-    font-size: 14px; font-weight: 700; color: var(--text2);
-  }
-  .status-total-sum strong { color: var(--accent2); font-size: 20px; }
 
   /* ── 월별 승인 현황 그래프 ── */
   .monthly-chart { margin-top: 24px; padding: 20px 24px; background: var(--surface2); border-radius: 14px; border: 1px solid var(--border); }

@@ -364,9 +364,7 @@ function renderStatus() {
               <tr class="status-total-row">
                 <td class="status-td-model status-total-label">
                   <div class="status-total-model-wrap">
-                    <div class="status-total-models-label">승인 모델</div>
-                    <span class="status-num assy status-total-num">${modelList.length}</span>
-                    <div class="status-total-models-unit">개</div>
+                    <span class="status-total-text">승인 모델 <strong>${modelList.length}</strong>개</span>
                   </div>
                 </td>
                 <td class="status-td-cat"></td>
