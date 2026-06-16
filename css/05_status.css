@@ -168,7 +168,8 @@
   .status-total-row { border-top: 2px solid var(--border2); background: var(--surface2); }
   .status-total-row td { padding: 14px 14px; vertical-align: middle; }
   .status-total-label { }
-  .status-total-model-wrap { display: flex; align-items: center; }
+  /* 이미지(44px) + gap(10px) = 54px 들여쓰기로 모델명 텍스트 열과 정렬 */
+  .status-total-model-wrap { display: flex; align-items: center; padding-left: 54px; }
   .status-total-text {
     font-family: 'Pretendard','Inter',sans-serif;
     font-size: 20px; font-weight: 800; color: var(--text);
