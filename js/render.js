@@ -100,7 +100,7 @@ function renderParts() {
             </div>
             <div class="spec-inline-group spec-dimension">
               <div class="spec-label">규격</div>
-              <div class="spec-val"><span style="font-weight:400;color:var(--text3)">T(두께): </span>${p.thickness} <span style="font-weight:400;color:var(--text3)">/ W(폭): </span>${p.width_raw} <span style="font-weight:400;color:var(--text3)">/ P(피치): </span>${p.pitch}</div>
+              <div class="spec-val"><span style="font-weight:400;color:var(--text3)">T(두께):&nbsp;</span>${p.thickness}&nbsp;<span style="font-weight:400;color:var(--text3)">/&nbsp;W(폭):&nbsp;</span>${p.width_raw}&nbsp;<span style="font-weight:400;color:var(--text3)">/&nbsp;P(피치):&nbsp;</span>${p.pitch}</div>
             </div>
             <div class="spec-divider"></div>
             ${['l','w','h'].map(d=>`
@@ -190,7 +190,7 @@ function renderParts() {
           </div>
           <div class="spec-inline-group spec-dimension">
             <div class="spec-label">규격</div>
-            <div class="spec-val"><span style="font-weight:400;color:var(--text3)">T(두께): </span>${p.thickness} <span style="font-weight:400;color:var(--text3)">/ W(폭): </span>${p.width_raw} <span style="font-weight:400;color:var(--text3)">/ P(피치): </span>${p.pitch}</div>
+            <div class="spec-val"><span style="font-weight:400;color:var(--text3)">T(두께):&nbsp;</span>${p.thickness}&nbsp;<span style="font-weight:400;color:var(--text3)">/&nbsp;W(폭):&nbsp;</span>${p.width_raw}&nbsp;<span style="font-weight:400;color:var(--text3)">/&nbsp;P(피치):&nbsp;</span>${p.pitch}</div>
           </div>
           <div class="spec-divider"></div>
           ${['l','w','h'].map(d=>`
