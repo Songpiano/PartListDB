@@ -120,7 +120,7 @@
 
 /* SUB NO — 상위카드와 동일한 크기 */
 .sub-row .part-no { width: 76px; min-width: 76px; padding-right: 10px; border-right: 1px solid var(--border); }
-.sub-row .part-no-val { font-size: var(--fs-2xl); }  /* 상위카드와 동일 (22px) */
+.sub-row .part-no-val { font-size: 22px !important; font-weight: 900 !important; }
 .sub-row .part-no-label { font-size: var(--fs-xs); }
 
 /* ASSY 배지 */

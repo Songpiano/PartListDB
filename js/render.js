@@ -363,7 +363,7 @@ function renderStatus() {
                 <td class="status-td-cat"></td>
                 <td class="status-td-num"><span class="status-num assy status-total-num">${totalAssyCount}</span></td>
                 <td class="status-td-num"><span class="status-num sub status-total-num">${totalSubCount}</span></td>
-                <td class="status-td-approval status-total-sum">총 코드 <strong>${totalPartCount}</strong>개</td>
+                <td class="status-td-approval"></td>
                 <td></td>
               </tr>
             </tfoot>
