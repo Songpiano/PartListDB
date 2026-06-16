@@ -118,7 +118,10 @@
 .part-no-divider { height: 1px; background: var(--border); margin: 3px 0; }
 .part-no-val.assy-no { font-size: var(--fs-xl); color: var(--text); }
 
-/* SUB NO — (sr-no 클래스로 대체됨, 하위호환 유지) */
+/* SUB NO — 상위카드와 동일한 크기 */
+.sub-row .part-no { width: 76px; min-width: 76px; padding-right: 10px; border-right: 1px solid var(--border); }
+.sub-row .part-no-val { font-size: var(--fs-2xl); }  /* 상위카드와 동일 (22px) */
+.sub-row .part-no-label { font-size: var(--fs-xs); }
 
 /* ASSY 배지 */
 .assy-badge {

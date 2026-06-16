@@ -165,20 +165,20 @@
   /* ── TOTAL 행 ── */
   .status-total-row { border-top: 2px solid var(--border2); background: var(--surface2); }
   .status-total-row td { padding: 14px 14px; vertical-align: middle; }
-  .status-total-label { display: flex; align-items: center; gap: 10px; }
-  .status-total-badge {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px; font-weight: 900;
-    color: var(--accent); background: var(--accent-glow);
-    border: 1px solid rgba(91,110,247,0.35);
-    border-radius: 6px; padding: 3px 10px; letter-spacing: 0.05em;
+  .status-total-label { }
+  .status-total-model-wrap {
+    display: flex; align-items: center; gap: 8px;
   }
-  .status-total-models {
+  .status-total-models-label {
+    font-family: 'Pretendard','Inter',sans-serif;
+    font-size: 12px; font-weight: 700; color: var(--text3);
+    white-space: nowrap;
+  }
+  .status-total-models-unit {
     font-family: 'Pretendard','Inter',sans-serif;
     font-size: 14px; font-weight: 700; color: var(--text2);
   }
-  .status-total-models strong { color: var(--text); font-size: 18px; }
-  .status-total-num { font-size: 22px !important; }
+  .status-total-num { font-size: 24px !important; }
   .status-total-sum {
     font-family: 'Pretendard','Inter',sans-serif;
     font-size: 14px; font-weight: 700; color: var(--text2);

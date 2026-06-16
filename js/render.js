@@ -354,8 +354,11 @@ function renderStatus() {
             <tfoot>
               <tr class="status-total-row">
                 <td class="status-td-model status-total-label">
-                  <span class="status-total-badge">TOTAL</span>
-                  <span class="status-total-models">모델 <strong>${modelList.length}</strong>개</span>
+                  <div class="status-total-model-wrap">
+                    <div class="status-total-models-label">승인 모델</div>
+                    <span class="status-num assy status-total-num">${modelList.length}</span>
+                    <div class="status-total-models-unit">개</div>
+                  </div>
                 </td>
                 <td class="status-td-cat"></td>
                 <td class="status-td-num"><span class="status-num assy status-total-num">${totalAssyCount}</span></td>
