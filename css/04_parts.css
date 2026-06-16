@@ -239,7 +239,8 @@
 
 /* 원소재·규격 고정 너비 */
 .spec-inline-group.spec-material  { min-width: 110px; width: 110px; }
-.spec-inline-group.spec-dimension { min-width: 210px; width: 210px; }
+.spec-inline-group.spec-dimension { min-width: 180px; width: auto; flex: 1; max-width: 320px; }
+.spec-inline-group.spec-dimension .spec-val { white-space: nowrap; overflow: visible; text-overflow: unset; max-width: none; }
 
 /* DIM BOX 고정 너비 */
 .dim-box {
