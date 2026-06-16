@@ -2,6 +2,19 @@
 // Part List Database — filter.js
 // ============================================================
 
+// ESC 키로 검색 필터 초기화
+document.addEventListener('keydown', function(e) {
+  if (e.key !== 'Escape') return;
+  const searchInput = document.getElementById('searchInput');
+  if (!searchInput) return;
+  const hasValue = ['searchInput','categoryInput','matInput','dimL','dimW','dimH']
+    .some(id => { const el = document.getElementById(id); return el && el.value.trim(); });
+  if (hasValue) {
+    resetFilters();
+    searchInput.blur();
+  }
+});
+
 // ─── FILTER ───────────────────────────────────────────────────────────────────
 function getFilteredParts() {
   const s  = (document.getElementById('searchInput')?.value||'').toLowerCase();
