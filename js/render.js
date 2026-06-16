@@ -293,6 +293,11 @@ function renderStatus() {
       return minA !== minB ? minA.localeCompare(minB) : a[0].localeCompare(b[0]);
     });
 
+    // Total 집계
+    const totalAssyCount = modelList.reduce((s,[,md]) => s + md.parts.filter(p=>p.isAssembly).length, 0);
+    const totalSubCount  = modelList.reduce((s,[,md]) => s + md.parts.filter(p=>p.isSub).length, 0);
+    const totalPartCount = totalAssyCount + totalSubCount;
+
     const tableRows = modelList.map(([model, md]) => {
       const assyCount = md.parts.filter(p => p.isAssembly).length;
       const subCount  = md.parts.filter(p => p.isSub).length;
@@ -346,6 +351,19 @@ function renderStatus() {
               <th>모델명</th><th>품목별</th><th>ASSY PART</th><th>하위품 PART</th><th>승인시점</th><th></th>
             </tr></thead>
             <tbody>${tableRows}</tbody>
+            <tfoot>
+              <tr class="status-total-row">
+                <td class="status-td-model status-total-label">
+                  <span class="status-total-badge">TOTAL</span>
+                  <span class="status-total-models">모델 <strong>${modelList.length}</strong>개</span>
+                </td>
+                <td class="status-td-cat"></td>
+                <td class="status-td-num"><span class="status-num assy status-total-num">${totalAssyCount}</span></td>
+                <td class="status-td-num"><span class="status-num sub status-total-num">${totalSubCount}</span></td>
+                <td class="status-td-approval status-total-sum">총 코드 <strong>${totalPartCount}</strong>개</td>
+                <td></td>
+              </tr>
+            </tfoot>
           </table>
         </div>
 

@@ -162,6 +162,29 @@
 .status-del-btn { font-size: 11px; font-weight: 700; color: var(--rose); background: var(--rose-dim); border: 1px solid rgba(244,106,106,0.3); border-radius: 6px; padding: 4px 10px; transition: background 0.15s, box-shadow 0.15s; white-space: nowrap; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
   .status-del-btn:hover { background: rgba(244,106,106,0.25); box-shadow: 0 2px 8px rgba(244,106,106,0.2); }
 
+  /* ── TOTAL 행 ── */
+  .status-total-row { border-top: 2px solid var(--border2); background: var(--surface2); }
+  .status-total-row td { padding: 14px 14px; vertical-align: middle; }
+  .status-total-label { display: flex; align-items: center; gap: 10px; }
+  .status-total-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; font-weight: 900;
+    color: var(--accent); background: var(--accent-glow);
+    border: 1px solid rgba(91,110,247,0.35);
+    border-radius: 6px; padding: 3px 10px; letter-spacing: 0.05em;
+  }
+  .status-total-models {
+    font-family: 'Pretendard','Inter',sans-serif;
+    font-size: 14px; font-weight: 700; color: var(--text2);
+  }
+  .status-total-models strong { color: var(--text); font-size: 18px; }
+  .status-total-num { font-size: 22px !important; }
+  .status-total-sum {
+    font-family: 'Pretendard','Inter',sans-serif;
+    font-size: 14px; font-weight: 700; color: var(--text2);
+  }
+  .status-total-sum strong { color: var(--accent2); font-size: 20px; }
+
   /* ── 월별 승인 현황 그래프 ── */
   .monthly-chart { margin-top: 24px; padding: 20px 24px; background: var(--surface2); border-radius: 14px; border: 1px solid var(--border); }
   .monthly-chart-title { font-family: var(--font-base,'Pretendard',sans-serif); font-size: 15px; font-weight: 800; color: var(--text); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
