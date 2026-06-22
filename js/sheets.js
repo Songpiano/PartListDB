@@ -40,8 +40,10 @@ function decodeMetaFromImage(p) {
   const metaStr  = raw.slice(idx + META_DELIM.length);
   try {
     const meta = JSON.parse(metaStr);
-    if (meta.moldType) p.moldType = meta.moldType;
-    if (meta.manager)  p.manager  = meta.manager;
+    // Sheets 컬럼에 직접 저장된 값이 있으면 우선 사용, 없을 때만 META에서 복원
+    const isEmpty = v => !v || v === '-';
+    if (meta.moldType && isEmpty(p.moldType)) p.moldType = meta.moldType;
+    if (meta.manager  && isEmpty(p.manager))  p.manager  = meta.manager;
   } catch(e) { /* ignore */ }
   p.imageUrl = imgPart || null;
 }

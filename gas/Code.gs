@@ -5,7 +5,7 @@ const HEADERS = [
   'category','categoryClass','model','name','code',
   'material','thickness','width_raw','pitch',
   'dim_l','dim_w','dim_h','weight_g',
-  'cav','set_qty','tray_qty','manager',
+  'cav','set_qty','tray_qty','manager','moldType',
   'approvalDate','uploadBatch','rowIndex','createdAt','imageUrl'
 ];
 
@@ -69,9 +69,17 @@ function getSheet() {
   let sheet = ss.getSheetByName(SHEET_NAME);
   if (!sheet) {
     sheet = ss.insertSheet(SHEET_NAME);
-    // 전체 시트를 텍스트 형식으로 설정 (날짜 자동변환 방지)
     sheet.getRange(1, 1, 1000, HEADERS.length).setNumberFormat('@');
     sheet.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS]);
+  } else {
+    // 기존 Sheets에 누락된 컬럼 자동 추가 (HEADERS 순서 기준 끝에 append)
+    const existing = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0].map(String);
+    const missing  = HEADERS.filter(h => !existing.includes(h));
+    if (missing.length > 0) {
+      const startCol = existing.length + 1;
+      sheet.getRange(1, startCol, 1, missing.length).setValues([missing]);
+      sheet.getRange(1, startCol, 1000, missing.length).setNumberFormat('@');
+    }
   }
   return sheet;
 }
