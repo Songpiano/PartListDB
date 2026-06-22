@@ -83,7 +83,6 @@ function renderParts() {
           <div class="part-no-val assy-no">${escHtml(String(p.displayId))}</div>
         </div>
 
-        <div class="sub-img-spacer"></div>
 
         <div class="part-info">
           <div class="part-main">
@@ -160,20 +159,6 @@ function renderParts() {
         </div>` : ''}
       </div>
 
-      <div class="part-img-col">
-        ${p.imageUrl
-          ? `<div class="part-img-wrap">
-              <img src="${p.imageUrl}" alt="${escHtml(p.name)}" onclick="openZoom('${p.id}')" />
-              <div class="img-zoom-icon">🔍</div>
-              <button class="img-remove" onclick="removeImage('${p.id}')" title="이미지 삭제">✕</button>
-            </div>`
-          : `<label class="img-upload-label" ondragover="event.preventDefault()" ondrop="handleImgDrop(event,'${p.id}')">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
-              <span>Drag or Click</span>
-              <input type="file" accept="image/*" style="display:none" onchange="handleImgFile(event,'${p.id}')" />
-            </label>`
-        }
-      </div>
 
       <div class="part-info">
         <div class="part-main">

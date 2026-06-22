@@ -65,8 +65,6 @@
 }
 .sub-row:last-child { border-bottom: none; }
 .sub-row:hover { background: var(--surface2); }
-/* 상위카드 이미지 칸 너비와 동일한 spacer — 컬럼 정렬용 */
-.sub-img-spacer { width: 50px; min-width: 50px; flex-shrink: 0; }
 
 /* ══ NO 컬럼 ══════════════════════════════════════════════════ */
 .part-no {
@@ -129,25 +127,6 @@
   margin-top: 2px; text-align: center; line-height: 1.3;
 }
 
-/* ══ 이미지 컬럼 ══════════════════════════════════════════════ */
-.part-img-col { flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 4px; }
-.part-img-wrap { width: 50px; height: 50px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border2); position: relative; background: var(--surface2); flex-shrink: 0; }
-.part-img-wrap img { width: 100%; height: 100%; object-fit: cover; cursor: zoom-in; transition: filter 0.2s; }
-.part-img-wrap:hover img { filter: brightness(0.7); }
-.img-zoom-icon { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s; pointer-events: none; color: #fff; font-size: 16px; }
-.part-img-wrap:hover .img-zoom-icon { opacity: 1; }
-.img-remove { position: absolute; top: 4px; right: 4px; width: 18px; height: 18px; border-radius: 50%; background: rgba(0,0,0,0.65); border: none; cursor: pointer; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 10px; opacity: 0; transition: opacity 0.2s; z-index: 5; }
-.part-img-wrap:hover .img-remove { opacity: 1; }
-.img-remove:hover { background: var(--rose); }
-.img-upload-label {
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 3px; width: 50px; height: 50px; border-radius: 8px;
-  border: 2px dashed var(--border2); cursor: pointer; transition: all 0.2s;
-  color: var(--text3); font-family: var(--font-base); font-size: 9px; font-weight: 600;
-  background: var(--bg);
-}
-.img-upload-label:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-glow); }
-.img-upload-label svg { width: 18px; height: 18px; }
 
 /* ══ PART INFO (좌: 이름/코드  우: 스펙) ════════════════════ */
 .part-info { flex: 1; display: flex; flex-direction: row; align-items: center; gap: 14px; min-width: 0; }

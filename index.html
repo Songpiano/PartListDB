@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="css/01_variables.css?v=20260609e">
   <link rel="stylesheet" href="css/02_lock.css?v=20260609e">
   <link rel="stylesheet" href="css/03_header.css?v=20260615a">
-  <link rel="stylesheet" href="css/04_parts.css?v=20260622c">
+  <link rel="stylesheet" href="css/04_parts.css?v=20260622d">
   <link rel="stylesheet" href="css/05_status.css?v=20260615g">
   <link rel="stylesheet" href="css/06_modals.css?v=20260609e">
   <link rel="stylesheet" href="css/07_footer.css?v=20260609e">
@@ -140,44 +140,6 @@
   </div>
 </div>
 
-<!-- BULK IMAGE UPLOAD MODAL -->
-<div class="bulk-modal-overlay" id="bulkImgModal">
-  <div class="bulk-modal">
-    <div class="bulk-modal-head">
-      <div class="bulk-modal-title">📸 일괄 이미지 업로드</div>
-      <button class="bulk-modal-close" onclick="closeBulkModal()">✕</button>
-    </div>
-    <div class="bulk-modal-sub">
-      이미지 파일명에 <strong>CODE NO.</strong> 또는 <strong>품명</strong>이 포함되면 자동으로 매칭됩니다.<br>
-      예: <strong>GH61-22345A.jpg</strong> → SUB UB CONN SUS 에 자동 연결
-    </div>
-    <label class="bulk-drop-zone" id="bulkDropZone"
-      ondragover="bulkDragOver(event)" ondragleave="bulkDragLeave(event)" ondrop="bulkDrop(event)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
-        <polyline points="17 8 12 3 7 8"/>
-        <line x1="12" y1="3" x2="12" y2="15"/>
-      </svg>
-      <div class="bulk-drop-label">이미지 파일을 드래그하거나 클릭하여 선택</div>
-      <div class="bulk-drop-hint">JPG · PNG · WEBP · GIF — 여러 파일 동시 선택 가능</div>
-      <input type="file" id="bulkFileInput" multiple accept="image/*" style="display:none" onchange="bulkFileSelect(event)" />
-    </label>
-    <div class="bulk-results" id="bulkResults"></div>
-    <div class="bulk-footer">
-      <div class="bulk-summary" id="bulkSummary"></div>
-      <button class="btn-bulk-apply" id="bulkApplyBtn" onclick="bulkApply()" disabled>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px"><polyline points="20 6 9 17 4 12"/></svg>
-        매칭된 이미지 저장
-      </button>
-    </div>
-  </div>
-</div>
-
-<!-- ZOOM MODAL -->
-<div class="zoom-overlay" id="zoomModal" onclick="closeZoom()">
-  <button class="zoom-close" onclick="closeZoom()">✕</button>
-  <img id="zoomImg" src="" alt="Enlarged" />
-</div>
 
 <!-- MAIN APP -->
 <div id="app">
@@ -215,10 +177,6 @@
       <button class="btn" onclick="document.getElementById('xlsxInput').click()" title="여러 개의 파트리스트 엑셀 파일을 한 번에 선택할 수 있습니다">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v14a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
         데이터 추가
-      </button>
-      <button class="btn" onclick="openBulkModal()" title="이미지 일괄 업로드">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-        이미지 일괄 업로드
       </button>
       <button class="btn" onclick="exportBackupSnapshot()" title="이미지/금형TYPE/담당자 등 전체 데이터를 data/parts.json 백업용 파일로 내보냅니다">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -327,10 +285,8 @@
   <script src="js/core.js?v=20260609i"></script>
   <script src="js/upload.js?v=20260616b"></script>
   <script src="js/filter.js?v=20260615a"></script>
-  <script src="js/render.js?v=20260622c"></script>
+  <script src="js/render.js?v=20260622d"></script>
   <script src="js/edit.js?v=20260609e"></script>
-  <script src="js/image.js?v=20260615a"></script>
-  <script src="js/xlsx-image.js?v=20260609g"></script>
   <script src="js/sheets.js?v=20260609s"></script>
   <script src="js/bulk.js?v=20260609h"></script>
   <script src="js/qna.js?v=20260615a"></script>
