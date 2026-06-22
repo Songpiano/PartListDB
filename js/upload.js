@@ -26,6 +26,18 @@ function processFileQueue(files, index, summary) {
 }
 
 // ── 업로드 데이터 검증: NO 순서 / 아이템군 분류 규칙 ──────────────────────────
+const VALID_MOLD_TYPES = [
+  '범용(일반)',
+  '일관',
+  '60톤',
+  '80톤',
+  '110톤',
+  '일관 (속건성+열풍)',
+  '60톤 (속건성+열풍)',
+  '80톤 (속건성+열풍)',
+  '110톤 (속건성+열풍)'
+];
+
 const VALID_CATEGORIES = [
   'SMD SHIELD CAN류 완제품',
   'SMD SHIELD CAN류 반제품',
@@ -103,6 +115,29 @@ function validateCategories(rows) {
     return { valid: false, message:
       `아이템군(제품구분) 분류가 올바르지 않은 항목이 있습니다:\n${[...invalid].join('\n')}\n\n` +
       `허용되는 분류:\n${VALID_CATEGORIES.join(', ')}` };
+  }
+  return { valid: true };
+}
+
+// 규칙 3: 금형TYPE이 허용 목록에 속하는지 검증 (빈칸·대시는 허용)
+function validateMoldTypes(rows, moldIdx) {
+  if (moldIdx < 0) return { valid: true }; // 금형TYPE 컬럼 없으면 검증 생략
+  const invalid = new Set();
+  rows.forEach(row => {
+    if (isUploadHeaderRow(row)) return;
+    const name = String(row[2]||'').trim();
+    const code = String(row[3]||'').trim();
+    if (!name && !code) return;
+    const raw = row[moldIdx] != null ? String(row[moldIdx]).replace(/\n/g,' ').trim() : '';
+    if (!raw || /^[-–—\s]+$/.test(raw)) return; // 빈칸·대시 허용
+    if (!VALID_MOLD_TYPES.includes(raw)) {
+      invalid.add(`NO ${String(row[0]).trim()}: "${raw}"`);
+    }
+  });
+  if (invalid.size > 0) {
+    return { valid: false, message:
+      `금형TYPE이 올바르지 않은 항목이 있습니다:\n${[...invalid].join('\n')}\n\n` +
+      `허용되는 금형TYPE:\n${VALID_MOLD_TYPES.join(', ')}` };
   }
   return { valid: true };
 }
@@ -192,6 +227,15 @@ function processSingleFile(file, summary, next) {
       if (managerIdx === -1 && deliverIdx >= 0) managerIdx = deliverIdx + 1;
       if (managerIdx === -1) managerIdx = setIdx + 4;
       console.log('[upload] headerRowIdx:', headerRowIdx, 'cavIdx:', cavIdx, 'setIdx:', setIdx, 'managerIdx:', managerIdx, '(deliverIdx:', deliverIdx, ') moldIdx:', moldIdx);
+
+      // ── 금형TYPE 검증 ──
+      const moldCheck = validateMoldTypes(rows, moldIdx);
+      if (!moldCheck.valid) {
+        alert(`[${file.name}] 금형TYPE 오류로 등록할 수 없습니다.\n\n${moldCheck.message}`);
+        showSyncStatus(`등록 불가: ${file.name} (금형TYPE 오류)`, 'error');
+        next();
+        return;
+      }
 
       // ── 기존 모델 존재 시 교체/추가 선택 모달 ──
       const existingCount = parts.filter(p => p.model === modelName).length;
