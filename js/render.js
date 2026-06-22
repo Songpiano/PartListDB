@@ -135,7 +135,9 @@ function renderParts() {
             </div>
           </div>
         </div>
-      </div>`;
+      </div>
+      <div class="sub-manager-spacer"></div>
+    </div>`;
       return;
     }
 
