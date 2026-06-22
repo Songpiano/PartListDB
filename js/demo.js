@@ -294,13 +294,17 @@
 
   /* ── 상태 ─────────────────────────────────────────────────────── */
   let demoRunning = false;
+  let demoPaused = false;
   let demoTimers = [];
+  let demoStartedAt = 0;   // Date.now() 기준 시작 시각
+  let pausedElapsed = 0;   // 일시정지 시점까지 경과한 ms
   let spotlightEl = null;
   let subtitleEl = null;
   let progressEl = null;
   let overlayEl = null;
   let launchBtn = null;
   let stopBtn = null;
+  let pauseBtn = null;
   let highlightBox = null;
 
   const TOTAL_DURATION = 127000;
@@ -428,47 +432,98 @@
 
   /* ── 진행 바 업데이트 ─────────────────────────────────────────── */
   function startProgressBar() {
-    let start = Date.now();
     const iv = setInterval(() => {
       if (!demoRunning) { clearInterval(iv); return; }
-      const pct = Math.min(100, ((Date.now() - start) / TOTAL_DURATION) * 100);
+      if (demoPaused) return;  // 일시정지 중엔 멈춤
+      const elapsed = pausedElapsed + (Date.now() - demoStartedAt);
+      const pct = Math.min(100, (elapsed / TOTAL_DURATION) * 100);
       if (progressEl) progressEl.style.width = pct + '%';
       if (pct >= 100) clearInterval(iv);
     }, 200);
     demoTimers.push({ clear: () => clearInterval(iv) });
   }
 
-  /* ── 데모 시작 ─────────────────────────────────────────────────── */
-  function startDemo() {
-    if (demoRunning) return;
-    demoRunning = true;
-
-    if (launchBtn) launchBtn.style.display = 'none';
-    if (stopBtn) stopBtn.style.display = 'flex';
-
-    buildUI();
-    startProgressBar();
-
+  /* ── 스텝 스케줄링 (from = 재개 시 경과 ms) ─────────────────────── */
+  function scheduleSteps(from) {
     STEPS.forEach((step) => {
+      const delay = step.time - from;
+      if (delay < 0) return;  // 이미 지난 스텝은 건너뜀
       const t = setTimeout(() => {
-        if (!demoRunning) return;
-        // 액션 실행
+        if (!demoRunning || demoPaused) return;
         try { step.action(); } catch(e) {}
-        // 자막 업데이트
         if (step.title !== undefined) updateSubtitle(step.title, step.desc);
-        // 하이라이트 (약간 딜레이)
         setTimeout(() => {
           if (step.highlight) focusHighlight(step.highlight);
           else if (highlightBox) highlightBox.style.opacity = '0';
         }, 700);
-      }, step.time);
+      }, delay);
       demoTimers.push({ clear: () => clearTimeout(t) });
     });
+  }
+
+  /* ── 데모 시작 ─────────────────────────────────────────────────── */
+  function startDemo() {
+    if (demoRunning) return;
+    demoRunning = true;
+    demoPaused = false;
+    pausedElapsed = 0;
+    demoStartedAt = Date.now();
+
+    if (launchBtn) launchBtn.style.display = 'none';
+    if (stopBtn)   stopBtn.style.display = 'flex';
+    if (pauseBtn)  { pauseBtn.style.display = 'flex'; pauseBtn.innerHTML = '⏸ 일시정지'; }
+
+    buildUI();
+    startProgressBar();
+    scheduleSteps(0);
+  }
+
+  /* ── 일시정지 / 재개 ──────────────────────────────────────────── */
+  function pauseDemo() {
+    if (!demoRunning || demoPaused) return;
+    demoPaused = true;
+
+    // 진행 타이머 취소 (진행 바 interval은 demoPaused 체크로 자동 멈춤)
+    demoTimers.forEach(t => t.clear());
+    demoTimers = [];
+
+    // 경과 시간 저장
+    pausedElapsed += Date.now() - demoStartedAt;
+
+    // 자막 배지 업데이트
+    const badge = document.getElementById('demo-badge');
+    if (badge) badge.innerHTML = '⏸ PAUSED  PART LIST DATABASE';
+
+    if (pauseBtn) pauseBtn.innerHTML = '▶ 재개';
+  }
+
+  function resumeDemo() {
+    if (!demoRunning || !demoPaused) return;
+    demoPaused = false;
+    demoStartedAt = Date.now();
+
+    // 자막 배지 복원
+    const badge = document.getElementById('demo-badge');
+    if (badge) badge.innerHTML = '● REC  PART LIST DATABASE';
+
+    if (pauseBtn) pauseBtn.innerHTML = '⏸ 일시정지';
+
+    // 진행 바 재시작
+    startProgressBar();
+    // 남은 스텝들 재스케줄
+    scheduleSteps(pausedElapsed);
+  }
+
+  function togglePause() {
+    if (demoPaused) resumeDemo();
+    else pauseDemo();
   }
 
   /* ── 데모 중지 ─────────────────────────────────────────────────── */
   function stopDemo() {
     demoRunning = false;
+    demoPaused = false;
+    pausedElapsed = 0;
     demoTimers.forEach(t => t.clear());
     demoTimers = [];
 
@@ -492,12 +547,15 @@
     }
 
     if (launchBtn) launchBtn.style.display = 'flex';
-    if (stopBtn) stopBtn.style.display = 'none';
+    if (stopBtn)   stopBtn.style.display = 'none';
+    if (pauseBtn)  pauseBtn.style.display = 'none';
   }
 
   /* ── 런처 버튼 생성 ─────────────────────────────────────────────── */
   function createLauncher() {
-    // 시작 버튼
+    const F = `font-family:'Pretendard','Noto Sans KR',sans-serif;`;
+
+    // ── 시작 버튼
     launchBtn = document.createElement('button');
     launchBtn.id = 'demo-launch-btn';
     launchBtn.innerHTML = '🎬 시연 시작';
@@ -506,40 +564,66 @@
       display:flex; align-items:center; gap:8px;
       background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
       color:#fff; font-size:14px; font-weight:700;
-      border:none; border-radius:999px;
-      padding:12px 22px; cursor:pointer;
-      box-shadow: 0 8px 24px rgba(102,126,234,0.5), 0 2px 8px rgba(0,0,0,0.3);
-      font-family:'Pretendard','Noto Sans KR',sans-serif;
-      transition: transform 0.2s, box-shadow 0.2s;
+      border:none; border-radius:999px; padding:12px 22px; cursor:pointer;
+      box-shadow:0 8px 24px rgba(102,126,234,0.5),0 2px 8px rgba(0,0,0,0.3);
+      ${F} transition:transform 0.2s,box-shadow 0.2s;
     `;
     launchBtn.onmouseenter = () => {
       launchBtn.style.transform = 'scale(1.05) translateY(-2px)';
-      launchBtn.style.boxShadow = '0 12px 32px rgba(102,126,234,0.7), 0 4px 12px rgba(0,0,0,0.3)';
+      launchBtn.style.boxShadow = '0 12px 32px rgba(102,126,234,0.7),0 4px 12px rgba(0,0,0,0.3)';
     };
     launchBtn.onmouseleave = () => {
       launchBtn.style.transform = '';
-      launchBtn.style.boxShadow = '0 8px 24px rgba(102,126,234,0.5), 0 2px 8px rgba(0,0,0,0.3)';
+      launchBtn.style.boxShadow = '0 8px 24px rgba(102,126,234,0.5),0 2px 8px rgba(0,0,0,0.3)';
     };
     launchBtn.onclick = startDemo;
     document.body.appendChild(launchBtn);
 
-    // 중지 버튼
-    stopBtn = document.createElement('button');
-    stopBtn.id = 'demo-stop-btn';
-    stopBtn.innerHTML = '⏹ 시연 중지';
-    stopBtn.style.cssText = `
+    // ── 시연 중 컨트롤 래퍼 (일시정지 + 중지)
+    // stopBtn 변수를 이 래퍼로 설정 → startDemo/stopDemo의 display 제어가 그대로 동작
+    const ctrlWrap = document.createElement('div');
+    ctrlWrap.id = 'demo-ctrl-wrap';
+    ctrlWrap.style.cssText = `
       position:fixed; bottom:24px; right:24px; z-index:99999;
-      display:none; align-items:center; gap:8px;
-      background:rgba(244,106,106,0.9);
-      color:#fff; font-size:13px; font-weight:700;
-      border:none; border-radius:999px;
-      padding:10px 20px; cursor:pointer;
-      box-shadow: 0 6px 18px rgba(244,106,106,0.4);
-      font-family:'Pretendard','Noto Sans KR',sans-serif;
-      backdrop-filter:blur(8px);
+      display:none; align-items:center; gap:10px;
     `;
-    stopBtn.onclick = stopDemo;
-    document.body.appendChild(stopBtn);
+    stopBtn = ctrlWrap;   // ← startDemo에서 stopBtn.style.display = 'flex' 로 래퍼를 표시
+
+    // ── 일시정지 버튼
+    pauseBtn = document.createElement('button');
+    pauseBtn.id = 'demo-pause-btn';
+    pauseBtn.innerHTML = '⏸ 일시정지';
+    pauseBtn.style.cssText = `
+      display:flex; align-items:center; gap:6px;
+      background:rgba(99,179,237,0.92); color:#fff;
+      font-size:13px; font-weight:700; border:none; border-radius:999px;
+      padding:10px 20px; cursor:pointer;
+      box-shadow:0 6px 18px rgba(99,179,237,0.4);
+      ${F} backdrop-filter:blur(8px); transition:background 0.2s;
+    `;
+    pauseBtn.onmouseenter = () => { pauseBtn.style.background = 'rgba(99,179,237,1)'; };
+    pauseBtn.onmouseleave = () => { pauseBtn.style.background = 'rgba(99,179,237,0.92)'; };
+    pauseBtn.onclick = togglePause;
+
+    // ── 중지 버튼
+    const realStopBtn = document.createElement('button');
+    realStopBtn.id = 'demo-stop-btn';
+    realStopBtn.innerHTML = '⏹ 중지';
+    realStopBtn.style.cssText = `
+      display:flex; align-items:center; gap:6px;
+      background:rgba(244,106,106,0.9); color:#fff;
+      font-size:13px; font-weight:700; border:none; border-radius:999px;
+      padding:10px 20px; cursor:pointer;
+      box-shadow:0 6px 18px rgba(244,106,106,0.4);
+      ${F} backdrop-filter:blur(8px); transition:background 0.2s;
+    `;
+    realStopBtn.onmouseenter = () => { realStopBtn.style.background = 'rgba(244,106,106,1)'; };
+    realStopBtn.onmouseleave = () => { realStopBtn.style.background = 'rgba(244,106,106,0.9)'; };
+    realStopBtn.onclick = stopDemo;
+
+    ctrlWrap.appendChild(pauseBtn);
+    ctrlWrap.appendChild(realStopBtn);
+    document.body.appendChild(ctrlWrap);
   }
 
   /* ── 초기화 ─────────────────────────────────────────────────────── */
@@ -555,8 +639,11 @@
   }
 
   // 전역 제어 함수 노출
-  window.demoStart = startDemo;
-  window.demoStop = stopDemo;
+  window.demoStart  = startDemo;
+  window.demoStop   = stopDemo;
+  window.demoPause  = pauseDemo;
+  window.demoResume = resumeDemo;
+  window.demoTogglePause = togglePause;
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
