@@ -359,12 +359,28 @@
     `;
     subtitleEl.innerHTML = `
       <div id="demo-progress-wrap" style="
-        width:100%; height:3px; background:rgba(255,255,255,0.15); border-radius:999px;
-        margin-bottom:22px; overflow:hidden;
+        width:100%; height:5px; background:rgba(255,255,255,0.15); border-radius:999px;
+        margin-bottom:20px; overflow:visible; position:relative;
+        cursor:pointer; pointer-events:auto;
+        transition: height 0.15s ease;
       ">
         <div id="demo-progress-bar" style="
           height:100%; width:0%; background:linear-gradient(90deg,#63b3ed,#9f7aea);
-          border-radius:999px; transition:width 0.5s linear;
+          border-radius:999px; transition:width 0.5s linear; pointer-events:none;
+        "></div>
+        <div id="demo-progress-thumb" style="
+          position:absolute; top:50%; right:auto; width:13px; height:13px;
+          background:#fff; border-radius:50%; transform:translate(-50%,-50%);
+          pointer-events:none; opacity:0;
+          box-shadow:0 0 0 3px rgba(99,179,237,0.6);
+          transition: opacity 0.15s ease, left 0.5s linear;
+        "></div>
+        <div id="demo-progress-tooltip" style="
+          position:absolute; bottom:18px; transform:translateX(-50%);
+          background:rgba(0,0,0,0.85); color:#fff; font-size:11px; font-weight:700;
+          padding:3px 8px; border-radius:6px; pointer-events:none; opacity:0;
+          font-family:'JetBrains Mono',monospace; white-space:nowrap;
+          transition: opacity 0.1s ease;
         "></div>
       </div>
       <div id="demo-badge" style="
@@ -391,6 +407,42 @@
     document.body.appendChild(subtitleEl);
 
     progressEl = document.getElementById('demo-progress-bar');
+
+    // 진행 바 클릭 / 호버 이벤트
+    const wrap = document.getElementById('demo-progress-wrap');
+    const thumb = document.getElementById('demo-progress-thumb');
+    const tooltip = document.getElementById('demo-progress-tooltip');
+
+    function msToTime(ms) {
+      const s = Math.floor(ms / 1000);
+      return `${String(Math.floor(s / 60)).padStart(2,'0')}:${String(s % 60).padStart(2,'0')}`;
+    }
+
+    wrap.addEventListener('mouseenter', () => {
+      wrap.style.height = '8px';
+      if (thumb) thumb.style.opacity = '1';
+    });
+    wrap.addEventListener('mouseleave', () => {
+      wrap.style.height = '5px';
+      if (thumb) thumb.style.opacity = '0';
+      if (tooltip) tooltip.style.opacity = '0';
+    });
+    wrap.addEventListener('mousemove', (e) => {
+      const rect = wrap.getBoundingClientRect();
+      const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+      const hoverMs = Math.floor(ratio * TOTAL_DURATION);
+      if (thumb) thumb.style.left = (ratio * 100) + '%';
+      if (tooltip) {
+        tooltip.style.left = (ratio * 100) + '%';
+        tooltip.style.opacity = '1';
+        tooltip.textContent = msToTime(hoverMs);
+      }
+    });
+    wrap.addEventListener('click', (e) => {
+      const rect = wrap.getBoundingClientRect();
+      const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+      seekTo(Math.floor(ratio * TOTAL_DURATION));
+    });
   }
 
   /* ── 하이라이트 포커스 ─────────────────────────────────────────── */
@@ -434,13 +486,55 @@
   function startProgressBar() {
     const iv = setInterval(() => {
       if (!demoRunning) { clearInterval(iv); return; }
-      if (demoPaused) return;  // 일시정지 중엔 멈춤
+      if (demoPaused) return;
       const elapsed = pausedElapsed + (Date.now() - demoStartedAt);
       const pct = Math.min(100, (elapsed / TOTAL_DURATION) * 100);
       if (progressEl) progressEl.style.width = pct + '%';
+      // thumb 동기화 (마우스가 올라가 있지 않을 때)
+      const thumb = document.getElementById('demo-progress-thumb');
+      if (thumb && thumb.style.opacity === '0') {
+        thumb.style.transition = 'opacity 0.15s ease, left 0.5s linear';
+        thumb.style.left = pct + '%';
+      }
       if (pct >= 100) clearInterval(iv);
     }, 200);
     demoTimers.push({ clear: () => clearInterval(iv) });
+  }
+
+  /* ── 특정 시간으로 이동 ───────────────────────────────────────── */
+  function seekTo(targetMs) {
+    if (!demoRunning) return;
+    targetMs = Math.max(0, Math.min(TOTAL_DURATION, targetMs));
+
+    // 현재 실행 중인 타이머 전부 취소
+    demoTimers.forEach(t => t.clear());
+    demoTimers = [];
+
+    // 경과 시간 업데이트
+    pausedElapsed = targetMs;
+    demoStartedAt = Date.now();
+
+    // 진행 바 즉시 반영
+    const pct = (targetMs / TOTAL_DURATION) * 100;
+    if (progressEl) {
+      progressEl.style.transition = 'none';
+      progressEl.style.width = pct + '%';
+      requestAnimationFrame(() => { progressEl.style.transition = 'width 0.5s linear'; });
+    }
+
+    // 해당 시점의 자막 찾아서 즉시 표시
+    let lastStep = null;
+    for (const s of STEPS) {
+      if (s.time <= targetMs && s.title) lastStep = s;
+    }
+    if (lastStep) updateSubtitle(lastStep.title, lastStep.desc);
+
+    if (demoPaused) {
+      // 일시정지 중이면 배지 유지, 진행 바만 갱신
+      return;
+    }
+    startProgressBar();
+    scheduleSteps(targetMs);
   }
 
   /* ── 스텝 스케줄링 (from = 재개 시 경과 ms) ─────────────────────── */
@@ -461,6 +555,29 @@
     });
   }
 
+  /* ── 키보드 탐색 핸들러 ──────────────────────────────────────── */
+  function _onKeySeek(e) {
+    if (!demoRunning) return;
+    // 입력 필드 포커스 중엔 무시
+    if (['INPUT','TEXTAREA'].includes(document.activeElement?.tagName)) return;
+    if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      const cur = demoPaused
+        ? pausedElapsed
+        : pausedElapsed + (Date.now() - demoStartedAt);
+      seekTo(cur - 5000);
+    } else if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      const cur = demoPaused
+        ? pausedElapsed
+        : pausedElapsed + (Date.now() - demoStartedAt);
+      seekTo(cur + 5000);
+    } else if (e.key === ' ') {
+      e.preventDefault();
+      togglePause();
+    }
+  }
+
   /* ── 데모 시작 ─────────────────────────────────────────────────── */
   function startDemo() {
     if (demoRunning) return;
@@ -476,6 +593,8 @@
     buildUI();
     startProgressBar();
     scheduleSteps(0);
+
+    document.addEventListener('keydown', _onKeySeek);
   }
 
   /* ── 일시정지 / 재개 ──────────────────────────────────────────── */
@@ -526,6 +645,7 @@
     pausedElapsed = 0;
     demoTimers.forEach(t => t.clear());
     demoTimers = [];
+    document.removeEventListener('keydown', _onKeySeek);
 
     // UI 제거
     ['demo-overlay', 'demo-subtitle', 'demo-highlight'].forEach(id => {
@@ -639,11 +759,12 @@
   }
 
   // 전역 제어 함수 노출
-  window.demoStart  = startDemo;
-  window.demoStop   = stopDemo;
-  window.demoPause  = pauseDemo;
-  window.demoResume = resumeDemo;
+  window.demoStart       = startDemo;
+  window.demoStop        = stopDemo;
+  window.demoPause       = pauseDemo;
+  window.demoResume      = resumeDemo;
   window.demoTogglePause = togglePause;
+  window.demoSeek        = seekTo;
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
