@@ -94,40 +94,44 @@ function renderParts() {
             <div class="part-code">CODE: ${escHtml(p.code)}</div>
           </div>
           <div class="part-specs-right">
-            <div class="spec-inline-group spec-material">
-              <div class="spec-label">원소재</div>
-              <div class="spec-val">${escHtml(String(p.material||'–'))}</div>
+            <div class="spec-text-group">
+              <div class="spec-inline-group spec-material">
+                <div class="spec-label">원소재</div>
+                <div class="spec-val">${escHtml(String(p.material||'–'))}</div>
+              </div>
+              <div class="spec-inline-group spec-dimension">
+                <div class="spec-label">규격</div>
+                <div class="spec-val"><span style="font-weight:400;color:var(--text3)">T(두께):&nbsp;</span>${p.thickness}&nbsp;<span style="font-weight:400;color:var(--text3)">/&nbsp;W(폭):&nbsp;</span>${p.width_raw}&nbsp;<span style="font-weight:400;color:var(--text3)">/&nbsp;P(피치):&nbsp;</span>${p.pitch}</div>
+              </div>
             </div>
-            <div class="spec-inline-group spec-dimension">
-              <div class="spec-label">규격</div>
-              <div class="spec-val"><span style="font-weight:400;color:var(--text3)">T(두께):&nbsp;</span>${p.thickness}&nbsp;<span style="font-weight:400;color:var(--text3)">/&nbsp;W(폭):&nbsp;</span>${p.width_raw}&nbsp;<span style="font-weight:400;color:var(--text3)">/&nbsp;P(피치):&nbsp;</span>${p.pitch}</div>
-            </div>
-            <div class="spec-divider"></div>
-            ${['l','w','h'].map(d=>`
+            <div class="spec-dim-group">
+              <div class="spec-divider"></div>
+              ${['l','w','h'].map(d=>`
               <div class="dim-box">
                 <div class="dim-box-label">${d==='l'?'가로':d==='w'?'세로':'높이'}</div>
                 <div class="dim-box-val">${p['dim_'+d]}</div>
               </div>`).join('')}
-            <div class="dim-box dim-box-mold">
-              <div class="dim-box-label">금형TYPE</div>
-              <div class="dim-box-val">${p.moldType && p.moldType !== '-' ? escHtml(p.moldType) : '-'}</div>
-            </div>
-            <div class="dim-box dim-box-accent">
-              <div class="dim-box-label">CAV</div>
-              <div class="dim-box-val">${p.cav != null && p.cav !== '-' ? escHtml(String(p.cav)) : '-'}</div>
-            </div>
-            <div class="dim-box dim-box-accent">
-              <div class="dim-box-label">SET소요</div>
-              <div class="dim-box-val" style="font-size:${setFontSize}">${p.set_qty != null && p.set_qty !== '-' ? (() => { const v = parseFloat(p.set_qty); return isNaN(v) ? String(p.set_qty) : (v < 1 ? v.toFixed(4) : String(p.set_qty)); })() : '-'}</div>
-            </div>
-            ${p.tray_qty != null ? `
-            <div class="dim-box dim-box-pkg">
-              <div class="dim-box-label">${trayLabel}</div>
-              <div class="dim-box-val" style="font-size:${trayFontSize}">${escHtml(String(p.tray_qty))}</div>
-            </div>` : ''}
-            <div class="dim-box dim-box-weight">
-              <div class="dim-box-label">Weight</div>
-              <div class="dim-box-val">${escHtml(String(weightVal))}<span style="font-size:9px;font-weight:600;opacity:0.7"> g</span></div>
+              <div class="dim-box dim-box-mold">
+                <div class="dim-box-label">금형TYPE</div>
+                <div class="dim-box-val">${p.moldType && p.moldType !== '-' ? escHtml(p.moldType) : '-'}</div>
+              </div>
+              <div class="dim-box dim-box-accent">
+                <div class="dim-box-label">CAV</div>
+                <div class="dim-box-val">${p.cav != null && p.cav !== '-' ? escHtml(String(p.cav)) : '-'}</div>
+              </div>
+              <div class="dim-box dim-box-accent">
+                <div class="dim-box-label">SET소요</div>
+                <div class="dim-box-val" style="font-size:${setFontSize}">${p.set_qty != null && p.set_qty !== '-' ? (() => { const v = parseFloat(p.set_qty); return isNaN(v) ? String(p.set_qty) : (v < 1 ? v.toFixed(4) : String(p.set_qty)); })() : '-'}</div>
+              </div>
+              ${p.tray_qty != null ? `
+              <div class="dim-box dim-box-pkg">
+                <div class="dim-box-label">${trayLabel}</div>
+                <div class="dim-box-val" style="font-size:${trayFontSize}">${escHtml(String(p.tray_qty))}</div>
+              </div>` : ''}
+              <div class="dim-box dim-box-weight">
+                <div class="dim-box-label">Weight</div>
+                <div class="dim-box-val">${escHtml(String(weightVal))}<span style="font-size:9px;font-weight:600;opacity:0.7"> g</span></div>
+              </div>
             </div>
           </div>
         </div>
@@ -184,40 +188,44 @@ function renderParts() {
           <div class="part-code">CODE: ${escHtml(p.code)}</div>
         </div>
         <div class="part-specs-right">
-          <div class="spec-inline-group spec-material">
-            <div class="spec-label">원소재</div>
-            <div class="spec-val">${escHtml(String(p.material||'–'))}</div>
+          <div class="spec-text-group">
+            <div class="spec-inline-group spec-material">
+              <div class="spec-label">원소재</div>
+              <div class="spec-val">${escHtml(String(p.material||'–'))}</div>
+            </div>
+            <div class="spec-inline-group spec-dimension">
+              <div class="spec-label">규격</div>
+              <div class="spec-val"><span style="font-weight:400;color:var(--text3)">T(두께):&nbsp;</span>${p.thickness}&nbsp;<span style="font-weight:400;color:var(--text3)">/&nbsp;W(폭):&nbsp;</span>${p.width_raw}&nbsp;<span style="font-weight:400;color:var(--text3)">/&nbsp;P(피치):&nbsp;</span>${p.pitch}</div>
+            </div>
           </div>
-          <div class="spec-inline-group spec-dimension">
-            <div class="spec-label">규격</div>
-            <div class="spec-val"><span style="font-weight:400;color:var(--text3)">T(두께):&nbsp;</span>${p.thickness}&nbsp;<span style="font-weight:400;color:var(--text3)">/&nbsp;W(폭):&nbsp;</span>${p.width_raw}&nbsp;<span style="font-weight:400;color:var(--text3)">/&nbsp;P(피치):&nbsp;</span>${p.pitch}</div>
-          </div>
-          <div class="spec-divider"></div>
-          ${['l','w','h'].map(d=>`
+          <div class="spec-dim-group">
+            <div class="spec-divider"></div>
+            ${['l','w','h'].map(d=>`
             <div class="dim-box">
               <div class="dim-box-label">${d==='l'?'가로':d==='w'?'세로':'높이'}</div>
               <div class="dim-box-val">${p['dim_'+d]}</div>
             </div>`).join('')}
-          <div class="dim-box dim-box-mold">
-            <div class="dim-box-label">금형TYPE</div>
-            <div class="dim-box-val">${p.moldType && p.moldType !== '-' ? escHtml(p.moldType) : '-'}</div>
-          </div>
-          <div class="dim-box dim-box-accent">
-            <div class="dim-box-label">CAV</div>
-            <div class="dim-box-val">${p.cav != null && p.cav !== '-' ? escHtml(String(p.cav)) : '-'}</div>
-          </div>
-          <div class="dim-box dim-box-accent">
-            <div class="dim-box-label">SET소요</div>
-            <div class="dim-box-val" style="font-size:${setFontSize}">${p.set_qty != null && p.set_qty !== '-' ? (() => { const v = parseFloat(p.set_qty); return isNaN(v) ? String(p.set_qty) : (v < 1 ? v.toFixed(4) : String(p.set_qty)); })() : '-'}</div>
-          </div>
-          ${p.tray_qty != null ? `
-          <div class="dim-box dim-box-pkg">
-            <div class="dim-box-label">${trayLabel}</div>
-            <div class="dim-box-val" style="font-size:${trayFontSize}">${escHtml(String(p.tray_qty))}</div>
-          </div>` : ''}
-          <div class="dim-box dim-box-weight">
-            <div class="dim-box-label">Weight</div>
-            <div class="dim-box-val">${escHtml(String(weightVal))}<span style="font-size:9px;font-weight:600;opacity:0.7"> g</span></div>
+            <div class="dim-box dim-box-mold">
+              <div class="dim-box-label">금형TYPE</div>
+              <div class="dim-box-val">${p.moldType && p.moldType !== '-' ? escHtml(p.moldType) : '-'}</div>
+            </div>
+            <div class="dim-box dim-box-accent">
+              <div class="dim-box-label">CAV</div>
+              <div class="dim-box-val">${p.cav != null && p.cav !== '-' ? escHtml(String(p.cav)) : '-'}</div>
+            </div>
+            <div class="dim-box dim-box-accent">
+              <div class="dim-box-label">SET소요</div>
+              <div class="dim-box-val" style="font-size:${setFontSize}">${p.set_qty != null && p.set_qty !== '-' ? (() => { const v = parseFloat(p.set_qty); return isNaN(v) ? String(p.set_qty) : (v < 1 ? v.toFixed(4) : String(p.set_qty)); })() : '-'}</div>
+            </div>
+            ${p.tray_qty != null ? `
+            <div class="dim-box dim-box-pkg">
+              <div class="dim-box-label">${trayLabel}</div>
+              <div class="dim-box-val" style="font-size:${trayFontSize}">${escHtml(String(p.tray_qty))}</div>
+            </div>` : ''}
+            <div class="dim-box dim-box-weight">
+              <div class="dim-box-label">Weight</div>
+              <div class="dim-box-val">${escHtml(String(weightVal))}<span style="font-size:9px;font-weight:600;opacity:0.7"> g</span></div>
+            </div>
           </div>
         </div>
       </div>

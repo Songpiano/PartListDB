@@ -226,6 +226,18 @@
 }
 .sub-row .part-specs-right { gap: 4px; }
 
+/* 텍스트 그룹 (원소재+규격) — 남은 공간 모두 차지 */
+.spec-text-group {
+  display: flex; flex-wrap: nowrap; align-items: center;
+  gap: 4px; flex: 1; min-width: 0;
+}
+
+/* 치수 그룹 (구분선+dim-box들) — 고정 너비, 항상 우측 정렬 */
+.spec-dim-group {
+  display: flex; flex-wrap: nowrap; align-items: center;
+  gap: 4px; flex-shrink: 0;
+}
+
 /* 모든 스펙 항목 공통: 고정 높이, 라벨 위·값 아래 배치 */
 .spec-inline-group, .dim-box {
   display: flex; flex-direction: column;
@@ -237,9 +249,10 @@
   padding: 2px 5px;
 }
 
-/* 원소재·규격 고정 너비 */
-.spec-inline-group.spec-material  { min-width: 150px; width: 150px; }
-.spec-inline-group.spec-dimension { min-width: 180px; width: auto; flex: 1; max-width: 320px; }
+/* 원소재·규격 너비 */
+.spec-inline-group.spec-material  { flex: 0 0 auto; min-width: 120px; width: auto; max-width: 200px; }
+.spec-inline-group.spec-material .spec-val { overflow: visible; text-overflow: unset; max-width: none; white-space: nowrap; }
+.spec-inline-group.spec-dimension { flex: 1; min-width: 160px; width: auto; max-width: none; }
 .spec-inline-group.spec-dimension .spec-val { white-space: nowrap; overflow: visible; text-overflow: unset; max-width: none; }
 
 /* DIM BOX 고정 너비 */
