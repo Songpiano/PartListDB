@@ -307,12 +307,10 @@ function renderStatus() {
           const isAssy = c.includes('완제품');
           return `<span class="status-cat-badge${isAssy ? ' assy-cat' : ''}">${escHtml(c)} <strong>${n}</strong></span>`;
         }).join('');
-      const imgs = md.parts.filter(p => p.imageUrl).slice(0,1);
-
       return `<tr class="status-model-row" onclick="navigateToModel('${escHtml(model)}')" title="부품 리스트 보기">
         <td class="status-td-model">
           <div class="status-model-name">
-            ${imgs.length ? `<img class="status-model-thumb" src="${imgs[0].imageUrl}" />` : '<div class="status-model-icon">📱</div>'}
+            <div class="status-model-icon">📱</div>
             <span>${escHtml(model)}</span>
           </div>
         </td>
