@@ -142,35 +142,91 @@
         window.scrollTo({ top: 300, behavior: 'smooth' });
       }
     },
-    // 12: 담당자 수정
+    // 12: 데이터 추가 버튼
     {
       time: 71500,
-      title: '✏️ 담당자 인라인 편집',
-      desc: '담당자 칸을 클릭하면 바로 수정할 수 있습니다 — 별도 창 없이 인라인 편집',
-      highlight: '.part-manager-col, .parts-grid',
-      action: () => {}
-    },
-    // 13: 데이터 추가 버튼
-    {
-      time: 77500,
       title: '📁 엑셀 데이터 추가',
       desc: '여러 개의 파트리스트 엑셀 파일을 한 번에 업로드할 수 있습니다',
-      highlight: '.header-actions .btn:first-child',
+      highlight: '.header-actions .btn:first-child, [data-action="upload"], #uploadBtn',
       action: () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
+        switchTab('list');
       }
     },
-    // 14: 백업 기능
+    // 13: 데이터 추가 오류 시연
     {
-      time: 83500,
-      title: '💾 백업 내보내기',
-      desc: '모든 데이터를 JSON 파일로 백업 · 복원할 수 있습니다',
-      highlight: '.header-actions',
-      action: () => {}
+      time: 78000,
+      title: '⚠️ 데이터 형식 오류 안내',
+      desc: '잘못된 형식의 파일 업로드 시 항목별 오류 메시지로 원인을 즉시 안내합니다',
+      highlight: '#syncStatus',
+      action: () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        // 오류 메시지 시뮬레이션 - NO 순서 오류
+        if (typeof showSyncStatus === 'function') {
+          showSyncStatus('등록 불가: 파일명.xlsx (NO 순서 오류)', 'error');
+        }
+        // 커스텀 오류 배너 표시
+        const banner = document.createElement('div');
+        banner.id = 'demo-error-banner';
+        banner.style.cssText = `
+          position:fixed; top:80px; left:50%; transform:translateX(-50%);
+          z-index:99998; background:rgba(220,53,69,0.95);
+          color:#fff; font-size:14px; font-weight:700;
+          padding:14px 28px; border-radius:10px;
+          box-shadow:0 8px 32px rgba(220,53,69,0.5);
+          font-family:'Pretendard','Noto Sans KR',sans-serif;
+          max-width:520px; text-align:center; line-height:1.6;
+          backdrop-filter:blur(8px);
+          animation: demoFadeIn 0.3s ease;
+        `;
+        if (!document.getElementById('demo-error-anim')) {
+          const style = document.createElement('style');
+          style.id = 'demo-error-anim';
+          style.textContent = '@keyframes demoFadeIn { from{opacity:0;transform:translateX(-50%) translateY(-10px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }';
+          document.head.appendChild(style);
+        }
+        banner.innerHTML = `
+          <div style="font-size:18px;margin-bottom:4px;">⚠️ 파트리스트 오류로 등록할 수 없습니다</div>
+          <div style="font-weight:400;opacity:0.9;">파일명.xlsx — NO 순서 오류<br><span style="font-size:12px;opacity:0.75;">항목 순서를 확인하고 다시 업로드해주세요</span></div>
+        `;
+        document.body.appendChild(banner);
+        setTimeout(() => { if (banner.parentNode) banner.remove(); }, 6000);
+      }
+    },
+    // 14: 금형 TYPE 오류 예시
+    {
+      time: 85000,
+      title: '🔴 금형 TYPE 오류',
+      desc: '금형 TYPE 값이 올바르지 않을 때도 파일명과 함께 정확한 오류 원인을 표시합니다',
+      highlight: '#syncStatus',
+      action: () => {
+        if (typeof showSyncStatus === 'function') {
+          showSyncStatus('등록 불가: 파일명.xlsx (금형TYPE 오류)', 'error');
+        }
+        const banner = document.createElement('div');
+        banner.id = 'demo-error-banner2';
+        banner.style.cssText = `
+          position:fixed; top:80px; left:50%; transform:translateX(-50%);
+          z-index:99998; background:rgba(220,53,69,0.95);
+          color:#fff; font-size:14px; font-weight:700;
+          padding:14px 28px; border-radius:10px;
+          box-shadow:0 8px 32px rgba(220,53,69,0.5);
+          font-family:'Pretendard','Noto Sans KR',sans-serif;
+          max-width:520px; text-align:center; line-height:1.6;
+          backdrop-filter:blur(8px);
+          animation: demoFadeIn 0.3s ease;
+        `;
+        banner.innerHTML = `
+          <div style="font-size:18px;margin-bottom:4px;">⚠️ 금형TYPE 오류로 등록할 수 없습니다</div>
+          <div style="font-weight:400;opacity:0.9;">파일명.xlsx — 금형TYPE 오류<br><span style="font-size:12px;opacity:0.75;">허용된 금형 TYPE 값을 사용하고 다시 업로드해주세요</span></div>
+        `;
+        document.body.appendChild(banner);
+        setTimeout(() => { if (banner.parentNode) banner.remove(); }, 5500);
+      }
     },
     // 15: Q&A 탭
     {
-      time: 89000,
+      time: 92000,
       title: '💬 요청 게시판',
       desc: '기능 요청, 데이터 수정 등을 자유롭게 남길 수 있는 게시판입니다',
       highlight: '#tabQna',
@@ -181,7 +237,7 @@
     },
     // 16: Q&A 리스트
     {
-      time: 95500,
+      time: 98500,
       title: '📋 요청 · 답변 현황',
       desc: '작성된 요청과 답변 상태(대기중 · 완료)를 한눈에 확인합니다',
       highlight: '#qnaList',
@@ -189,7 +245,7 @@
     },
     // 17: 테마 전환
     {
-      time: 102000,
+      time: 104500,
       title: '🌙 라이트 / 다크 테마',
       desc: '눈이 편한 다크 모드와 명확한 라이트 모드를 자유롭게 전환합니다',
       highlight: '#themeToggle',
@@ -203,7 +259,7 @@
     },
     // 18: 라이트 테마 상태
     {
-      time: 108000,
+      time: 110000,
       title: '☀️ 라이트 테마 적용',
       desc: '라이트 모드에서도 모든 정보가 선명하게 표시됩니다',
       highlight: '#panelStatus',
@@ -211,7 +267,7 @@
     },
     // 19: 다크 테마로 복귀
     {
-      time: 113500,
+      time: 115500,
       title: '🌙 다크 테마로 복귀',
       desc: '다시 다크 모드로 전환합니다',
       highlight: '#themeToggle',
@@ -223,7 +279,7 @@
     },
     // 20: 아웃트로
     {
-      time: 118000,
+      time: 120500,
       title: '✅ Part List Database',
       desc: '파트리스트 취합 · 검색 · 현황 분석을 하나의 대시보드에서 — 지금 바로 사용해보세요',
       highlight: '.header-brand',
@@ -233,7 +289,7 @@
       }
     },
     // 21: 종료
-    { time: 125000, title: '', desc: '', highlight: null, action: () => { stopDemo(); } }
+    { time: 127000, title: '', desc: '', highlight: null, action: () => { stopDemo(); } }
   ];
 
   /* ── 상태 ─────────────────────────────────────────────────────── */
@@ -247,7 +303,7 @@
   let stopBtn = null;
   let highlightBox = null;
 
-  const TOTAL_DURATION = 125000;
+  const TOTAL_DURATION = 127000;
 
   /* ── 유틸 ─────────────────────────────────────────────────────── */
   function demoTypeText(input, text, speed, cb) {
@@ -498,10 +554,13 @@
     }, 500);
   }
 
+  // 전역 제어 함수 노출
+  window.demoStart = startDemo;
+  window.demoStop = stopDemo;
+
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
-    // 앱 로드 후 약간 딜레이
     setTimeout(init, 1500);
   }
 
