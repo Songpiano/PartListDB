@@ -215,7 +215,7 @@ function renderParts() {
           </div>
           ${isAssy && p.process2 && p.process2 !== '' ? `
           <div class="part-process-flow-row">
-            <span class="process-flow-label-inline">공정</span>
+            <span class="process-flow-label-inline">공정 :</span>
             <span class="process-flow-val-inline">${escHtml(p.process2)}</span>
           </div>` : ''}
         </div>
