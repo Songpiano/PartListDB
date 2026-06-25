@@ -213,17 +213,17 @@ function renderParts() {
               <div class="dim-box-val">${escHtml(String(weightVal))}<span style="font-size:9px;font-weight:600;opacity:0.7"> g</span></div>
             </div>
           </div>
+          ${isAssy && p.process2 && p.process2 !== '' ? `
+          <div class="part-process-flow-row">
+            <span class="process-flow-label-inline">공정</span>
+            <span class="process-flow-val-inline">${escHtml(p.process2)}</span>
+          </div>` : ''}
         </div>
       </div>
       <div class="part-manager-col">
         <div class="part-manager-label">담당자</div>
         <div class="part-manager-name"><span id="field_${p.id}_manager">${escHtml(p.manager||'–')}</span></div>
       </div>
-      ${isAssy && p.process2 && p.process2 !== '' ? `
-      <div class="part-process-flow-row">
-        <span class="process-flow-label-inline">공정</span>
-        <span class="process-flow-val-inline">${escHtml(p.process2)}</span>
-      </div>` : ''}
     </div>`;
   });
   if (inSubGroup) gridHtml += '</div>';
