@@ -141,7 +141,7 @@
   letter-spacing: 0.03em;
 }
 .process-flow-val-inline {
-  font-size: 13px; font-weight: 500; color: var(--text);
+  font-size: 14px; font-weight: 500; color: var(--text);
   white-space: normal; word-break: keep-all; line-height: 1.5;
 }
 
