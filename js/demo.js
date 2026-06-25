@@ -243,43 +243,9 @@
       highlight: '#qnaList',
       action: () => {}
     },
-    // 17: 테마 전환
+    // 17: 아웃트로
     {
       time: 104500,
-      title: '🌙 라이트 / 다크 테마',
-      desc: '눈이 편한 다크 모드와 명확한 라이트 모드를 자유롭게 전환합니다',
-      highlight: '#themeToggle',
-      action: () => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        switchTab('status');
-        setTimeout(() => {
-          if (typeof toggleTheme === 'function') toggleTheme();
-        }, 600);
-      }
-    },
-    // 18: 라이트 테마 상태
-    {
-      time: 110000,
-      title: '☀️ 라이트 테마 적용',
-      desc: '라이트 모드에서도 모든 정보가 선명하게 표시됩니다',
-      highlight: '#panelStatus',
-      action: () => {}
-    },
-    // 19: 다크 테마로 복귀
-    {
-      time: 115500,
-      title: '🌙 다크 테마로 복귀',
-      desc: '다시 다크 모드로 전환합니다',
-      highlight: '#themeToggle',
-      action: () => {
-        setTimeout(() => {
-          if (typeof toggleTheme === 'function') toggleTheme();
-        }, 400);
-      }
-    },
-    // 20: 아웃트로
-    {
-      time: 120500,
       title: '✅ Part List Database',
       desc: '파트리스트 취합 · 검색 · 현황 분석을 하나의 대시보드에서 — 지금 바로 사용해보세요',
       highlight: '.header-brand',
@@ -288,8 +254,8 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     },
-    // 21: 종료
-    { time: 127000, title: '', desc: '', highlight: null, action: () => { stopDemo(); } }
+    // 18: 종료
+    { time: 111000, title: '', desc: '', highlight: null, action: () => { stopDemo(); } }
   ];
 
   /* ── 상태 ─────────────────────────────────────────────────────── */
@@ -307,7 +273,7 @@
   let pauseBtn = null;
   let highlightBox = null;
 
-  const TOTAL_DURATION = 127000;
+  const TOTAL_DURATION = 111000;
 
   /* ── 유틸 ─────────────────────────────────────────────────────── */
   function demoTypeText(input, text, speed, cb) {
