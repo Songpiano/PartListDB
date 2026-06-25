@@ -223,7 +223,7 @@ function processSingleFile(file, summary, next) {
       }
 
       // ── CAV가 있는 실제 표 헤더 행을 먼저 찾음 (결재란 등 상단 타이틀 영역의 "담당자" 라벨과 혼동 방지) ──
-      let cavIdx = 16, setIdx = 17, managerIdx = -1, deliverIdx = -1, moldIdx = -1, headerRowIdx = -1;
+      let cavIdx = 16, setIdx = 17, managerIdx = -1, deliverIdx = -1, moldIdx = -1, process1Idx = -1, process2Idx = -1, headerRowIdx = -1;
       for (let r = 0; r < Math.min(15, rows.length); r++) {
         if (!rows[r]) continue;
         rows[r].forEach((cell, ci) => {
@@ -243,12 +243,16 @@ function processSingleFile(file, summary, next) {
           if (s === '비고') managerIdx = ci;           // 비고 컬럼 명시 감지
           if (s.includes('납품처') || s.includes('납품')) deliverIdx = ci;
           if (s.includes('금형')) moldIdx = ci;        // 금형TYPE 컬럼 감지
+          if (s.includes('공정')) {                    // 공정 컬럼 감지 (공정1, 공정2 순서대로)
+            if (process1Idx === -1) process1Idx = ci;
+            else if (process2Idx === -1) process2Idx = ci;
+          }
         });
       });
       // 비고 컬럼 미감지 시 납품처 다음 컬럼으로 추정
       if (managerIdx === -1 && deliverIdx >= 0) managerIdx = deliverIdx + 1;
       if (managerIdx === -1) managerIdx = setIdx + 4;
-      console.log('[upload] headerRowIdx:', headerRowIdx, 'cavIdx:', cavIdx, 'setIdx:', setIdx, 'managerIdx:', managerIdx, '(deliverIdx:', deliverIdx, ') moldIdx:', moldIdx);
+      console.log('[upload] headerRowIdx:', headerRowIdx, 'cavIdx:', cavIdx, 'setIdx:', setIdx, 'managerIdx:', managerIdx, '(deliverIdx:', deliverIdx, ') moldIdx:', moldIdx, 'process1Idx:', process1Idx, 'process2Idx:', process2Idx);
 
       // ── 금형TYPE 검증 ──
       const moldCheck = validateMoldTypes(rows, moldIdx);
@@ -267,19 +271,19 @@ function processSingleFile(file, summary, next) {
           `<strong>${modelName}</strong> 모델의 기존 파트 <strong>${existingCount}개</strong>가 있습니다.<br>어떻게 처리하시겠습니까?`;
         document.getElementById('replaceBtn').onclick = () => {
           closeReplaceModal();
-          summary.added += processUpload(rows, modelName, xlsxImgMap, approvalDate, cavIdx, setIdx, managerIdx, moldIdx, true, approvalManager);
+          summary.added += processUpload(rows, modelName, xlsxImgMap, approvalDate, cavIdx, setIdx, managerIdx, moldIdx, process1Idx, process2Idx, true, approvalManager);
           next();
         };
         document.getElementById('appendBtn').onclick = () => {
           closeReplaceModal();
-          summary.added += processUpload(rows, modelName, xlsxImgMap, approvalDate, cavIdx, setIdx, managerIdx, moldIdx, false, approvalManager);
+          summary.added += processUpload(rows, modelName, xlsxImgMap, approvalDate, cavIdx, setIdx, managerIdx, moldIdx, process1Idx, process2Idx, false, approvalManager);
           next();
         };
         document.getElementById('replaceModal').classList.add('open');
         return;
       }
 
-      summary.added += processUpload(rows, modelName, xlsxImgMap, approvalDate, cavIdx, setIdx, managerIdx, moldIdx, false, approvalManager);
+      summary.added += processUpload(rows, modelName, xlsxImgMap, approvalDate, cavIdx, setIdx, managerIdx, moldIdx, process1Idx, process2Idx, false, approvalManager);
       next();
 
     } catch(err) {
@@ -292,7 +296,7 @@ function processSingleFile(file, summary, next) {
 }
 
 // ─── CORE UPLOAD PROCESSING ───────────────────────────────────────────────────
-function processUpload(rows, modelName, xlsxImgMap, approvalDate, cavIdx, setIdx, managerIdx, moldIdx, replace, approvalManager) {
+function processUpload(rows, modelName, xlsxImgMap, approvalDate, cavIdx, setIdx, managerIdx, moldIdx, process1Idx, process2Idx, replace, approvalManager) {
   const isEmptyManager = (v) => !v || /^[-–—\s]+$/.test(v);
 
   // 교체 모드: 기존 모델 파트 전체 삭제
@@ -379,6 +383,8 @@ function processUpload(rows, modelName, xlsxImgMap, approvalDate, cavIdx, setIdx
       set_qty:   (row[setIdx] != null && row[setIdx] !== '') ? row[setIdx] : '-',
       tray_qty:  trayQty,
       moldType:  moldIdx >= 0 && row[moldIdx] != null && String(row[moldIdx]).trim() !== '' ? String(row[moldIdx]).replace(/\n/g,' ').trim() : '-',
+      process1:  process1Idx >= 0 && row[process1Idx] != null ? String(row[process1Idx]).replace(/\n/g,' ').trim() : '',
+      process2:  process2Idx >= 0 && row[process2Idx] != null ? String(row[process2Idx]).replace(/\n/g,' ').trim() : '',
       manager:   colManagerVal,
       approvalDate,
       uploadBatch,

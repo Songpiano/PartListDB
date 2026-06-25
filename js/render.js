@@ -156,7 +156,8 @@ function renderParts() {
         <div class="assy-toggle-wrap${hasSubs ? '' : ' is-hidden'}">
           <div class="assy-toggle-arrow" id="arrow_${p.id}">▾</div>
           <div class="assy-toggle-label" id="arrowLabel_${p.id}">하위코드 숨김</div>
-        </div>` : ''}
+        </div>
+        ${p.process2 && p.process2 !== '' ? `<div class="part-process-flow"><span class="process-flow-label">공정</span><span class="process-flow-val">${escHtml(p.process2)}</span></div>` : ''}` : ''}
       </div>
 
 

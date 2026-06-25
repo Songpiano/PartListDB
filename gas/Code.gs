@@ -6,6 +6,7 @@ const HEADERS = [
   'material','thickness','width_raw','pitch',
   'dim_l','dim_w','dim_h','weight_g',
   'cav','set_qty','tray_qty','manager','moldType',
+  'process1','process2',
   'approvalDate','uploadBatch','rowIndex','createdAt','imageUrl'
 ];
 
