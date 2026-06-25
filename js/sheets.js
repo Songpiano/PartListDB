@@ -5,11 +5,12 @@
 
 // ─── GOOGLE SHEETS 연동 ───────────────────────────────────────────────────────
 const GAS_URL_KEY = 'partlist_gas_url';
-// 이미지 Drive 업로드 기능 추가로 재배포된 새 URL
-const GAS_DEFAULT_URL = 'https://script.google.com/macros/s/AKfycbxoQ-WC1pSaA8KjBaKprcECbyP7GqDv31VL_1g7OQjeT_C6B_KxCtcP-fvpZU-BtraO/exec';
+// process1/process2(공정 흐름) 컬럼 추가로 재배포된 새 URL
+const GAS_DEFAULT_URL = 'https://script.google.com/macros/s/AKfycbx5Q3O5HQN_h2GQTNp5N95fAIjllCAmAo8D6EAnLWGpzv-LIwu-_Ip8EfF-hfjPIDUO/exec';
 // 예전 배포 URL들 — localStorage에 캐시되어 있으면 새 URL로 자동 교체
 const GAS_OLD_DEFAULT_URLS = [
-  'https://script.google.com/macros/s/AKfycbw23LS1mGOh27Nm51WKS_bzdX2os2EPigpZyBgbKcQR03RT1ipKHFXdKRKz68iCZ0sS/exec'
+  'https://script.google.com/macros/s/AKfycbw23LS1mGOh27Nm51WKS_bzdX2os2EPigpZyBgbKcQR03RT1ipKHFXdKRKz68iCZ0sS/exec',
+  'https://script.google.com/macros/s/AKfycbxoQ-WC1pSaA8KjBaKprcECbyP7GqDv31VL_1g7OQjeT_C6B_KxCtcP-fvpZU-BtraO/exec'
 ];
 let gasUrl = localStorage.getItem(GAS_URL_KEY);
 if (!gasUrl || GAS_OLD_DEFAULT_URLS.includes(gasUrl)) {
