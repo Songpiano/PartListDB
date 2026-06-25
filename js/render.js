@@ -156,8 +156,7 @@ function renderParts() {
         <div class="assy-toggle-wrap${hasSubs ? '' : ' is-hidden'}">
           <div class="assy-toggle-arrow" id="arrow_${p.id}">▾</div>
           <div class="assy-toggle-label" id="arrowLabel_${p.id}">하위코드 숨김</div>
-        </div>
-        ${p.process2 && p.process2 !== '' ? `<div class="part-process-flow"><span class="process-flow-label">공정</span><span class="process-flow-val">${escHtml(p.process2)}</span></div>` : ''}` : ''}
+        </div>` : ''}
       </div>
 
 
@@ -220,6 +219,11 @@ function renderParts() {
         <div class="part-manager-label">담당자</div>
         <div class="part-manager-name"><span id="field_${p.id}_manager">${escHtml(p.manager||'–')}</span></div>
       </div>
+      ${isAssy && p.process2 && p.process2 !== '' ? `
+      <div class="part-process-flow-row">
+        <span class="process-flow-label-inline">공정</span>
+        <span class="process-flow-val-inline">${escHtml(p.process2)}</span>
+      </div>` : ''}
     </div>`;
   });
   if (inSubGroup) gridHtml += '</div>';

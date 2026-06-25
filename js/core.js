@@ -104,8 +104,21 @@ let pendingAction = null;
 
 function saveParts() {
   parts.forEach((p, i) => { p.globalNo = i + 1; });
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(parts));
-  showSyncStatus('로컬 저장됨', 'success');
+  // base64 이미지는 localStorage에 저장하지 않음 (5MB 한도 초과 방지)
+  // Drive URL은 그대로 저장, base64는 null로 교체 후 저장
+  const forStorage = parts.map(p => ({
+    ...p,
+    imageUrl: (p.imageUrl && p.imageUrl.startsWith('data:')) ? null : p.imageUrl
+  }));
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(forStorage));
+    showSyncStatus('로컬 저장됨', 'success');
+  } catch(e) {
+    // 그래도 넘치면 이미지 전체 제외 후 재시도
+    const minimal = parts.map(p => ({ ...p, imageUrl: null }));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(minimal));
+    showSyncStatus('로컬 저장됨 (이미지 제외)', 'success');
+  }
   // Google Sheets 동기화 (연동 설정 시)
   if (gasUrl) syncToSheets();
 }
